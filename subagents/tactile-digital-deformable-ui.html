@@ -1,0 +1,1230 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE · Tactile Digital / Deformable UI  (styles.csv row 60)
+  Origin: 2025+ Tactile Era · Complexity: Medium · Perf cost: low, no drivers
+
+  The mechanism of this style is not a colour, it is a CONSEQUENCE: every
+  surface you touch changes shape and then remembers its old shape.
+
+    1. PRESS DEFORMATION — a finger/pointer/click drives `scale` down and
+       narrow, spreads the corner radii wider, sinks a `box-shadow: inset`
+       into the top of the object and lifts `filter: brightness`. The object
+       is squashed, not merely darkened.
+    2. BOUNCE-BACK — every one of those properties leaves `:active` through
+       `cubic-bezier(0.34, 1.56, 0.64, 1)`, the overshoot curve, so the
+       surface returns past its rest size and settles. Release adds a short
+       `x-jelly` keyframe (the wobble the curve alone cannot do).
+    3. MATERIAL — chrome (polished #C0C0C0 rails), jelly (translucent pink
+       and soft-blue bodies with a top gloss and a dark underside), and a
+       pointer-tracked dent highlight so a surface visibly yields under the
+       cursor before it is ever pressed.
+
+  Spring physics from the row (`--spring-stiffness: 300 / --spring-damping:
+  20`) is a real damped spring; a CSS transition cannot take those numbers,
+  so it is expressed as its observable equivalent — the overshoot bezier and
+  a ζ≈0.33 decay. Frameworks named in the row (framer-motion, react-spring,
+  gsap) are NOT used: ROOT.md §5 forbids them, so the spring, the pointer
+  deformation and the staggered entrance are hand-written CSS + vanilla JS.
+
+  No DOM hooks were renamed. Tier-0 markup, strings, images, ids and form
+  controls are the canonical skeleton's; only the presentation layer, plus
+  `x-`/aria-hidden decoration, is mine.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Quicksand:wght@500;600;700&display=swap">
+
+<style>
+  /* ── 1 · CANONICAL COLOUR TOKENS ──────────────────────────────────────────
+     The same nine names in both themes, so the flip is total. In light the
+     page is daylight chrome + jelly on a pale blue plate; in dark it is
+     midnight metal with the same pink jelly glowing through it. `--c-accent`
+     is deliberately the *material* (Jelly Pink #FF9ECD) in both themes — the
+     row's own accessibility field demands contrast-text-4.5, and #FF9ECD is
+     far too light to carry white text, so it is used as the thing you press,
+     with near-black plum ink laid ON it (9.2:1), never as ink itself. Text
+     accents get their own darkened tokens below (--x-link, --x-blue-ink). */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #e8eef7;
+    --c-surface: #ffffff;
+    --c-elevate: #d7e2f0;
+    --c-text: #191b2e;
+    --c-muted: #4f5573;
+    --c-accent: #ff9ecd;
+    --c-accent-ink: #2b0f22;
+    --c-border: #b9c6dd;
+    --c-shadow: rgba(22, 26, 58, 0.20);
+  }
+  [data-theme="dark"] {
+    --c-bg: #12131f;
+    --c-surface: #212336;
+    --c-elevate: #2d3049;
+    --c-text: #f3f1ff;
+    --c-muted: #a9b0d6;
+    --c-accent: #ff9ecd;
+    --c-accent-ink: #2b0f22;
+    --c-border: #444a70;
+    --c-shadow: rgba(0, 0, 0, 0.60);
+  }
+
+  /* ── 2 · MATERIAL + PHYSICS (non-canonical names: they never flip alone) ──
+     `--press-scale`, `--bounce-duration`, `--depth-shadow` and
+     `--material-glossy` are the row's literal design-system variables. */
+  :root {
+    /* the row's physics, verbatim */
+    --press-scale: 0.95;
+    --bounce-duration: 400ms;
+    --spring-stiffness: 300;
+    --spring-damping: 20;
+    --depth-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+    --material-glossy: linear-gradient(135deg, rgba(255, 255, 255, 0.92) 0%, rgba(255, 255, 255, 0) 58%);
+
+    /* the observable equivalent of stiffness 300 / damping 20 (ζ ≈ 0.33):
+       overshoot once, settle in ~2 cycles */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --ease-out-soft: cubic-bezier(0.22, 0.9, 0.28, 1);
+    --squish: 480ms;
+
+    /* canonical layout vars, re-valued for a jelly grid */
+    --page-max: 1140px;
+    --gap: 1.35rem;
+    --pad: clamp(1.15rem, 4vw, 3rem);
+    --radius: 26px;
+    --font-display: "Baloo 2", ui-rounded, "SF Pro Rounded", "Trebuchet MS", system-ui, sans-serif;
+    --font-body: "Quicksand", ui-rounded, "Segoe UI", system-ui, -apple-system, sans-serif;
+  }
+
+  [data-theme="light"] {
+    --x-chrome: linear-gradient(180deg, #ffffff 0%, #eef2fa 15%, #c0c0c0 49%, #a3adbf 51%, #dde6f4 78%, #ffffff 100%);
+    --x-chrome-soft: linear-gradient(180deg, #ffffff 0%, #f2f6fc 55%, #d9e3f2 100%);
+    --x-plate: linear-gradient(158deg, #ffffff 0%, #f5f8fe 44%, #e6eef9 100%);
+    --x-jelly-pink: linear-gradient(158deg, #ffdcec 0%, #ff9ecd 44%, #f77ab4 100%);
+    --x-jelly-blue: linear-gradient(158deg, #eaf8ff 0%, #b7e2f8 46%, #7cc2e6 100%);
+    --x-dent: rgba(255, 255, 255, 0.92);
+    --x-rim: rgba(255, 255, 255, 0.95);
+    --x-under: rgba(94, 71, 120, 0.30);
+    --x-seam: rgba(90, 104, 145, 0.30);
+    --x-link: #a51a54;
+    --x-blue-ink: #14547d;
+    --x-on-blue: #0d3f60;
+    --x-on-jelly: #2b0f22;
+    --x-on-jelly-soft: rgba(43, 15, 34, 0.74);
+    --x-glow: rgba(255, 158, 205, 0.55);
+    --x-gloss-op: 0.34;
+    --x-field-op: 0.62;
+  }
+  [data-theme="dark"] {
+    --x-chrome: linear-gradient(180deg, #6d7592 0%, #41475f 20%, #232739 50%, #2c3149 52%, #454c66 80%, #606880 100%);
+    --x-chrome-soft: linear-gradient(180deg, #3a4058 0%, #292e44 55%, #1d2133 100%);
+    --x-plate: linear-gradient(158deg, #2b3050 0%, #212336 52%, #181a29 100%);
+    --x-jelly-pink: linear-gradient(158deg, #ffc7e4 0%, #ff9ecd 44%, #d95f96 100%);
+    --x-jelly-blue: linear-gradient(158deg, #c4ecff 0%, #87ceeb 46%, #5fa9cf 100%);
+    --x-dent: rgba(255, 214, 236, 0.34);
+    --x-rim: rgba(198, 214, 255, 0.30);
+    --x-under: rgba(0, 0, 0, 0.60);
+    --x-seam: rgba(150, 160, 210, 0.28);
+    --x-link: #ffb6dd;
+    --x-blue-ink: #87ceeb;
+    --x-on-blue: #0b2c44;
+    --x-on-jelly: #2b0f22;
+    --x-on-jelly-soft: rgba(43, 15, 34, 0.74);
+    --x-glow: rgba(255, 158, 205, 0.42);
+    --x-gloss-op: 0.16;
+    --x-field-op: 0.40;
+  }
+
+  /* ── 3 · BASE ─────────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    /* the plate colour is the background-COLOUR, so the theme flip is
+       measurable and not painted only by gradients */
+    background-color: var(--c-bg);
+    /* grain + jelly field live in this one background stack, so they cost zero
+       extra composited layers (ROOT §9) */
+    background-image:
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E"),
+      radial-gradient(720px 460px at 4% -4%, var(--c-elevate) 0%, transparent 64%),
+      radial-gradient(640px 420px at 99% 1%, var(--c-accent) 0%, transparent 58%),
+      radial-gradient(820px 480px at 50% 104%, var(--c-accent) 0%, transparent 62%);
+    background-size: 140px 140px, auto, auto, auto;
+    background-repeat: repeat, no-repeat, no-repeat, no-repeat;
+    background-position: 0 0, 0 0, 100% 0, 50% 100%;
+    background-blend-mode: soft-light, soft-light, soft-light, soft-light;
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1.03125rem;
+    font-weight: 500;
+    line-height: 1.66;
+    overflow-wrap: break-word;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--x-link); text-decoration: none; }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    line-height: 1.06;
+    letter-spacing: -0.018em;
+    margin: 0 0 .42em;
+    /* the puffy extruded edge: type as a moulded jelly body */
+    text-shadow:
+      0 1px 0 var(--x-rim),
+      0 3px 0 var(--x-seam),
+      0 9px 18px var(--c-shadow);
+  }
+  h1 { font-size: clamp(2.35rem, 8.4vw, 4.35rem); }
+  h2 { font-size: clamp(1.65rem, 4.6vw, 2.7rem); }
+  h3 { font-size: 1.25rem; font-weight: 700; line-height: 1.2; text-shadow: 0 1px 0 var(--x-rim); }
+  p { margin: 0 0 1em; }
+
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+  section {
+    position: relative;
+    padding-block: clamp(2.75rem, 8vw, 6rem);
+    border-block-start: 2px solid var(--x-seam);
+  }
+  section:first-of-type { border-block-start: 0; }
+  #hero::before { display: none; }   /* nothing to mark: the hero opens the page */
+  /* a squashed jelly bead sits on every section seam — the style's signature
+     "this was pressed here" mark */
+  section::before {
+    content: "";
+    position: absolute;
+    top: -7px; left: 50%;
+    width: 96px; height: 12px;
+    margin-left: -48px;
+    border-radius: 99px;
+    background: var(--x-jelly-pink);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 4px 10px var(--c-shadow);
+  }
+  #itinerary::before, #reviews::before { background: var(--x-jelly-blue); width: 148px; margin-left: -74px; }
+  #booking::before { width: 62px; margin-left: -31px; }
+
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+  .grid > *, .card, figure { min-width: 0; }
+
+  /* ── 4 · THE DEFORMABLE PLATE ───────────────────────────────────────────
+     Every raised object in the page is one of these. `scale` and `translate`
+     are independent transform properties, so a press squish and the
+     pointer-driven `transform: perspective(...)` tilt never fight. */
+  .card, .btn, .field > input, .field > select, summary {
+    transform: perspective(760px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    scale: var(--sx, 1) var(--sy, 1);
+    transition:
+      scale var(--squish) var(--ease-spring),
+      transform 260ms var(--ease-out-soft),
+      border-radius var(--squish) var(--ease-spring),
+      box-shadow var(--squish) var(--ease-out-soft),
+      filter 180ms linear,
+      background-color 220ms linear,
+      color 220ms linear;
+    touch-action: manipulation;
+  }
+
+  .card {
+    position: relative;
+    isolation: isolate;
+    overflow: hidden;
+    background: var(--x-plate);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.3rem 1.25rem 1.35rem;
+    box-shadow:
+      inset 0 1px 0 var(--x-rim),
+      inset 0 -14px 22px -14px var(--x-under),
+      0 12px 26px -10px var(--c-shadow),
+      var(--depth-shadow);
+  }
+  /* the glossy top-left sheen (`--material-glossy`) */
+  .card::before {
+    content: "";
+    position: absolute; inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    background: var(--material-glossy);
+    opacity: var(--x-gloss-op);
+    pointer-events: none;
+    transition: opacity 260ms var(--ease-out-soft);
+  }
+  .card:hover::before { opacity: calc(var(--x-gloss-op) + 0.1); }
+  .card:active::before { opacity: calc(var(--x-gloss-op) + 0.18); }
+  /* the dent: a highlight that follows the pointer across the face */
+  .card::after {
+    content: "";
+    position: absolute; inset: -1px;
+    z-index: 3;
+    border-radius: inherit;
+    background: radial-gradient(150px circle at var(--mx, 50%) var(--my, 0%), var(--x-dent), transparent 62%);
+    opacity: var(--dent, 0);
+    transition: opacity 320ms var(--ease-out-soft);
+    pointer-events: none;
+  }
+  .card:hover { --sx: 1.012; --sy: 1.026; border-radius: calc(var(--radius) + 8px) calc(var(--radius) + 2px) calc(var(--radius) + 10px) calc(var(--radius) + 3px); }
+  .card:active {
+    --sx: 0.965;
+    --sy: 0.905;
+    --rx: 0deg; --ry: 0deg;
+    border-radius: calc(var(--radius) + 14px) calc(var(--radius) + 6px) calc(var(--radius) + 16px) calc(var(--radius) + 5px);
+    box-shadow:
+      inset 0 10px 22px -6px var(--x-under),
+      inset 0 -3px 0 var(--x-rim),
+      0 2px 6px -2px var(--c-shadow);
+    filter: brightness(1.05) saturate(1.12);
+  }
+
+  /* ── 5 · JELLY BUTTONS ─────────────────────────────────────────────────
+     A pressed jelly button goes narrow AND wide, gains a dark submerged
+     underside and loses its outer depth — the classic squish. */
+  .btn {
+    display: inline-block;
+    font: inherit;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.0625rem;
+    letter-spacing: .004em;
+    text-decoration: none;
+    text-align: center;
+    padding: .95rem 1.7rem;
+    border-radius: 999px;
+    border: 1px solid transparent;
+    background-image: var(--material-glossy), var(--x-jelly-pink);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    position: relative;
+    isolation: isolate;
+    box-shadow:
+      inset 0 2px 0 var(--x-rim),
+      inset 0 -10px 16px -8px rgba(120, 30, 80, 0.55),
+      0 10px 22px -8px var(--x-glow),
+      var(--depth-shadow);
+    filter: saturate(1.04);
+  }
+  .btn::before {
+    content: "";
+    position: absolute; inset: 1px 1px 55%;
+    z-index: 1;
+    border-radius: 999px 999px 40% 40% / 999px 999px 22% 22%;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6) 0%, rgba(255, 255, 255, 0) 100%);
+    opacity: .55;
+    pointer-events: none;
+    transition: opacity 200ms linear, transform var(--squish) var(--ease-spring);
+  }
+  .btn:hover { --sy: 1.05; --sx: 1.028; filter: brightness(1.05) saturate(1.1); }
+  .btn:hover::before { opacity: .8; }
+  .btn:active {
+    --sx: var(--press-scale);
+    --sy: 0.88;
+    translate: 0 2px;
+    filter: brightness(1.12) saturate(1.2);
+    box-shadow:
+      inset 0 8px 16px -6px rgba(120, 30, 80, 0.7),
+      inset 0 -2px 0 var(--x-rim),
+      0 2px 4px -2px var(--c-shadow);
+  }
+  /* the cap highlight flattens as the body is pushed down */
+  .btn:active::before { opacity: .95; transform: translateY(3px) scaleY(.42); }
+  /* the quiet button is polished chrome instead of jelly — same yield */
+  .btn--quiet {
+    background: var(--x-chrome);
+    color: var(--c-text);
+    border-color: var(--c-border);
+    box-shadow:
+      inset 0 1px 0 var(--x-rim),
+      inset 0 -8px 14px -8px var(--x-under),
+      0 8px 18px -10px var(--c-shadow);
+  }
+  .btn--quiet:active {
+    box-shadow:
+      inset 0 7px 14px -5px var(--x-under),
+      inset 0 -1px 0 var(--x-rim),
+      0 1px 3px -1px var(--c-shadow);
+  }
+  #booking .btn[type="submit"] { width: 100%; padding-block: 1.1rem; font-size: 1.1875rem; }
+
+  /* ── 6 · HEADER RAIL (chrome) ─────────────────────────────────────────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 20;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-block: .7rem;
+    background:
+      linear-gradient(180deg, rgba(255, 255, 255, .5) 0%, rgba(255, 255, 255, 0) 34%),
+      var(--x-chrome-soft);
+    border-block-end: 3px solid var(--c-accent);
+    box-shadow: 0 10px 26px -14px var(--c-shadow), inset 0 -1px 0 var(--x-rim);
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 1.3125rem;
+    letter-spacing: -.02em;
+    color: var(--c-text);
+    text-shadow: 0 1px 0 var(--x-rim), 0 3px 0 var(--x-seam);
+    scale: var(--sx, 1) var(--sy, 1);
+    transition: scale var(--squish) var(--ease-spring);
+  }
+  .brand:active { --sx: .96; --sy: .9; }
+  .site-nav { display: flex; flex-wrap: wrap; gap: .5rem; font-size: .9375rem; }
+  .site-nav a {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    color: var(--c-text);
+    padding: .42rem .95rem;
+    border-radius: 999px;
+    background: var(--x-chrome-soft);
+    border: 1px solid var(--c-border);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 5px 12px -7px var(--c-shadow);
+    scale: var(--sx, 1) var(--sy, 1);
+    transform: perspective(520px) rotateX(var(--rx, 0deg)) rotateY(var(--ry, 0deg));
+    transition: scale var(--squish) var(--ease-spring), transform 240ms var(--ease-out-soft), background-color 200ms linear, color 200ms linear;
+  }
+  .site-nav a:hover { --sy: 1.07; --sx: 1.03; background: var(--x-jelly-blue); color: var(--x-on-blue); }
+  .site-nav a:active { --sx: .93; --sy: .84; background: var(--c-accent); color: var(--c-accent-ink); }
+
+  /* theme toggle: a chrome cap with a pink jelly core */
+  #theme-toggle {
+    font-family: var(--font-display);
+    font-weight: 700;
+    padding: .5rem 1.15rem;
+    background: var(--x-chrome);
+    color: var(--c-text);
+    border: 1px solid var(--c-border);
+    box-shadow:
+      inset 0 2px 0 var(--x-rim),
+      inset 0 -7px 12px -7px var(--x-under),
+      0 7px 16px -9px var(--c-shadow);
+  }
+  /* the dark theme is "on": the cap turns to blue jelly, so its ink turns dark */
+  #theme-toggle[aria-pressed="true"] { background: var(--x-jelly-blue); color: var(--x-on-blue); }
+
+  /* ── 7 · HERO ────────────────────────────────────────────────────────── */
+  #hero { padding-block-start: clamp(2rem, 6vw, 4.25rem); }
+  .eyebrow {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: .875rem;
+    letter-spacing: .045em;
+    text-transform: uppercase;
+    margin: 0 0 1.1rem;
+    padding: .4rem 1rem;
+    border-radius: 999px;
+    background: var(--x-jelly-blue);
+    color: var(--x-on-blue);
+    border: 1px solid var(--c-border);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 6px 14px -8px var(--c-shadow);
+    scale: var(--sx, 1) var(--sy, 1);
+    transition: scale var(--squish) var(--ease-spring);
+  }
+  .eyebrow:active, .eyebrow:hover { --sx: .97; --sy: .9; }
+  #hero .lede { font-size: clamp(1.0625rem, 2.2vw, 1.28125rem); color: var(--c-muted); max-width: 46ch; }
+  #hero h1 { max-width: 15ch; }
+  #hero > p:not(.lede):not(.eyebrow) { display: flex; flex-wrap: wrap; gap: .85rem; margin-block: 1.6rem 1.9rem; }
+  #hero > p:not(.lede):not(.eyebrow) .btn { flex: 1 1 12rem; }
+
+  .meta-list { display: flex; flex-wrap: wrap; gap: .6rem; list-style: none; padding: 0; margin: 0 0 2rem; }
+  .meta-list li {
+    --x-chip: 1;
+    display: inline-flex; align-items: center; gap: .5rem;
+    font-size: .875rem; font-weight: 600;
+    color: var(--c-text);
+    padding: .5rem .9rem .5rem .7rem;
+    border-radius: 16px 20px 17px 21px;
+    background: var(--x-plate);
+    border: 1px solid var(--c-border);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 7px 15px -11px var(--c-shadow);
+    scale: var(--sx, 1) var(--sy, 1);
+    transition: scale var(--squish) var(--ease-spring), border-radius var(--squish) var(--ease-spring), background-color 200ms linear;
+  }
+  .meta-list li::before {
+    content: "";
+    width: 11px; height: 11px;
+    border-radius: 50% 46% 52% 48%;
+    background: var(--x-jelly-pink);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 2px 5px var(--c-shadow);
+  }
+  .meta-list li:hover { --sy: 1.06; --sx: 1.02; border-radius: 22px 15px 24px 14px; }
+  .meta-list li:active { --sy: .86; --sx: .95; border-radius: 26px 12px 26px 12px; }
+
+  /* the hero photograph is a moulded jelly slab that keeps breathing */
+  figure { margin: 0; }
+  .hero-figure { position: relative; isolation: isolate; }
+  .hero-figure > img {
+    width: 100%;
+    border-radius: 40px 26px 44px 22px / 24px 44px 26px 40px;
+    border: 3px solid var(--x-rim);
+    box-shadow:
+      inset 0 0 0 1px var(--c-border),
+      0 22px 44px -22px var(--c-shadow),
+      var(--depth-shadow);
+    animation: x-breathe 9s var(--ease-out-soft) infinite;
+    transition: filter 240ms linear;
+  }
+  .hero-figure::after {
+    content: "";
+    position: absolute; inset: 0;
+    z-index: 2;
+    border-radius: inherit;
+    background: linear-gradient(155deg, rgba(255,255,255,.55) 0%, rgba(255,255,255,0) 42%);
+    pointer-events: none;
+  }
+  .hero-figure:hover > img { filter: saturate(1.12) brightness(1.04); }
+  figcaption, .hero-figure figcaption {
+    font-size: .8125rem; font-weight: 600; color: var(--c-muted);
+    margin-block-start: .75rem;
+    padding-inline-start: .9rem;
+    border-inline-start: 4px solid var(--c-accent);
+    border-radius: 2px;
+  }
+  /* Tier-2 decoration: soft jelly field behind the hero text (single layer,
+     no blur, no will-change) */
+  .x-blobfield {
+    position: absolute; inset: 0;
+    z-index: -1;
+    overflow: hidden;
+    pointer-events: none;
+    opacity: var(--x-field-op);
+    background:
+      radial-gradient(38% 30% at 8% 26%, var(--x-glow) 0%, transparent 62%),
+      radial-gradient(30% 26% at 96% 62%, rgba(135, 206, 235, 0.55) 0%, transparent 60%),
+      radial-gradient(24% 22% at 46% 104%, var(--x-glow) 0%, transparent 64%);
+  }
+
+  /* ── 8 · HIGHLIGHTS ──────────────────────────────────────────────────── */
+  #highlights .card { padding: 0 0 1.15rem; display: flex; flex-direction: column; }
+  #highlights .card > img {
+    width: 100%;
+    border-radius: calc(var(--radius) - 3px) calc(var(--radius) + 4px) 0 0 / calc(var(--radius) - 3px) calc(var(--radius) + 4px) 0 0;
+    border-block-end: 3px solid var(--x-rim);
+    filter: saturate(1.02);
+  }
+  #highlights .card h3,
+  #highlights .card > p { padding-inline: 1.15rem; }
+  #highlights .card h3 { margin-block: 1.05rem .4rem; color: var(--x-link); text-shadow: 0 1px 0 var(--x-rim); }
+  #highlights .card > p { margin: 0; color: var(--c-muted); font-size: .96875rem; }
+  #highlights .card:active > img { filter: brightness(1.08) saturate(1.25); }
+
+  /* ── 9 · ITINERARY — a jelly staircase of days ───────────────────────── */
+  #itinerary .grid--days { gap: 1rem; }
+  .day { border-radius: 22px 30px 22px 30px / 30px 22px 30px 22px; }
+  .day > .day-num {
+    display: inline-flex; align-items: center; justify-content: center;
+    min-width: 3.4rem; height: 2.1rem;
+    padding-inline: .7rem;
+    margin: 0 0 .7rem;
+    font-family: var(--font-display);
+    font-size: .6875rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--c-text);
+    background: var(--x-chrome);
+    border: 1px solid var(--c-border);
+    border-radius: 999px;
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 5px 11px -7px var(--c-shadow);
+  }
+  .day:nth-child(even) > .day-num { background: var(--x-jelly-blue); color: var(--x-on-blue); }
+  .day h3 { color: var(--c-text); }
+  .day > p:last-of-type { margin: 0; color: var(--c-muted); font-size: .9375rem; }
+  .day img { margin-block: 1rem 0; border-radius: 18px 26px 18px 26px; border: 2px solid var(--x-rim); box-shadow: 0 10px 22px -14px var(--c-shadow); }
+  .day:hover { border-radius: 30px 22px 30px 22px / 22px 30px 22px 30px; }
+  .day:active { border-radius: 34px 16px 34px 16px / 16px 34px 16px 34px; }
+
+  /* ── 10 · GALLERY — six pressable slabs ──────────────────────────────── */
+  .grid--gallery { gap: 1.1rem; }
+  .grid--gallery .card { padding: .6rem .6rem .75rem; background: var(--x-chrome-soft); }
+  .grid--gallery img {
+    width: 100%;
+    border-radius: 20px 28px 20px 28px;
+    border: 2px solid var(--x-rim);
+    box-shadow: 0 12px 24px -16px var(--c-shadow);
+    transition: filter 220ms var(--ease-out-soft);
+  }
+  .grid--gallery figcaption {
+    border-inline-start-width: 0;
+    padding-inline: .35rem;
+    margin-block-start: .6rem;
+    font-size: .8125rem;
+    color: var(--c-muted);
+  }
+  .grid--gallery figure:nth-child(3n+2) img { border-radius: 30px 18px 32px 16px; }
+  .grid--gallery figure:nth-child(3n) img { border-radius: 16px 34px 14px 30px; }
+  .grid--gallery figure:hover img { filter: saturate(1.16) brightness(1.05); }
+  .grid--gallery figure:active img { filter: brightness(1.14) saturate(1.3); }
+
+  /* ── 11 · REVIEWS ────────────────────────────────────────────────────── */
+  #reviews .grid { counter-reset: x; }
+  #reviews .card {
+    border-radius: 30px 30px 30px 8px;
+    background: var(--x-jelly-blue);
+    border-color: var(--c-border);
+  }
+  #reviews .card:nth-child(2) { background: var(--x-jelly-pink); }
+  #reviews .card:nth-child(3) { background: var(--x-chrome-soft); }
+  #reviews .card { color: var(--x-on-jelly); }
+  #reviews .card > p { color: var(--x-on-jelly); }
+  #reviews .card:nth-child(3), #reviews .card:nth-child(3) > p { color: var(--c-text); }
+  #reviews blockquote p { margin: 0 0 1em; }
+  #reviews blockquote p:last-of-type { margin-block-end: .4rem; }
+  .rating {
+    display: inline-block;
+    color: var(--c-accent-ink);
+    letter-spacing: .16em;
+    font-size: 1.0625rem;
+    padding: .18rem .6rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, .5);
+    box-shadow: inset 0 1px 0 var(--x-rim), 0 4px 10px -6px var(--c-shadow);
+    scale: var(--sx, 1) var(--sy, 1);
+    transition: scale var(--squish) var(--ease-spring);
+  }
+  #reviews .card:hover .rating { --sy: 1.18; --sx: 1.06; }
+  #reviews .card:active .rating { --sy: .8; --sx: .93; }
+  #reviews footer { display: flex; flex-wrap: wrap; align-items: baseline; gap: .15rem; font-size: .9375rem; }
+  #reviews cite { font-style: normal; font-family: var(--font-display); font-weight: 700; }
+  #reviews footer span { color: var(--x-on-jelly-soft); font-weight: 600; }
+  #reviews .card:nth-child(3) footer span { color: var(--c-muted); }
+
+  /* ── 12 · BOOKING — the wells you press into ─────────────────────────── */
+  #booking .card { padding: clamp(1.15rem, 3.4vw, 2rem); }
+  .field { display: grid; gap: .4rem; margin-block-end: 1.1rem; }
+  .field > label {
+    font-family: var(--font-display);
+    font-size: .8125rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .1em;
+    color: var(--x-link);
+  }
+  .field > input, .field > select {
+    font: inherit; font-weight: 600;
+    color: var(--c-text);
+    padding: .85rem 1rem;
+    background: var(--x-chrome-soft);
+    border: 1px solid var(--c-border);
+    border-radius: 18px 24px 18px 24px;
+    /* an inset well: the control is already sunk, focus sinks it deeper */
+    box-shadow:
+      inset 0 5px 12px -6px var(--x-under),
+      inset 0 -1px 0 var(--x-rim),
+      0 1px 0 var(--x-rim);
+    transition:
+      box-shadow 220ms var(--ease-out-soft),
+      border-radius var(--squish) var(--ease-spring),
+      translate var(--squish) var(--ease-spring),
+      border-color 200ms linear;
+    translate: 0 var(--tl, 0px);
+  }
+  .field > select {
+    appearance: none; -webkit-appearance: none;
+    padding-inline-end: 2.6rem;
+    background-image:
+      var(--x-chrome-soft),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='12'%3E%3Cpath d='M1 3l7 6 7-6' fill='none' stroke='%234f5573' stroke-width='2.4' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat, no-repeat;
+    background-position: 0 0, right 1rem center;
+    background-size: auto, 16px 12px;
+  }
+  .field > input:hover, .field > select:hover { --tl: 1px; border-radius: 24px 18px 24px 18px; }
+  .field > input:active, .field > select:active { --tl: 2px; box-shadow: inset 0 8px 16px -6px var(--x-under); }
+  .field > input:focus, .field > select:focus {
+    --tl: 2px;
+    border-color: var(--c-accent);
+    box-shadow:
+      inset 0 6px 14px -6px var(--x-under),
+      0 0 0 4px var(--x-glow);
+  }
+  .fineprint { margin: .9rem 0 0; font-size: .8125rem; font-weight: 600; color: var(--c-muted); }
+
+  #booking h3 { margin-block: clamp(2.5rem, 6vw, 4rem) .9rem; }
+  .faq { display: grid; gap: .85rem; }
+  .faq details {
+    padding: 0;
+    border-radius: 22px 26px 22px 26px;
+    background: var(--x-plate);
+    transition: border-radius var(--squish) var(--ease-spring), scale var(--squish) var(--ease-spring), background-color 220ms linear;
+    scale: var(--sx, 1) var(--sy, 1);
+  }
+  .faq details:active { --sx: .985; --sy: .955; }
+  .faq details[open] {
+    --sx: 1.008;
+    background: var(--x-chrome-soft);
+    border-radius: 26px 22px 30px 20px;
+  }
+  .faq summary {
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    list-style: none;
+    cursor: pointer;
+    padding: 1.05rem 1.15rem;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 1.03125rem;
+    color: var(--c-text);
+    border-radius: inherit;
+    user-select: none;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:active { --sx: .955; --sy: .9; filter: brightness(1.05); }
+  /* the jelly knob that pops out when the drawer yields */
+  .x-knob {
+    flex: 0 0 auto;
+    width: 30px; height: 30px;
+    border-radius: 50% 46% 54% 48%;
+    background: var(--x-jelly-pink);
+    box-shadow:
+      inset 0 2px 0 var(--x-rim),
+      inset 0 -6px 10px -6px rgba(120, 30, 80, .6),
+      0 5px 12px -6px var(--c-shadow);
+    transition: border-radius var(--squish) var(--ease-spring), transform var(--squish) var(--ease-spring), background 220ms linear;
+  }
+  .x-knob::after {
+    content: "";
+    display: block;
+    width: 100%; height: 100%;
+    border-radius: inherit;
+    background:
+      linear-gradient(90deg, transparent 43%, currentColor 43%, currentColor 57%, transparent 57%),
+      linear-gradient(0deg, transparent 43%, var(--c-accent-ink) 43%, var(--c-accent-ink) 57%, transparent 57%);
+    color: var(--c-accent-ink);
+    opacity: .85;
+  }
+  details[open] .x-knob { border-radius: 26% 34% 26% 34%; transform: rotate(45deg); background: var(--x-jelly-blue); }
+  .faq details > p {
+    margin: 0;
+    padding: 0 1.15rem 1.2rem;
+    color: var(--c-muted);
+    font-size: .96875rem;
+  }
+  /* the answer unfolds with a spring — no fill-mode, so the resting state is
+     never pinned by a finished keyframe */
+  .faq details[open] > p { animation: x-unfold 460ms var(--ease-spring); }
+
+  /* ── 13 · FOOTER RAIL ────────────────────────────────────────────────── */
+  .site-footer {
+    border-block-start: 3px solid var(--c-accent);
+    background:
+      linear-gradient(0deg, rgba(255,255,255,.4) 0%, rgba(255,255,255,0) 30%),
+      var(--x-chrome-soft);
+    box-shadow: inset 0 2px 0 var(--x-rim);
+    padding-block: 2rem 2.4rem;
+  }
+  .site-footer p { margin: 0 0 .45em; font-weight: 600; }
+  .site-footer [data-tid="footer.line"] { font-family: var(--font-display); font-weight: 700; }
+  .site-footer [data-tid="footer.fine"] { font-size: .8125rem; color: var(--c-muted); }
+
+  /* ── 14 · MOTION LIBRARY ─────────────────────────────────────────────── */
+  /* Arrival: the page drops into the hand. `backwards` and never `both` — a
+     finished keyframe with a forward fill would pin `scale` and every later
+     :active squish on that element would stop working. */
+  @keyframes x-pop {
+    0%   { translate: 0 26px; scale: 0.9 0.82; }
+    55%  { translate: 0 -5px; scale: 1.03 1.06; }
+    78%  { translate: 0 2px; scale: 0.99 0.97; }
+    100% { translate: 0 0; scale: 1 1; }
+  }
+  /* No `opacity` in this track on purpose: a frozen or pre-start entrance may
+     look slightly squashed, but it can never render a blank section. */
+  .x-in { animation: x-pop 640ms var(--ease-spring) var(--x-delay, 0ms) backwards; }
+
+  /* Release wobble: what the overshoot bezier cannot do alone — the struck
+     body rings tall before it goes wide. Declared AFTER `.x-in` so a plate
+     still rings once it has landed, and the shorthand drops the stagger delay. */
+  @keyframes x-jelly {
+    0%   { scale: 0.95 0.88; }
+    22%  { scale: 1.05 0.94; }
+    44%  { scale: 0.975 1.05; }
+    64%  { scale: 1.02 0.985; }
+    82%  { scale: 0.992 1.012; }
+    100% { scale: 1 1; }
+  }
+  .x-flick { animation: x-jelly 560ms var(--ease-spring) 1; }
+
+  @keyframes x-breathe {
+    0%, 100% { border-radius: 40px 26px 44px 22px / 24px 44px 26px 40px; }
+    33%      { border-radius: 26px 42px 22px 46px / 44px 22px 46px 24px; }
+    66%      { border-radius: 44px 22px 38px 30px / 20px 40px 24px 44px; }
+  }
+  @keyframes x-unfold {
+    0%   { translate: 0 -8px; scale: 1 0.94; }
+    60%  { translate: 0 2px; }
+    100% { translate: 0 0; scale: 1 1; }
+  }
+
+  /* ── 15 · FOCUS (visible, and it too is springy) ─────────────────────── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    --sx: 1.035;
+    --sy: 1.06;
+  }
+  .field > input:focus-visible, .field > select:focus-visible {
+    outline-color: var(--x-link);
+    --sx: 1; --sy: 1;
+    --tl: 2px;
+  }
+  /* the pointer tilt must not fight the keyboard ring */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+  }
+
+  /* ── 16 · CANONICAL BREAKPOINTS — three bands, mobile-first ───────────── */
+  /* TABLET: 768 – 1023px */
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #hero .lede { font-size: 1.1875rem; }
+    .hero-figure > img { border-radius: 48px 30px 54px 26px / 30px 54px 30px 48px; }
+    #itinerary .grid--days { gap: 1.15rem; }
+    /* the jelly staircase: every second day sits a little lower */
+    #itinerary .grid--days .day:nth-child(2n) { margin-block-start: 1.4rem; }
+  }
+
+  /* DESKTOP: 1024px and up */
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #highlights .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: clamp(1.5rem, 3vw, 3rem);
+      align-items: center;
+    }
+    #hero > h1, #hero > .eyebrow, #hero > .lede, #hero > .meta-list { grid-column: 1; }
+    #hero > p:not(.lede):not(.eyebrow) { grid-column: 1; }
+    #hero .hero-figure { grid-column: 2; grid-row: 1 / span 5; }
+    #hero > p:not(.lede):not(.eyebrow) .btn { flex: 0 1 auto; }
+    .grid--days { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #itinerary .grid--days .day:nth-child(3n+2) { margin-block-start: 2.1rem; }
+    #itinerary .grid--days .day:nth-child(3n) { margin-block-start: 1.05rem; }
+    #itinerary .grid--days .day:nth-child(2n) { margin-block-start: 0; }
+    #booking { display: grid; grid-template-columns: minmax(0, 1fr); }
+    #booking > h2, #booking > p, #booking-form, #booking > h3, #booking .faq { grid-column: 1; }
+  }
+
+  /* MOBILE: below the tablet threshold */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; }
+    a.btn, #booking-form .btn { display: block; width: 100%; text-align: center; }
+    #hero > p a + a { margin-block-start: .5rem; }
+    #hero > p:not(.lede):not(.eyebrow) { flex-direction: column; gap: .7rem; }
+    .field > input, .field > select { width: 100%; }
+    /* comfortable native targets on phones (≥44px) */
+    .field > input, .field > select { font-size: 16px; min-height: 48px; }
+    .btn, #theme-toggle, .site-nav a { min-height: 44px; }
+    #theme-toggle { flex: 0 0 auto; width: auto; display: inline-block; padding-inline: 1.5rem; }
+    .faq summary { padding-block: 1.15rem; }
+    h1 { text-shadow: 0 1px 0 var(--x-rim), 0 2px 0 var(--x-seam), 0 7px 14px var(--c-shadow); }
+    section::before { width: 72px; margin-left: -36px; }
+  }
+
+  /* ── 17 · RUN-MODE GUARDS (canonical, must survive the restyle) ───────── */
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+
+<body>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <div class="x-blobfield" aria-hidden="true"></div>
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?<span class="x-knob" aria-hidden="true"></span></summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?<span class="x-knob" aria-hidden="true"></span></summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?<span class="x-knob" aria-hidden="true"></span></summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?<span class="x-knob" aria-hidden="true"></span></summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── Tactile runtime: the material has to actually answer the pointer ────
+     Everything below is one delegated listener plus one rAF, and it exits
+     immediately when the gallery asks for a still page (`?thumb=1`) or when the
+     visitor asked for calm motion. No DOM node is created, so no Tier-0 hook
+     moves and no `data-x-control` deviation is claimed: the deformation happens
+     to the canonical elements themselves, through custom properties. */
+  (function () {
+    'use strict';
+    if (window.STYLE_SCAFFOLD_THUMB) return;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (reduce.matches) return;
+
+    /* ── A · press → release: the jelly ring ─────────────────────────────
+       `:active` does the squish in CSS; the CSS transition can only travel to
+       one overshoot, so a release gets one real keyframe of ring-down. */
+    var PRESS = '.btn, .card, .site-nav a, .eyebrow, .meta-list li, .rating, summary, .brand, #theme-toggle';
+    function flick(t) {
+      if (!t || !t.classList) return;
+      t.classList.remove('x-flick');
+      void t.offsetWidth;                 /* restart the ring-down */
+      t.classList.add('x-flick');
+    }
+    document.addEventListener('pointerup', function (e) {
+      var t = e.target && e.target.closest ? e.target.closest(PRESS) : null;
+      flick(t);
+    }, { passive: true });
+    /* keyboard presses must answer too — the ring is not mouse-only */
+    document.addEventListener('keydown', function (e) {
+      if (e.key !== 'Enter' && e.key !== ' ') return;
+      var t = e.target && e.target.closest ? e.target.closest(PRESS) : null;
+      if (t) flick(t);
+    }, { passive: true });
+    document.addEventListener('animationend', function (e) {
+      if (e.animationName === 'x-jelly' && e.target && e.target.classList) {
+        e.target.classList.remove('x-flick');
+      }
+    });
+
+    /* ── B · pointer deformation: a surface yields before it is pressed ──
+       One coalesced rAF writes four custom properties onto the hovered plate:
+       the dent's position and a ±3° tilt. Finer pointers only, so touch never
+       pays for it and nothing moves on its own. */
+    var TILT = '.card, .hero-figure > img, .faq details';
+    var fine = window.matchMedia('(hover: hover) and (pointer: fine)');
+    var cur = null, move = null, queued = 0;
+
+    function paint() {
+      queued = 0;
+      if (!cur || !move) return;
+      var r = cur.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      var nx = (move.clientX - r.left) / r.width;
+      var ny = (move.clientY - r.top) / r.height;
+      nx = nx < 0 ? 0 : nx > 1 ? 1 : nx;
+      ny = ny < 0 ? 0 : ny > 1 ? 1 : ny;
+      var s = cur.style;
+      s.setProperty('--mx', (nx * 100).toFixed(1) + '%');
+      s.setProperty('--my', (ny * 100).toFixed(1) + '%');
+      s.setProperty('--rx', ((0.5 - ny) * 3.2).toFixed(2) + 'deg');
+      s.setProperty('--ry', ((nx - 0.5) * 4).toFixed(2) + 'deg');
+      s.setProperty('--dent', '1');
+    }
+    function release(el) {
+      if (!el || !el.style) return;
+      el.style.removeProperty('--rx');
+      el.style.removeProperty('--ry');
+      el.style.removeProperty('--dent');
+    }
+    function onMove(e) {
+      if (!fine.matches) return;
+      var t = e.target && e.target.closest ? e.target.closest(TILT) : null;
+      if (t !== cur) { release(cur); cur = t; }
+      if (!t) return;
+      move = e;
+      if (!queued) queued = requestAnimationFrame(paint);
+    }
+    function onLeave() { release(cur); cur = null; move = null; }
+    document.addEventListener('pointermove', onMove, { passive: true });
+    document.addEventListener('pointerleave', onLeave, { passive: true });
+    window.addEventListener('blur', onLeave);
+    /* a theme flip or a scroll can strand the tilt on a detached element */
+    document.addEventListener('scroll', function () {
+      if (cur) { release(cur); }
+    }, { passive: true });
+
+    /* ── C · arrival: the page drops into the hand ───────────────────────
+       The un-animated state is the final state (opacity 1, no translate), so
+       killing animations — reduced motion or ?thumb=1 — cannot hide content. */
+    var watch = document.querySelectorAll('#hero > *, .grid > *, #booking-form, #booking > h3, .faq details');
+    if (!('IntersectionObserver' in window)) return;
+    var io = new IntersectionObserver(function (rows) {
+      for (var i = 0; i < rows.length; i++) {
+        if (!rows[i].isIntersecting) continue;
+        var el = rows[i].target;
+        /* stagger inside a freshly revealed row so the grid lands as a wave */
+        var sibs = el.parentNode ? el.parentNode.children : null;
+        var idx = 0;
+        if (sibs) { for (var j = 0; j < sibs.length; j++) { if (sibs[j] === el) { idx = j; break; } } }
+        el.style.setProperty('--x-delay', Math.min(idx, 6) * 55 + 'ms');
+        el.classList.add('x-in');
+        io.unobserve(el);
+      }
+    }, { rootMargin: '0px 0px -8% 0px', threshold: 0.05 });
+    for (var k = 0; k < watch.length; k++) io.observe(watch[k]);
+  })();
+</script>
+
+</body>
+</html>

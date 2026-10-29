@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE — AI-Native UI  (row 43 of styles.csv)
+  Mechanism committed to, in priority order:
+    1. Conversational layout — the whole page is one narrow assistant thread.
+       Replies are left bubbles with a border-inline-start accent (context
+       cards); the short prompt-like strings (day labels, reviewer names) are
+       right-aligned user bubbles.
+    2. Generative reveal — streaming text (clip-path wipe + caret), staggered
+       message float-in via IntersectionObserver, a 3-dot typing indicator and
+       a "thinking" shimmer bar.
+    3. Minimal chrome — neutral surface, one accent (#6366F1), pill controls, a
+       composer-styled booking form with a sticky send affordance.
+  Framework vocabulary from the row (tailwind/react) is reproduced in plain
+  CSS + vanilla JS only: no library, no CDN, no build step.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── Canonical colour tokens ────────────────────────────────────────────
+     Same NAME set in both themes; values revalued for this style.
+     Light = the row's neutral #F5F5F5 ground with #6366F1 accent. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #f5f5f5;
+    --c-surface: #ffffff;
+    --c-elevate: #eef0fb;
+    --c-text: #14161d;
+    --c-muted: #5f6672;
+    --c-accent: #6366f1;
+    --c-accent-ink: #ffffff;
+    --c-border: #e3e5ee;
+    --c-shadow: rgba(24, 26, 46, 0.09);
+  }
+  [data-theme="dark"] {
+    --c-bg: #0d0e13;
+    --c-surface: #16171f;
+    --c-elevate: #21232f;
+    --c-text: #edeff2;
+    --c-muted: #9ba1ae;
+    --c-accent: #818cf8;
+    --c-accent-ink: #10131f;
+    --c-border: #2a2c39;
+    --c-shadow: rgba(0, 0, 0, 0.55);
+  }
+
+  /* ── Style-local tokens (not --c-*, so theme parity is untouched) ──
+     --ai-accent is the *accessible* sibling of --c-accent: #6366F1 on white is
+     4.46:1 and so fails the row's own contrast-text-4.5 requirement for text
+     and for button fills; #4F46E5 (6.2:1) carries all accent text, while
+     #6366F1 stays on borders, dots, glows and other non-text accents. */
+  :root {
+    --ai-accent: #4f46e5;
+    --ai-bubble: #f9fafb;
+    --ai-bubble-edge: #e0e3f4;
+    --user-bubble: #e0e7ff;
+    --user-ink: #232a55;
+    --ok: #10b981;
+    --ring: rgba(99, 102, 241, 0.28);
+    --halo-a: rgba(99, 102, 241, 0.16);
+    --halo-b: rgba(16, 185, 129, 0.10);
+    --glow: 0 14px 34px -16px rgba(43, 47, 110, 0.28);
+    --chrome: rgba(255, 255, 255, 0.88);
+    --dot-track: rgba(99, 102, 241, 0.16);
+  }
+  [data-theme="dark"] {
+    --ai-accent: #818cf8;
+    --ai-bubble: #1b1d27;
+    --ai-bubble-edge: #2c2f40;
+    --user-bubble: #262a4d;
+    --user-ink: #dbe0ff;
+    --ok: #34d399;
+    --ring: rgba(129, 140, 248, 0.34);
+    --halo-a: rgba(129, 140, 248, 0.16);
+    --halo-b: rgba(52, 211, 153, 0.10);
+    --glow: 0 16px 38px -18px rgba(0, 0, 0, 0.8);
+    --chrome: rgba(13, 14, 19, 0.88);
+    --dot-track: rgba(129, 140, 248, 0.22);
+  }
+
+  /* ── Non-colour canonical layout vars (overridden for the thread) ── */
+  :root {
+    --page-max: 58rem;          /* one conversational measure, all bands */
+    --gap: 1.15rem;
+    --pad: clamp(1rem, 4.4vw, 2.5rem);
+    --radius: 20px;
+    --bubble-r: 20px;
+    --chip-r: 999px;
+    --input-height: 48px;
+    --typing-dot-size: 8px;
+    --message-gap: 16px;
+    --font-display: "Inter var", ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+    --ease: cubic-bezier(.22, .68, .32, 1);
+    --t: .55s;
+  }
+
+  /* ── CANONICAL BREAKPOINTS (mobile-first; queries only ever ADD) ──
+     mobile 0–767 · tablet 768–1023 · desktop 1024+                      */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    letter-spacing: -.004em;
+    font-variant-numeric: tabular-nums;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--ai-accent); }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.15;
+    margin: 0 0 .5em;
+    letter-spacing: -.026em;
+    font-weight: 700;
+  }
+  h1 { font-size: clamp(2.05rem, 7.4vw, 3.15rem); line-height: 1.08; letter-spacing: -.032em; margin-block-end: .45em; }
+  h2 { font-size: clamp(1.34rem, 4vw, 1.8rem); font-weight: 700; letter-spacing: -.022em; }
+  h3 { font-size: 1.0625rem; font-weight: 600; letter-spacing: -.012em; line-height: 1.35; }
+  p { margin: 0 0 1em; }
+
+  /* The thread: one narrow column, generous vertical rhythm, no section rules
+     heavier than a hairline — minimal chrome. */
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+  main { display: block; }
+  section {
+    padding-block: clamp(2.25rem, 7vw, 4.25rem);
+    border-block-start: 1px solid var(--c-border);
+  }
+  section:first-of-type { border-block-start: 0; }
+  section > h2 { margin-block-end: .35em; }
+  section > p { color: var(--c-text); max-width: 44rem; }
+
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+
+  /* Context card — the row's "context cards (border-left accent)". */
+  .card {
+    position: relative;
+    background: var(--ai-bubble);
+    border: 1px solid var(--ai-bubble-edge);
+    border-inline-start: 3px solid var(--c-accent);
+    border-radius: var(--radius);
+    padding: 1.1rem 1.15rem;
+    box-shadow: var(--glow);
+    overflow: visible;
+  }
+
+  /* Buttons = the assistant's primary affordance: solid indigo pill + send mark */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: .5rem;
+    font: inherit;
+    font-weight: 600;
+    letter-spacing: -.01em;
+    text-decoration: none;
+    padding: .74rem 1.25rem;
+    min-height: var(--input-height);
+    border-radius: var(--chip-r);
+    border: 1px solid var(--ai-accent);
+    background: var(--ai-accent);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    box-shadow: 0 8px 20px -10px var(--halo-a);
+    transition: transform .18s var(--ease), box-shadow var(--t) var(--ease), background-color .18s linear;
+  }
+  .btn:hover { transform: translateY(-1px); box-shadow: 0 14px 26px -12px var(--halo-a); }
+  .btn:active { transform: translateY(0); }
+  /* send glyph, drawn, never typed (no new copy) */
+  .btn:not(.btn--quiet)::after {
+    content: "";
+    width: 15px; height: 15px;
+    flex: 0 0 auto;
+    border-radius: 4px;
+    background:
+      linear-gradient(to right, currentColor 0 100%) center right/6px 2px no-repeat,
+      linear-gradient(45deg, transparent 0 46%, currentColor 46% 58%, transparent 58%) center/12px 12px no-repeat;
+    opacity: .9;
+  }
+  .btn--quiet {
+    background: transparent;
+    color: var(--c-text);
+    border-color: var(--c-border);
+    box-shadow: none;
+  }
+  .btn--quiet::after { display: none; }
+  .btn--quiet:hover { border-color: var(--c-accent); color: var(--ai-accent); background: var(--c-surface); }
+
+  /* Fields = prompt input: 48px, soft border, focus ring that reads as "ready" */
+  .field { display: grid; align-content: start; gap: .4rem; margin-block-end: 0; }
+  .field > label {
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+  .field > input, .field > select {
+    font: inherit;
+    color: var(--c-text);
+    min-height: var(--input-height);
+    padding: .65rem .9rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 14px;
+    box-shadow: inset 0 1px 2px var(--c-shadow);
+    transition: border-color .16s linear, box-shadow .22s var(--ease);
+    appearance: none;
+  }
+  .field > select {
+    background-image:
+      linear-gradient(45deg, transparent 0 50%, var(--c-muted) 50% 62%, transparent 62%),
+      linear-gradient(135deg, transparent 0 50%, var(--c-muted) 50% 62%, transparent 62%);
+    background-position: right 1.15rem center, right .85rem center;
+    background-size: 6px 6px, 6px 6px;
+    background-repeat: no-repeat;
+    padding-inline-end: 2.2rem;
+  }
+  /* Never `outline: none` here — this rule out-specifies the global
+     :focus-visible ring below and would delete the keyboard focus indicator on
+     the booking fields. The glow ADDS to it instead. */
+  .field > input:focus, .field > select:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 4px var(--ring), inset 0 1px 2px var(--c-shadow);
+  }
+  .field > input::placeholder { color: var(--c-muted); }
+
+  figure { margin: 0; }
+  figcaption {
+    font-size: .8125rem;
+    line-height: 1.5;
+    color: var(--c-muted);
+    margin-block-start: .55rem;
+    padding-inline-start: .65rem;
+    border-inline-start: 2px solid var(--dot-track);
+  }
+
+  /* Attachment: photos are files the assistant sent, not hero banners. */
+  figure img, .card > img {
+    border-radius: 14px;
+    border: 1px solid var(--ai-bubble-edge);
+    box-shadow: 0 10px 24px -18px rgba(20, 22, 40, .8);
+    background: var(--c-elevate);
+  }
+  .card > img { margin-block: 0 .85rem; }
+
+  /* Meta list = context chips under the first reply. */
+  .meta-list {
+    display: flex; flex-wrap: wrap; gap: .5rem;
+    list-style: none; padding: 0; margin: 0 0 1.6rem;
+  }
+  .meta-list li {
+    font-size: .8125rem;
+    font-weight: 500;
+    color: var(--c-muted);
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--chip-r);
+    padding: .32rem .8rem;
+    box-shadow: 0 1px 2px var(--c-shadow);
+  }
+
+  /* ── Header: chat chrome, always present, deliberately quiet ── */
+  .site-header {
+    position: sticky; top: 0; z-index: 30;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-block: .6rem;
+    background: var(--chrome);
+    border-block-end: 1px solid var(--c-border);
+    box-shadow: 0 1px 0 rgba(0, 0, 0, .02), 0 10px 26px -26px rgba(20, 22, 40, .9);
+  }
+  .brand {
+    position: relative;
+    display: inline-flex; align-items: center; gap: .55rem;
+    font-family: var(--font-display);
+    font-size: 1rem;
+    font-weight: 700;
+    letter-spacing: -.02em;
+    padding-inline-start: 1.35rem;
+  }
+  /* presence dot: the assistant is online (row's #10B981 status indicator) */
+  .brand::before {
+    content: "";
+    position: absolute; inset-inline-start: 0; top: 50%;
+    width: 9px; height: 9px;
+    margin-block-start: -4.5px;
+    border-radius: 50%;
+    background: var(--ok);
+    box-shadow: 0 0 0 0 var(--halo-b);
+    animation: x-presence 2.4s var(--ease) infinite;
+  }
+  .site-nav { display: flex; gap: .4rem; font-size: .8125rem; }
+  .site-nav a {
+    color: var(--c-muted);
+    text-decoration: none;
+    padding: .34rem .8rem;
+    border: 1px solid transparent;
+    border-radius: var(--chip-r);
+    transition: color .16s linear, border-color .16s linear, background-color .16s linear;
+  }
+  .site-nav a:hover { color: var(--ai-accent); background: var(--c-surface); border-color: var(--c-border); }
+  /* the Book chip is the always-visible route into the composer */
+  .site-nav a[href="#booking"] {
+    color: var(--ai-accent);
+    background: var(--user-bubble);
+    border-color: var(--ai-bubble-edge);
+    font-weight: 600;
+  }
+  #theme-toggle {
+    font-size: .8125rem;
+    min-height: 38px;
+    padding: .35rem .95rem;
+    color: var(--c-muted);
+    background: var(--c-surface);
+    border-color: var(--c-border);
+    font-weight: 600;
+  }
+  #theme-toggle::before {
+    content: "";
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--c-accent);
+    box-shadow: 0 0 0 3px var(--ring);
+  }
+
+  /* ── HERO — the opening reply ─────────────────────────────────────────── */
+  #hero { padding-block-start: clamp(1.75rem, 6vw, 3.25rem); }
+  .eyebrow {
+    display: inline-block;
+    inline-size: fit-content;   /* a chip, never a full-width bar */
+    max-inline-size: 100%;
+    font-size: .75rem;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    color: var(--ai-accent);
+    background: var(--user-bubble);
+    border-radius: var(--chip-r);
+    padding: .3rem .85rem;
+    margin-block-end: 1rem;
+  }
+  .lede {
+    position: relative;
+    font-size: clamp(1.0625rem, 2.4vw, 1.2rem);
+    line-height: 1.65;
+    color: var(--c-text);
+    max-width: 42rem;
+    margin-block-end: 1.35rem;
+    padding-inline-start: .9rem;
+    border-inline-start: 2px solid var(--c-accent);
+  }
+  /* the caret that rides along with the streaming wipe */
+  [data-tid="hero.lede"]::after {
+    content: "";
+    display: inline-block;
+    inline-size: .5em;
+    block-size: 1.05em;
+    margin-inline-start: .12em;
+    vertical-align: -.16em;
+    border-radius: 2px;
+    background: var(--c-accent);
+    opacity: 0;
+  }
+  .hero-figure { margin-block-start: 1.6rem; }
+  .hero-figure img { width: 100%; border-radius: var(--radius); }
+
+  /* ── typing indicator + thinking shimmer (Tier-2 decoration) ── */
+  .x-msg-head {
+    display: flex; align-items: center; gap: .6rem;
+    margin-block-end: 1rem;
+  }
+  .x-avatar {
+    width: 26px; height: 26px; flex: 0 0 auto;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 32% 30%, #fff 0 18%, transparent 19%),
+      linear-gradient(140deg, var(--c-accent), var(--ok));
+    box-shadow: 0 0 0 3px var(--halo-a);
+  }
+  .x-typing {
+    display: inline-flex; align-items: center; gap: .3rem;
+    padding: .42rem .68rem;
+    background: var(--ai-bubble);
+    border: 1px solid var(--ai-bubble-edge);
+    border-radius: var(--chip-r);
+  }
+  .x-dot {
+    width: var(--typing-dot-size); height: var(--typing-dot-size);
+    border-radius: 50%;
+    background: var(--c-accent);
+    opacity: .35;
+    animation: x-bounce 1.25s var(--ease) infinite;
+  }
+  .x-dot:nth-child(2) { animation-delay: .16s; }
+  .x-dot:nth-child(3) { animation-delay: .32s; }
+  .x-shimmer {
+    display: block;
+    inline-size: clamp(90px, 26vw, 190px);
+    block-size: 6px;
+    border-radius: var(--chip-r);
+    background: linear-gradient(90deg, var(--dot-track) 0 25%, var(--c-accent) 50%, var(--dot-track) 75% 100%);
+    background-size: 260% 100%;
+    animation: x-shimmer 1.7s linear infinite;
+    opacity: .55;
+  }
+  .x-cue {
+    display: block;
+    inline-size: 2.6rem;
+    block-size: 4px;
+    margin-block-end: .95rem;
+    border-radius: var(--chip-r);
+    background: linear-gradient(90deg, var(--c-accent), transparent);
+  }
+
+  /* ── HIGHLIGHTS — four context cards ──────────────────────────────────── */
+  #highlights .card { padding-block: 1rem 1.15rem; }
+  #highlights h3 { margin-block-end: .35em; }
+  #highlights p { margin-block-end: 0; font-size: .9375rem; color: var(--c-text); }
+  #highlights img { aspect-ratio: 16 / 10; object-fit: cover; width: 100%; }
+  /* confidence meter — a reply-strength bar, drawn, no numbers invented */
+  #highlights .card::after {
+    content: "";
+    position: absolute;
+    inset-inline: 1.15rem;
+    inset-block-end: .55rem;
+    block-size: 3px;
+    border-radius: var(--chip-r);
+    background: linear-gradient(90deg, var(--c-accent), var(--halo-a)) no-repeat left / var(--conf, 78%) 100%;
+    opacity: .8;
+  }
+  #highlights .card { padding-block-end: 2.1rem; }
+  #highlights .card:nth-child(2) { --conf: 92%; }
+  #highlights .card:nth-child(3) { --conf: 68%; }
+  #highlights .card:nth-child(4) { --conf: 84%; }
+
+  /* ── ITINERARY — the thread proper ──────────────────────────────────────
+     Each day is an exchange: the short "Day n" string is the user prompt
+     (right, indigo pill), the title + body are the assistant reply (left,
+     accent-edged bubble). */
+  #itinerary .grid { gap: var(--message-gap); align-items: start; }
+  .day {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    /* align-content:start — a stretched auto row would widen one bubble into an
+       empty box when its neighbour (day four) is taller. */
+    align-content: start;
+    gap: .45rem;
+    background: none;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+  .day > .day-num {
+    justify-self: end;
+    max-width: 88%;
+    margin: 0;
+    padding: .3rem .8rem;
+    font-size: .75rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: none;
+    color: var(--user-ink);
+    background: var(--user-bubble);
+    border: 1px solid var(--ai-bubble-edge);
+    border-radius: var(--chip-r) var(--chip-r) 6px var(--chip-r);
+    text-align: end;
+  }
+  .day > h3, .day > p, .day > img {
+    justify-self: start;
+    width: 100%;
+    max-width: 46rem;
+    background: var(--ai-bubble);
+    border-inline: 0;
+    border-block: 1px solid var(--ai-bubble-edge);
+    border-inline-start: 3px solid var(--c-accent);
+    padding: .7rem 1.05rem;
+    margin: 0;
+  }
+  .day > h3 {
+    border-block-end: 0;
+    border-radius: var(--bubble-r) 0 0 0;
+    padding-block-end: .1rem;
+  }
+  .day > p {
+    border-block-start: 0;
+    border-radius: 0 0 0 var(--bubble-r);
+    font-size: .9375rem;
+  }
+  .day > img {
+    border-radius: 0 0 0 var(--bubble-r);
+    border-block-start: 1px solid var(--ai-bubble-edge);
+    margin: 0;
+    padding: .45rem;
+    width: min(100%, 32rem);
+  }
+  .day > img + p { margin-block-end: 0; }
+
+  /* ── GALLERY — attachment strip ───────────────────────────────────────── */
+  #gallery .grid { gap: 1.25rem; }
+  #gallery .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-inline-start: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: .7rem;
+    box-shadow: 0 12px 28px -22px rgba(20, 22, 40, .9);
+  }
+  #gallery img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; border-radius: 13px; }
+  #gallery figcaption { margin-block-start: .6rem; padding-inline: .35rem; border-inline-start: 0; }
+  #gallery .card::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 0; inset-inline: 1rem;
+    block-size: 3px;
+    border-radius: 0 0 4px 4px;
+    background: linear-gradient(90deg, var(--c-accent), transparent);
+  }
+
+  /* ── REVIEWS — what the travellers said back ──────────────────────────── */
+  #reviews .grid { gap: var(--message-gap); }
+  #reviews .card {
+    display: grid; align-content: start; gap: .5rem;
+    background: var(--ai-bubble);
+    border-radius: var(--bubble-r) var(--bubble-r) var(--bubble-r) 6px;
+    padding: 1.05rem 1.15rem .9rem;
+  }
+  #reviews .card > p { margin: 0; }
+  #reviews .rating {
+    justify-self: start;
+    font-size: .8125rem;
+    color: var(--ai-accent);
+    letter-spacing: .14em;
+    background: var(--user-bubble);
+    border-radius: var(--chip-r);
+    padding: .12rem .6rem;
+  }
+  #reviews .card footer {
+    justify-self: end;
+    max-width: 90%;
+    font-style: normal;
+    font-size: .8125rem;
+    font-weight: 600;
+    color: var(--user-ink);
+    background: var(--user-bubble);
+    border-radius: var(--chip-r) var(--chip-r) 6px var(--chip-r);
+    padding: .3rem .85rem;
+    text-align: end;
+  }
+  #reviews cite { font-style: normal; }
+  #reviews .card footer span { font-weight: 400; color: var(--c-muted); }
+  #reviews p:not(.rating) { font-size: .9375rem; color: var(--c-text); }
+
+  /* ── BOOKING — the composer ───────────────────────────────────────────── */
+  #booking-form {
+    display: grid;
+    gap: .95rem;
+    padding: 1.35rem 1.15rem 1.15rem;
+    border-radius: 26px;
+    background: var(--c-surface);
+    border: 1px solid var(--ai-bubble-edge);
+    border-inline-start: 1px solid var(--ai-bubble-edge);
+    box-shadow: var(--glow);
+  }
+  /* bottom-sheet grabber: this is where you type to the system */
+  #booking-form::before {
+    content: "";
+    justify-self: center;
+    inline-size: 3rem; block-size: 4px;
+    margin-block-end: .35rem;
+    border-radius: var(--chip-r);
+    background: var(--dot-track);
+  }
+  #booking-form .field { margin-block-end: 0; }
+  #booking-form > .btn { justify-self: start; margin-block-start: .2rem; }
+  #booking-form .fineprint {
+    margin: 0;
+    font-size: .8125rem;
+    color: var(--c-muted);
+    padding: .55rem .8rem;
+    background: var(--ai-bubble);
+    border-radius: 12px;
+    border-inline-start: 2px solid var(--dot-track);
+  }
+  /* the composer answers with a typing state instead of a page reload */
+  .x-thinking {
+    display: none;
+    align-items: center;
+    gap: .55rem;
+    justify-self: start;
+  }
+  #booking-form[data-x-sent="1"] .x-thinking { display: inline-flex; }
+
+  /* ── FAQ — collapsed tool rows ────────────────────────────────────────── */
+  .faq { display: grid; gap: .7rem; margin-block-start: 2rem; }
+  #booking h3 { margin-block-start: 2.5rem; }
+  .faq .card {
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-inline-start: 2px solid var(--c-border);
+    border-radius: 16px;
+    padding: 0;
+    box-shadow: none;
+    transition: border-color .18s linear, box-shadow .22s var(--ease);
+  }
+  .faq .card:hover { border-color: var(--ai-bubble-edge); box-shadow: 0 8px 20px -18px rgba(20, 22, 40, .9); }
+  .faq .card[open] { border-inline-start-color: var(--c-accent); background: var(--ai-bubble); }
+  .faq summary {
+    cursor: pointer;
+    list-style: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding: .85rem 1rem;
+    font-weight: 600;
+    font-size: .9375rem;
+    letter-spacing: -.01em;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "";
+    flex: 0 0 auto;
+    width: 10px; height: 10px;
+    margin-inline-end: .15rem;
+    border-inline-end: 2px solid var(--ai-accent);
+    border-block-end: 2px solid var(--ai-accent);
+    transform: rotate(45deg);
+    transition: transform .22s var(--ease);
+  }
+  .faq details[open] summary::after { transform: rotate(-135deg); }
+  .faq .card > p {
+    margin: 0;
+    padding: 0 1rem .95rem;
+    font-size: .9375rem;
+    color: var(--c-muted);
+  }
+
+  /* ── Footer ── */
+  .site-footer {
+    border-block-start: 1px solid var(--c-border);
+    background: var(--c-surface);
+    padding-block: 2.25rem 2.75rem;
+  }
+  .site-footer p { margin: 0 0 .35em; font-size: .8125rem; color: var(--c-muted); }
+  .site-footer p:first-child { color: var(--c-text); font-weight: 600; }
+
+  /* ── Ambient / generated backdrop layers (Tier 2, decorative only) ── */
+  .x-ambient {
+    position: fixed; inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    background:
+      radial-gradient(38rem 22rem at 82% -6rem, var(--halo-a), transparent 70%),
+      radial-gradient(30rem 20rem at 6% 22%, var(--halo-b), transparent 72%);
+  }
+  .x-grid {
+    position: fixed; inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    opacity: .5;
+    background-image:
+      linear-gradient(to right, var(--c-border) 0 1px, transparent 1px),
+      linear-gradient(to bottom, var(--c-border) 0 1px, transparent 1px);
+    background-size: 96px 96px;
+    mask-image: radial-gradient(60% 40% at 50% 0%, #000 0 20%, transparent 78%);
+    -webkit-mask-image: radial-gradient(60% 40% at 50% 0%, #000 0 20%, transparent 78%);
+  }
+  .x-progress {
+    position: fixed;
+    inset-block-start: 0; inset-inline: 0;
+    z-index: 40;
+    block-size: 2px;
+    pointer-events: none;
+  }
+  .x-progress-bar {
+    display: block;
+    block-size: 100%;
+    inline-size: 100%;
+    transform-origin: left center;
+    background: linear-gradient(90deg, var(--c-accent), var(--ok));
+    transform: scaleX(0);
+  }
+  @supports (animation-timeline: scroll()) {
+    .x-progress-bar {
+      animation: x-scroll-grow linear both;
+      animation-timeline: scroll(root block);
+    }
+  }
+  header, main, footer { position: relative; z-index: 1; }
+  main { scroll-margin-top: 4.5rem; }
+  section[id] { scroll-margin-top: 4.75rem; }
+
+  /* ── Reveal choreography (IntersectionObserver adds x-in) ──
+     The hidden pre-state exists ONLY while JS has armed html.x-io, so a page
+     with motion suppressed (or JS absent) shows everything at rest.
+     The lede streams on load rather than on intersection: Chromium's
+     IntersectionObserver will not report an element whose own clip-path hides
+     it, so an observed pre-clipped target would never be revealed. */
+  .x-io .x-reveal { opacity: 0; }
+  .x-io .x-reveal.x-in { animation: x-stream-in .42s var(--ease) both; }
+  .x-io [data-tid="hero.lede"] {
+    clip-path: inset(0 100% 0 0);
+    opacity: 1;
+    animation: x-stream .95s .18s steps(34, end) both;
+  }
+  .x-io [data-tid="hero.lede"]::after { animation: x-caret 1s .18s steps(1, end) 5 both; }
+  .x-io .day, .x-io #highlights .card, .x-io #gallery .card, .x-io #reviews .card,
+  .x-io .faq .card, .x-io #booking-form {
+    opacity: 0; transform: translateY(.85rem);
+  }
+  .x-io .day.x-in, .x-io .card.x-in {
+    animation: x-msg-in .42s var(--ease) both;
+  }
+  /* streaming rhythm inside a reply: stagger by position */
+  .x-io .grid > :nth-child(2).x-in { animation-delay: .06s; }
+  .x-io .grid > :nth-child(3).x-in { animation-delay: .12s; }
+  .x-io .grid > :nth-child(4).x-in { animation-delay: .18s; }
+  .x-io .grid > :nth-child(5).x-in { animation-delay: .24s; }
+  .x-io .grid > :nth-child(6).x-in { animation-delay: .30s; }
+  .x-io .grid > :nth-child(7).x-in { animation-delay: .36s; }
+
+  /* ── Keyframes ── */
+  @keyframes x-bounce {
+    0%, 62%, 100% { transform: translateY(0); opacity: .3; }
+    26% { transform: translateY(-.3rem); opacity: 1; }
+  }
+  @keyframes x-shimmer {
+    from { background-position: 180% 0; }
+    to { background-position: -80% 0; }
+  }
+  @keyframes x-presence {
+    0% { box-shadow: 0 0 0 0 var(--halo-b); }
+    70%, 100% { box-shadow: 0 0 0 8px rgba(16, 185, 129, 0); }
+  }
+  @keyframes x-stream {
+    from { clip-path: inset(0 100% 0 0); }
+    to { clip-path: inset(0 0 0 0); }
+  }
+  @keyframes x-stream-in {
+    from { opacity: 0; transform: translateY(.5rem); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes x-msg-in {
+    from { opacity: 0; transform: translateY(.85rem) scale(.995); }
+    to { opacity: 1; transform: none; }
+  }
+  @keyframes x-caret {
+    0%, 49% { opacity: 1; }
+    50%, 100% { opacity: 0; }
+  }
+  @keyframes x-scroll-grow {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  /* ── Focus: always visible, always on top ── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 2px;
+  }
+  .btn:focus-visible, .site-nav a:focus-visible, #theme-toggle:focus-visible { outline-offset: 3px; }
+
+  /* ── Overflow guards (mandatory) ── */
+  img, svg, video, canvas { max-width: 100%; }
+  body { overflow-wrap: break-word; }
+  .grid > *, .card, figure { min-width: 0; }
+  .day > *, #reviews .card > *, .meta-list li { overflow-wrap: anywhere; }
+
+  /* ── TABLET band: 768 – 1023px ── */
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #hero { padding-block-start: 3rem; }
+    .day > h3, .day > p, .day > img { max-width: 42rem; }
+    /* the composer becomes a two-column prompt: name/email, then departure/travellers */
+    #booking-form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 1.6rem 1.75rem 1.5rem;
+    }
+    #booking-form::before,
+    #booking-form > .btn,
+    #booking-form .fineprint,
+    .x-thinking { grid-column: 1 / -1; }
+    #booking-form > .btn { justify-self: start; }
+  }
+
+  /* ── DESKTOP band: 1024px and up ── */
+  @media (min-width: 1024px) {
+    :root { --page-max: 62rem; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #highlights .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.35rem; }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.5rem; }
+    #reviews .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: start; }
+    /* The thread stays single-column at desktop too — a chat does not go wide. */
+    .hero-figure { margin-block-start: 2rem; }
+    .hero-figure img { aspect-ratio: 21 / 10; object-fit: cover; }
+    .lede { font-size: 1.2rem; }
+    .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); display: grid; gap: .8rem 1rem; }
+    .faq .card { align-self: start; }
+    #booking-form { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 1.8rem 2rem; }
+    #booking-form > .btn { grid-column: 1; }
+    section { padding-block: clamp(3rem, 5vw, 4.5rem); }
+  }
+
+  /* ── MOBILE band specifics (below the tablet threshold) ── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; }
+    .btn { display: flex; width: 100%; justify-content: center; text-align: center; }
+    /* the CTA paragraph only — the eyebrow chip and lede keep their own display */
+    #hero > p:not(.eyebrow):not(.lede) { display: grid; gap: .6rem; }
+    .field > input, .field > select { width: 100%; font-size: 16px; }
+    #booking-form { padding: 1.15rem 1rem 1.1rem; border-radius: 22px; }
+    .day > h3, .day > p, .day > img { padding-inline: .9rem; }
+    #reviews .card footer { max-width: 100%; }
+    .meta-list li { font-size: .78rem; padding: .3rem .68rem; }
+    #theme-toggle { min-height: 44px; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+  @media (prefers-contrast: more) {
+    :root, [data-theme="light"] { --c-border: #b9bdd0; --ai-bubble-edge: #b9bdd0; }
+    [data-theme="dark"] { --c-border: #4d5164; --ai-bubble-edge: #4d5164; }
+  }
+
+  /* ── Print: the thread collapses to a plain transcript ── */
+  @media print {
+    .x-ambient, .x-grid, .x-progress, .x-msg-head, #theme-toggle, .site-nav { display: none; }
+    body { background: #fff; color: #000; }
+    .card, #booking-form { box-shadow: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier-2 decoration: ambient generative backdrop + reading progress hairline.
+     Fixed, pointer-events:none, aria-hidden — never part of the thread. -->
+<div class="x-ambient" aria-hidden="true"></div>
+<div class="x-grid" aria-hidden="true"></div>
+<div class="x-progress" aria-hidden="true"><i class="x-progress-bar"></i></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO — the opening reply ═══ -->
+  <section id="hero" class="wrap">
+    <div class="x-msg-head" aria-hidden="true">
+      <span class="x-avatar"></span>
+      <span class="x-typing"><i class="x-dot"></i><i class="x-dot"></i><i class="x-dot"></i></span>
+      <i class="x-shimmer"></i>
+    </div>
+    <p class="eyebrow x-reveal" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS — four context cards ═══ -->
+  <section id="highlights" class="wrap">
+    <span class="x-cue" aria-hidden="true"></span>
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY — the thread: prompt right, reply left ═══ -->
+  <section id="itinerary" class="wrap">
+    <span class="x-cue" aria-hidden="true"></span>
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY — attachments ═══ -->
+  <section id="gallery" class="wrap">
+    <span class="x-cue" aria-hidden="true"></span>
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <span class="x-cue" aria-hidden="true"></span>
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ — the composer ═══ -->
+  <section id="booking" class="wrap">
+    <span class="x-cue" aria-hidden="true"></span>
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <span class="x-thinking" aria-hidden="true"><i class="x-dot"></i><i class="x-dot"></i><i class="x-dot"></i><i class="x-shimmer"></i></span>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── AI-Native runtime — streaming reveals + composer feedback ──────────
+     Every effect is gated twice: it never initialises in ?thumb=1 mode, and it
+     never arms the hidden pre-state under prefers-reduced-motion. All motion is
+     plain CSS animation/transition, so the canonical [data-thumb="1"] and
+     prefers-reduced-motion rules above are the final authority — no
+     Web Animations API, no rAF loop, no timers left running uncancelled. */
+  (function () {
+    var root = document.documentElement;
+    var THUMB = window.STYLE_SCAFFOLD_THUMB === true;
+    var calm = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (THUMB || calm) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    /* Streaming choreography: the lede wipes in behind a caret on load (clip-path
+       only — no text node is split or duplicated); replies float in as they
+       approach, in reading order. A safety pass reveals anything still queued so
+       no string can ever be left unpainted by a missed intersection. */
+    root.classList.add('x-io');
+
+    var eyebrow = document.querySelector('.x-reveal[data-tid="hero.eyebrow"]');
+
+    var io = new IntersectionObserver(function (entries) {
+      for (var n = 0; n < entries.length; n++) {
+        if (!entries[n].isIntersecting) continue;
+        entries[n].target.classList.add('x-in');
+        io.unobserve(entries[n].target);
+      }
+    }, { rootMargin: '0px 0px 14% 0px', threshold: 0.01 });
+
+    var queue = [];
+    if (eyebrow) queue.push(eyebrow);
+    var blocks = document.querySelectorAll(
+      '#highlights .card, #itinerary .day, #gallery .card, #reviews .card, #booking .faq .card, #booking-form'
+    );
+    for (var b = 0; b < blocks.length; b++) queue.push(blocks[b]);
+    for (var q = 0; q < queue.length; q++) io.observe(queue[q]);
+
+    var settle = setTimeout(function () {
+      for (var i = 0; i < queue.length; i++) queue[i].classList.add('x-in');
+      io.disconnect();
+    }, 2600);
+
+    /* The composer answers instead of reloading the document: the pinned submit
+       control keeps its native behaviour and keyboard path; the typing state is
+       a decorative reply bubble that clears itself. */
+    var form = document.getElementById('booking-form');
+    var timer = 0;
+    if (form) {
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!form.checkValidity()) {
+          var bad = form.querySelector(':invalid');
+          if (bad && bad.focus) bad.focus();
+          return;
+        }
+        form.setAttribute('data-x-sent', '1');
+        if (timer) clearTimeout(timer);
+        timer = setTimeout(function () {
+          form.removeAttribute('data-x-sent');
+          timer = 0;
+        }, 2200);
+      });
+    }
+    window.addEventListener('pagehide', function () {
+      clearTimeout(settle);
+      if (timer) clearTimeout(timer);
+    }, { once: true });
+  })();
+</script>
+
+</body>
+</html>

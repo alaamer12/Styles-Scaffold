@@ -1,0 +1,120 @@
+# Sub-Agent Brief — Nature Distilled
+
+## 1. Context
+
+### Root
+Read these two files **before** you write anything; they bind every one of the 56
+agents equally and are not reproduced here:
+
+- `styles-scaffold/brief/ROOT.md` — shared non-negotiables
+- `styles-scaffold/brief/dom-contract.md` — exactly what you may change
+
+### Role
+You are one of 56 style agents. Each of you receives the same Kyoto page and a
+different design style. Your pages will be displayed side by side as live
+thumbnails in `styles-scaffold/master.html`, so your work is judged by eye
+against 55 siblings — including several styles close to yours.
+
+A style here is not a mood to hint at. It is a set of decisions — surface, depth,
+edge, colour, type scale, motion, spacing, ornament — that a viewer should be able
+to name from the screen alone, at thumbnail size, in under a second.
+
+### Domain — your style specification
+Verbatim row `61` of `styles.csv`. This is your source of truth; where
+it gives values, use them rather than inventing your own.
+
+- **Keywords:** Muted earthy, skin tones, wood, soil, sand, terracotta, warmth, organic materials, handmade warmth
+- **Primary colours:** Terracotta #C67B5C, Sand Beige #D4C4A8, Warm Clay #B5651D, Soft Cream #F5F0E1
+- **Secondary colours:** Earth Brown #8B4513, Olive Green #6B7B3C, Warm Stone #9C8B7A, muted gradients
+- **Effects & animation:** Subtle parallax, natural easing (ease-out), texture overlays, grain effects, soft shadows
+- **Best for:** Wellness brands, sustainable products, artisan goods, organic food, spa/beauty, home decor
+- **Avoid for:** Tech startups, gaming, nightlife, corporate finance, high-energy brands
+- **Performance:** cost:low|drivers:none
+- **Accessibility:** risk:low|requires:contrast-text-4.5,keyboard,visible-focus,reduced-motion
+- **Mobile-friendly:** adaptable
+- **Complexity:** Low
+- **Framework compatibility:** tailwind|css
+- **Era / origin:** 2025+ Handmade Warmth
+- **AI prompt keywords:** Design with nature distilled aesthetic. Use: muted earthy colors (terracotta, sand, olive), organic materials feel, warm tones, handmade warmth, natural textures, artisan quality, sustainable vibe, soft gradients.
+- **CSS / technical keywords:** background: warm earth tones, color: #C67B5C #D4C4A8 #6B7B3C, border-radius: organic (varied), box-shadow: soft natural, texture overlays (grain), font: humanist sans-serif
+- **Design system variables:** --terracotta: #C67B5C, --sand-beige: #D4C4A8, --warm-clay: #B5651D, --soft-cream: #F5F0E1, --olive-green: #6B7B3C, --grain-opacity: 0.1
+
+**Implementation checklist (report against this in your receipt):**
+- Earth tones dominant
+- Warm feel achieved
+- Textures subtle
+- Handmade quality
+- Sustainable messaging
+- Calming aesthetic
+
+**Read the two fields above carefully — they are descriptive, not permissive.**
+`Framework compatibility` lists what this style is usually built with in the wild.
+**You may not use any of it.** No library, CDN or build step is available here
+(ROOT.md §5), so a named technique like GSAP ScrollTrigger, SplitText, Three.js or
+`model-viewer` must be reproduced with plain CSS and vanilla JS — IntersectionObserver
+for scroll triggers, hand-written spans for split text, CSS `scroll-behavior` and
+`@keyframes` for choreography. Name the effect, build it yourself.
+
+**Differentiation — why you must not look like your siblings**
+Nature REDUCED to an essence: a restrained palette taken from landscape (fog, stone, lichen), subtle textures, calm gradients, almost no literal imagery. You are the quietest of the three nature styles — a mood, not a botanical.
+
+**Starting point** — copy this file and rewrite its presentation layer:
+`styles-scaffold/content/skeleton.html`
+Its baseline CSS is deliberately plain so no page can look broken; it also carries
+the canonical `--c-*` tokens, the three responsive bands, the theme toggle and the
+`?thumb=1` image deferral. `content/content.manifest.json` lists the 91 pinned
+strings and 12 image slots you must preserve.
+
+## 2. Goal
+Produce `styles-scaffold/subagents/nature-distilled.html`: the canonical Kyoto page rendered unmistakably in the **Nature Distilled** style, responsive at 375/768/1440 with both themes fully painted and no horizontal overflow, with every Tier-0 string, image and section intact.
+
+## 3. How
+
+**Allowed tools / skills**
+- Read the two brief files and the skeleton before editing.
+- Write / Edit exactly one file: `subagents/nature-distilled.html`.
+- You may run `bun styles-scaffold/tools/verify.ts nature-distilled` and iterate on it.
+
+**Required process**
+1. Read `brief/ROOT.md` and `brief/dom-contract.md`.
+2. Read `content/skeleton.html` in full — especially its CSS custom properties and its final `<script>`.
+3. Copy it to `subagents/nature-distilled.html`.
+4. Replace the presentation layer for your style: the `--c-*` token values, then
+   typography, spacing scale, surfaces, edges, depth, borders, motion. Aim for the
+   style's *mechanism*, not a decorative coat — pick the two or three techniques
+   your row names as essential and commit to them fully.
+5. Add style-appropriate Tier-2 decoration (`aria-hidden="true"` + `x-` class).
+6. If you need interactive DOM your style genuinely requires, use the escape
+   hatch: `data-x-control="nature-distilled"`, additive only, declared on `<html data-dom-deviation="…">`.
+7. Run the verifier. Fix everything it reports. Run it again. Ship only when it
+   passes, or when the sole remaining reason is something the contract forbids.
+
+**Hard boundaries**
+- You may operate only inside `styles-scaffold/subagents/nature-distilled.html`.
+- **Never run `rm`, `mv`, `git checkout`, `git reset`, `git clean` or any delete.** You
+  share this checkout with ~17 sibling agents; `scratch/` and every directory above
+  are read-only to you. Leave any temp file you create — deleting is not your call.
+- Never edit the skeleton, manifest, briefs, tooling, another style's file, or `styles.csv`.
+- No frameworks, no build step, no CSS/JS CDN, no new images, no new copy.
+- Do not add a `<script>` that runs ungated in `?thumb=1` mode.
+
+## 4. Autonomy Bounds
+You are an executor, not a decision-maker.
+- If a genuine choice appears, implement the closest legal option and describe the tension in your receipt. Do not stop and wait.
+- Do not expand scope. Do not touch any file other than your own output file.
+- Do not invent requirements, copy, sections, imagery, or product decisions.
+- Do not "improve" the shared content, the skeleton, the manifest, or another style's file.
+
+## 5. Output Contract
+Return AT MOST 10 short lines. The file on disk is the evidence and
+`bun styles-scaffold/tools/verify.ts nature-distilled` is the proof — do NOT paste your
+HTML, your CSS, tool output, or a narrative. Required lines:
+
+1. file: <path> · <line count> lines · <KB>
+2. style: <how you expressed the style in one line>
+3. tier0: "91/91 strings, 12/12 images, 6 sections in order" (as you achieved it)
+4. deviation: none | the exact data-dom-deviation value you declared
+5. x-control: none | list of interactive nodes you added, and what each replaces
+6. checklist: which of your style's Implementation Checklist items you met, and any you could not
+7. self-check: the output of the verify command above, and whether you fixed what it flagged
+8. unresolved: anything you had to guess, or a rule that fought the style

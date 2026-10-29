@@ -1,0 +1,467 @@
+{
+  "generatedFrom": "content/skeleton.html",
+  "title": "Kyoto in Seven Days",
+  "sections": [
+    "hero",
+    "highlights",
+    "itinerary",
+    "gallery",
+    "reviews",
+    "booking"
+  ],
+  "chrome": [
+    "site-header",
+    "site-footer"
+  ],
+  "formControls": [
+    "departure",
+    "email",
+    "name",
+    "travellers"
+  ],
+  "imageSlots": [
+    {
+      "slot": "temple",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280",
+      "alt": "The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light",
+      "lazy": false
+    },
+    {
+      "slot": "torii",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280",
+      "alt": "A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha",
+      "lazy": true
+    },
+    {
+      "slot": "bamboo",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280",
+      "alt": "Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove",
+      "lazy": true
+    },
+    {
+      "slot": "pavilion",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280",
+      "alt": "The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day",
+      "lazy": true
+    },
+    {
+      "slot": "street",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280",
+      "alt": "A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street",
+      "lazy": true
+    },
+    {
+      "slot": "garden",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280",
+      "alt": "The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda",
+      "lazy": true
+    },
+    {
+      "slot": "autumn",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280",
+      "alt": "Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion",
+      "lazy": true
+    },
+    {
+      "slot": "ryokan",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280",
+      "alt": "A tatami guest room with low table, floor cushions and a shoji screen",
+      "lazy": true
+    },
+    {
+      "slot": "food",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280",
+      "alt": "A kaiseki course arranged on lacquerware and ceramic plates",
+      "lazy": true
+    },
+    {
+      "slot": "train",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280",
+      "alt": "An N700 series Shinkansen pulling into a platform at Kyoto Station",
+      "lazy": true
+    },
+    {
+      "slot": "lantern",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280",
+      "alt": "Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end",
+      "lazy": true
+    },
+    {
+      "slot": "pagoda",
+      "src": "https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280",
+      "alt": "A five-storied pagoda at Daigo-ji seen through cherry blossom in spring",
+      "lazy": true
+    }
+  ],
+  "text": {
+    "brand": {
+      "tag": "span",
+      "value": "Kōan Travel"
+    },
+    "nav.highlights": {
+      "tag": "a",
+      "value": "Highlights"
+    },
+    "nav.itinerary": {
+      "tag": "a",
+      "value": "Itinerary"
+    },
+    "nav.gallery": {
+      "tag": "a",
+      "value": "Gallery"
+    },
+    "nav.booking": {
+      "tag": "a",
+      "value": "Book"
+    },
+    "theme.label": {
+      "tag": "span",
+      "value": "Dark",
+      "mutable": true
+    },
+    "hero.eyebrow": {
+      "tag": "p",
+      "value": "Small-group journey · Limited to 8 travellers"
+    },
+    "hero.title": {
+      "tag": "h1",
+      "value": "Kyoto in Seven Days"
+    },
+    "hero.lede": {
+      "tag": "p",
+      "value": "Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets."
+    },
+    "hero.meta.1": {
+      "tag": "li",
+      "value": "7 nights · April 12–18, 2026"
+    },
+    "hero.meta.2": {
+      "tag": "li",
+      "value": "¥248,000 per person"
+    },
+    "hero.meta.3": {
+      "tag": "li",
+      "value": "English & Japanese guiding"
+    },
+    "hero.meta.4": {
+      "tag": "li",
+      "value": "Departures from Kyoto Station"
+    },
+    "hero.cta.primary": {
+      "tag": "a",
+      "value": "Reserve a place"
+    },
+    "hero.cta.secondary": {
+      "tag": "a",
+      "value": "See the itinerary"
+    },
+    "hero.caption": {
+      "tag": "figcaption",
+      "value": "Kiyomizu-dera, the temple the city was built around."
+    },
+    "highlights.title": {
+      "tag": "h2",
+      "value": "What you'll see"
+    },
+    "highlights.lede": {
+      "tag": "p",
+      "value": "Four places set the shape of the week. Everything else hangs off them."
+    },
+    "highlights.1.title": {
+      "tag": "h3",
+      "value": "Fushimi Inari at first light"
+    },
+    "highlights.1.body": {
+      "tag": "p",
+      "value": "Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent."
+    },
+    "highlights.2.title": {
+      "tag": "h3",
+      "value": "The Sagano bamboo grove"
+    },
+    "highlights.2.body": {
+      "tag": "p",
+      "value": "A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove."
+    },
+    "highlights.3.title": {
+      "tag": "h3",
+      "value": "Kinkaku-ji, the golden pavilion"
+    },
+    "highlights.3.body": {
+      "tag": "p",
+      "value": "Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy."
+    },
+    "highlights.4.title": {
+      "tag": "h3",
+      "value": "Gion after dark"
+    },
+    "highlights.4.body": {
+      "tag": "p",
+      "value": "The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat."
+    },
+    "itinerary.title": {
+      "tag": "h2",
+      "value": "The seven days"
+    },
+    "itinerary.lede": {
+      "tag": "p",
+      "value": "Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee."
+    },
+    "itinerary.1.day": {
+      "tag": "p",
+      "value": "Day one"
+    },
+    "itinerary.1.title": {
+      "tag": "h3",
+      "value": "Arrival, and the station roof"
+    },
+    "itinerary.1.body": {
+      "tag": "p",
+      "value": "Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping."
+    },
+    "itinerary.2.day": {
+      "tag": "p",
+      "value": "Day two"
+    },
+    "itinerary.2.title": {
+      "tag": "h3",
+      "value": "Higashiyama on foot"
+    },
+    "itinerary.2.body": {
+      "tag": "p",
+      "value": "Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk."
+    },
+    "itinerary.3.day": {
+      "tag": "p",
+      "value": "Day three"
+    },
+    "itinerary.3.title": {
+      "tag": "h3",
+      "value": "Inari at 06:00"
+    },
+    "itinerary.3.body": {
+      "tag": "p",
+      "value": "The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow."
+    },
+    "itinerary.4.day": {
+      "tag": "p",
+      "value": "Day four"
+    },
+    "itinerary.4.title": {
+      "tag": "h3",
+      "value": "North-west, and a rock garden"
+    },
+    "itinerary.4.body": {
+      "tag": "p",
+      "value": "Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing."
+    },
+    "itinerary.5.day": {
+      "tag": "p",
+      "value": "Day five"
+    },
+    "itinerary.5.title": {
+      "tag": "h3",
+      "value": "Arashiyama and the bamboo"
+    },
+    "itinerary.5.body": {
+      "tag": "p",
+      "value": "Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough."
+    },
+    "itinerary.6.day": {
+      "tag": "p",
+      "value": "Day six"
+    },
+    "itinerary.6.title": {
+      "tag": "h3",
+      "value": "Day trip, and a ryokan night"
+    },
+    "itinerary.6.body": {
+      "tag": "p",
+      "value": "Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room."
+    },
+    "itinerary.7.day": {
+      "tag": "p",
+      "value": "Day seven"
+    },
+    "itinerary.7.title": {
+      "tag": "h3",
+      "value": "Maples, market, departure"
+    },
+    "itinerary.7.body": {
+      "tag": "p",
+      "value": "Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock."
+    },
+    "gallery.title": {
+      "tag": "h2",
+      "value": "Kyoto, in pictures"
+    },
+    "gallery.lede": {
+      "tag": "p",
+      "value": "Everything below is on the route. Nothing is a stock photo."
+    },
+    "gallery.1.caption": {
+      "tag": "figcaption",
+      "value": "Maples at Ginkaku-ji, mid-November."
+    },
+    "gallery.2.caption": {
+      "tag": "figcaption",
+      "value": "Our room for night six, tatami and shoji."
+    },
+    "gallery.3.caption": {
+      "tag": "figcaption",
+      "value": "The sixth course of the kaiseki dinner."
+    },
+    "gallery.4.caption": {
+      "tag": "figcaption",
+      "value": "Nara is forty-five minutes away, twice an hour."
+    },
+    "gallery.5.caption": {
+      "tag": "figcaption",
+      "value": "Yasaka-dori at dawn, which is the only honest hour."
+    },
+    "gallery.6.caption": {
+      "tag": "figcaption",
+      "value": "Daigo-ji, three weeks before we arrive."
+    },
+    "reviews.title": {
+      "tag": "h2",
+      "value": "From past travellers"
+    },
+    "reviews.1.rating": {
+      "tag": "p",
+      "value": "★★★★★"
+    },
+    "reviews.1.body": {
+      "tag": "p",
+      "value": "The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast."
+    },
+    "reviews.1.author": {
+      "tag": "cite",
+      "value": "Mariam Osei"
+    },
+    "reviews.1.origin": {
+      "tag": "span",
+      "value": "· London, November 2025"
+    },
+    "reviews.2.rating": {
+      "tag": "p",
+      "value": "★★★★★"
+    },
+    "reviews.2.body": {
+      "tag": "p",
+      "value": "Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone."
+    },
+    "reviews.2.author": {
+      "tag": "cite",
+      "value": "Daniel Whitcombe"
+    },
+    "reviews.2.origin": {
+      "tag": "span",
+      "value": "· Toronto, April 2025"
+    },
+    "reviews.3.rating": {
+      "tag": "p",
+      "value": "★★★★☆"
+    },
+    "reviews.3.body": {
+      "tag": "p",
+      "value": "The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour."
+    },
+    "reviews.3.author": {
+      "tag": "cite",
+      "value": "Ines Ferreira"
+    },
+    "reviews.3.origin": {
+      "tag": "span",
+      "value": "· Lisbon, October 2025"
+    },
+    "booking.title": {
+      "tag": "h2",
+      "value": "Reserve a place"
+    },
+    "booking.lede": {
+      "tag": "p",
+      "value": "Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival."
+    },
+    "booking.label.name": {
+      "tag": "label",
+      "value": "Full name"
+    },
+    "booking.label.email": {
+      "tag": "label",
+      "value": "Email"
+    },
+    "booking.label.departure": {
+      "tag": "label",
+      "value": "Departure"
+    },
+    "booking.option.1": {
+      "tag": "option",
+      "value": "12–18 April 2026 · 3 places left"
+    },
+    "booking.option.2": {
+      "tag": "option",
+      "value": "8–14 November 2026 · 7 places left"
+    },
+    "booking.option.3": {
+      "tag": "option",
+      "value": "11–17 April 2027 · open"
+    },
+    "booking.label.travellers": {
+      "tag": "label",
+      "value": "Travellers"
+    },
+    "booking.submit": {
+      "tag": "button",
+      "value": "Hold my place"
+    },
+    "booking.fineprint": {
+      "tag": "p",
+      "value": "No payment is taken here. We reply within two working days."
+    },
+    "faq.title": {
+      "tag": "h3",
+      "value": "Questions"
+    },
+    "faq.1.q": {
+      "tag": "summary",
+      "value": "How much walking is involved?"
+    },
+    "faq.1.a": {
+      "tag": "p",
+      "value": "Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing."
+    },
+    "faq.2.q": {
+      "tag": "summary",
+      "value": "Is the April departure before the maple colour?"
+    },
+    "faq.2.a": {
+      "tag": "p",
+      "value": "Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8."
+    },
+    "faq.3.q": {
+      "tag": "summary",
+      "value": "What is included in the price?"
+    },
+    "faq.3.a": {
+      "tag": "p",
+      "value": "Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included."
+    },
+    "faq.4.q": {
+      "tag": "summary",
+      "value": "Can I do this alone?"
+    },
+    "faq.4.a": {
+      "tag": "p",
+      "value": "Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week."
+    },
+    "footer.line": {
+      "tag": "p",
+      "value": "Kōan Travel · Kyoto · Licensed travel operator 2-0481"
+    },
+    "footer.fine": {
+      "tag": "p",
+      "value": "Photographs from Wikimedia Commons contributors, used under their original licences."
+    }
+  }
+}

@@ -1,0 +1,1197 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-dom-deviation="cursor-reticle">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE 41 · CYBERPUNK UI — night-city terminal / HUD.
+  Mechanism (the three techniques this style is actually made of):
+    1. phosphor-on-black surfaces with a CRT overlay stack (scanlines, sweep,
+       grain, vignette, rain-slick gradient),
+    2. neon glow + chromatic-aberration text-shadow on display type,
+    3. glitch: skew/offset keyframes and RGB ghosting, run on a long cycle so
+       it reads as a broken signal rather than a decoration.
+  Every surface, edge and ornament is token-driven, so the light theme is a
+  real second paint (daylight AR) rather than an afterthought.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── Canonical colour tokens — identical SET on both sides ────────────────
+     dark  = #0D0D0D base, Matrix green / magenta / cyan phosphor
+     light = pale phosphor paper, deepened so every accent still clears 4.5:1 */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #dfe4d8;
+    --c-surface: #eef1e8;
+    --c-elevate: #d5dbcd;
+    --c-text: #0f1a13;
+    --c-muted: #46564b;
+    --c-accent: #0a6b33;
+    --c-accent-ink: #f2fff5;
+    --c-border: #8fa092;
+    --c-shadow: rgba(8, 24, 14, 0.20);
+    --c-neon: #b4009a;
+    --c-neon-2: #0a6f78;
+    --c-glow: rgba(10, 107, 51, 0.24);
+    --c-glow-2: rgba(180, 0, 154, 0.16);
+    --c-scan: rgba(15, 26, 19, 0.055);
+    --c-grid: rgba(15, 26, 19, 0.075);
+    --c-grain: rgba(15, 26, 19, 0.05);
+    --c-edge: rgba(10, 111, 120, 0.55);
+    /* daylight AR: the photo tint sits ON the image, it does not bloom over it */
+    --duo-blend: multiply;
+    --duo-op: .2;
+    --photo-filter: saturate(1.06) contrast(1.04) brightness(1.02);
+  }
+  [data-theme="dark"] {
+    --c-bg: #0d0d0d;
+    --c-surface: #121614;
+    --c-elevate: #1a2320;
+    --c-text: #d8ffe7;
+    --c-muted: #6fa88c;
+    --c-accent: #00ff00;
+    --c-accent-ink: #04140a;
+    --c-border: #23473a;
+    --c-shadow: rgba(0, 0, 0, 0.72);
+    --c-neon: #ff00ff;
+    --c-neon-2: #00ffff;
+    --c-glow: rgba(0, 255, 120, 0.45);
+    --c-glow-2: rgba(255, 0, 255, 0.30);
+    --c-scan: rgba(0, 255, 170, 0.06);
+    --c-grid: rgba(0, 255, 190, 0.055);
+    --c-grain: rgba(216, 255, 231, 0.05);
+    --c-edge: rgba(0, 255, 230, 0.55);
+    /* night city: the tint is emitted light, so it screens onto the photo */
+    --duo-blend: screen;
+    --duo-op: .4;
+    --photo-filter: saturate(1.42) contrast(1.16) brightness(.9) hue-rotate(-12deg);
+  }
+
+  /* ── Non-colour canonical layout vars (yours to override) ── */
+  :root {
+    --page-max: 1180px;
+    --gap: 1.25rem;
+    --pad: clamp(1.1rem, 4vw, 3rem);
+    --radius: 0px;
+    /* monospace is the whole voice of this style — local stacks only, no CDN */
+    --font-display: ui-monospace, "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+    --font-body: ui-monospace, "SFMono-Regular", "JetBrains Mono", "IBM Plex Mono", Menlo, Consolas, "DejaVu Sans Mono", "Liberation Mono", monospace;
+    --font-hud: ui-monospace, "SFMono-Regular", Menlo, Consolas, "DejaVu Sans Mono", monospace;
+    /* style scalars (deliberately NOT --c-*, they do not theme-flip) */
+    --notch: 11px;
+    --bracket: 13px;
+    --scan-op: 1;
+    --glitch-duration: 0.3s;
+    --hud-gap: .62rem;
+  }
+
+  /* ── CANONICAL BREAKPOINTS — mobile-first base, queries only ADD ─────────
+       mobile   0 – 767px   (verify 375)
+       tablet   768 – 1023  (verify 768)
+       desktop  1024 +      (verify 1440) */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background-color: var(--c-bg);
+    /* rain-slick skyline wash + horizon glow, anchored to the top of the
+       document in px so a 10 000px page never repaints a full-height gradient */
+    background-image:
+      radial-gradient(1100px 460px at 50% 0%, var(--c-glow) 0%, transparent 72%),
+      radial-gradient(780px 420px at 6% 30px, var(--c-glow-2) 0%, transparent 74%);
+    background-repeat: no-repeat;
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 0.9375rem;
+    line-height: 1.7;
+    letter-spacing: 0.005em;
+    overflow-wrap: break-word;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--c-neon-2); text-decoration-color: var(--c-edge); text-underline-offset: .22em; }
+  a:hover { color: var(--c-accent); }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.06;
+    margin: 0 0 .5em;
+    text-transform: uppercase;
+    letter-spacing: .03em;
+    font-weight: 700;
+  }
+  h1 {
+    font-size: clamp(1.85rem, 8.4vw, 4.6rem);
+    /* the signature: RGB ghost fringes + phosphor bloom */
+    text-shadow:
+      .045em 0 var(--c-neon),
+      -.045em 0 var(--c-neon-2),
+      0 0 16px var(--c-glow),
+      0 0 46px var(--c-glow-2);
+    animation: x-glitch 7.5s steps(1, end) infinite;
+  }
+  h2 {
+    font-size: clamp(1.15rem, 3.4vw, 1.9rem);
+    letter-spacing: .13em;
+    text-shadow: 0 0 12px var(--c-glow);
+  }
+  h3 { font-size: .95rem; letter-spacing: .1em; text-transform: uppercase; line-height: 1.35; }
+  p { margin: 0 0 1em; }
+
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+  section {
+    position: relative;
+    padding-block: clamp(2.6rem, 7vw, 5.5rem);
+    border-block-start: 1px solid var(--c-border);
+    counter-increment: sec;
+  }
+  section:first-of-type { border-block-start: 0; }
+  /* HUD divider: a neon hairline that burns out toward the right edge */
+  section::after {
+    content: "";
+    position: absolute;
+    inset-block-start: -1px; inset-inline: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--c-edge) 0%, var(--c-glow-2) 22%, transparent 62%);
+    opacity: calc(.9 * var(--scan-op));
+  }
+  section:first-of-type::after { display: none; }
+  /* bracketed section index, generated — never touches the pinned string */
+  section > h2::before {
+    content: "[" counter(sec, decimal-leading-zero) "]";
+    display: block;
+    font-family: var(--font-hud);
+    font-size: .6875rem;
+    letter-spacing: .3em;
+    color: var(--c-neon);
+    text-shadow: 0 0 10px var(--c-glow-2);
+    margin-block-end: .5em;
+  }
+
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+
+  /* ── HUD panel ──────────────────────────────────────────────────────────
+     square corners, cut top-left notch, 1px frame, interior scanlines,
+     corner brackets top-left / bottom-right */
+  .card {
+    position: relative;
+    background-color: var(--c-surface);
+    background-image: repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 4px);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.25rem;
+    box-shadow: inset 0 1px 0 var(--c-glow), 0 2px 14px var(--c-shadow);
+    clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+    transition: border-color .18s linear, background-color .18s linear;
+  }
+  .card::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 5px; inset-inline-start: 5px;
+    width: var(--bracket); height: var(--bracket);
+    border-block-start: 1px solid var(--c-edge);
+    border-inline-start: 1px solid var(--c-edge);
+    pointer-events: none;
+  }
+  .card::after {
+    content: "";
+    position: absolute;
+    inset-block-end: 5px; inset-inline-end: 5px;
+    width: var(--bracket); height: var(--bracket);
+    border-block-end: 1px solid var(--c-edge);
+    border-inline-end: 1px solid var(--c-edge);
+    pointer-events: none;
+  }
+  .card:hover { border-color: var(--c-accent); box-shadow: inset 0 1px 0 var(--c-glow), 0 0 22px var(--c-glow); }
+
+  /* ── Buttons: notched neon slabs ── */
+  .btn {
+    display: inline-block;
+    position: relative;
+    font: inherit;
+    font-family: var(--font-hud);
+    font-size: .8125rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .16em;
+    text-decoration: none;
+    padding: .8rem 1.4rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-accent);
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+    filter: drop-shadow(0 0 8px var(--c-glow));
+    transition: background-color .14s linear, color .14s linear;
+  }
+  .btn:hover {
+    background: var(--c-neon);
+    border-color: var(--c-neon);
+    color: var(--c-accent-ink);
+    animation: x-jitter var(--glitch-duration) steps(2, end) 2;
+  }
+  .btn--quiet {
+    background: transparent;
+    color: var(--c-text);
+    border-color: var(--c-border);
+    filter: none;
+  }
+  .btn--quiet:hover { background: var(--c-elevate); border-color: var(--c-accent); color: var(--c-text); }
+
+  /* ── Terminal fields ── */
+  .field { display: grid; gap: .35rem; margin-block-end: 1rem; }
+  .field > label {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    color: var(--c-muted);
+  }
+  .field > label::before {
+    content: "> ";
+    color: var(--c-accent);
+    text-shadow: 0 0 8px var(--c-glow);
+  }
+  .field > input, .field > select {
+    font: inherit;
+    font-family: var(--font-body);
+    color: var(--c-text);
+    caret-color: var(--c-accent);
+    padding: .6rem .7rem;
+    background-color: var(--c-elevate);
+    background-image: repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 3px);
+    border: 1px solid var(--c-border);
+    border-inline-start: 3px solid var(--c-accent);
+    border-radius: var(--radius);
+    transition: border-color .14s linear, box-shadow .14s linear;
+  }
+  .field > input:hover, .field > select:hover { border-color: var(--c-neon-2); }
+  .field > input:focus, .field > select:focus { border-color: var(--c-accent); box-shadow: 0 0 16px var(--c-glow); }
+
+  figure { margin: 0; }
+  figcaption {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    line-height: 1.5;
+    color: var(--c-muted);
+    letter-spacing: .04em;
+    margin-block-start: .6rem;
+    padding-inline-start: .6rem;
+    border-inline-start: 2px solid var(--c-edge);
+  }
+
+  .meta-list {
+    display: flex; flex-wrap: wrap; gap: var(--hud-gap) 1.4rem;
+    list-style: none; padding: 0; margin: 0 0 2rem;
+  }
+  .meta-list li {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .13em;
+    color: var(--c-muted);
+    padding: .18rem .55rem;
+    border: 1px solid var(--c-border);
+    background-color: var(--c-surface);
+    clip-path: polygon(6px 0, 100% 0, 100% calc(100% - 6px), calc(100% - 6px) 100%, 0 100%, 0 6px);
+  }
+  .meta-list li::before { content: "▍"; color: var(--c-accent); margin-inline-end: .35em; }
+
+  /* ── Header: sticky status bar ── */
+  .site-header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-block: .85rem;
+    background-color: var(--c-bg);
+    background-image: linear-gradient(180deg, var(--c-glow), transparent 70%);
+    border-block-end: 1px solid var(--c-accent);
+    box-shadow: 0 0 18px var(--c-glow), 0 1px 0 var(--c-glow-2);
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: .9375rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .26em;
+    color: var(--c-text);
+    text-shadow: .04em 0 var(--c-neon), -.04em 0 var(--c-neon-2), 0 0 14px var(--c-glow);
+    animation: x-glitch 9s steps(1, end) infinite;
+  }
+  .site-nav { display: flex; gap: 1rem; font-family: var(--font-hud); font-size: .75rem; text-transform: uppercase; letter-spacing: .16em; }
+  .site-nav a { color: var(--c-muted); text-decoration: none; position: relative; padding-block-start: .2rem; }
+  .site-nav a::before {
+    content: "»";
+    color: var(--c-accent);
+    opacity: 0;
+    margin-inline-end: .25em;
+  }
+  .site-nav a:hover { color: var(--c-accent); text-shadow: 0 0 12px var(--c-glow); }
+  .site-nav a:hover::before { opacity: 1; }
+  #theme-toggle { font-size: .6875rem; padding: .5rem .9rem; min-height: 36px; }
+
+  .rating {
+    color: var(--c-neon);
+    letter-spacing: .28em;
+    font-size: .875rem;
+    text-shadow: 0 0 12px var(--c-glow-2);
+  }
+  .day-num {
+    font-family: var(--font-hud);
+    font-size: .6875rem;
+    text-transform: uppercase;
+    letter-spacing: .26em;
+    color: var(--c-neon-2);
+    text-shadow: 0 0 10px var(--c-glow);
+  }
+  .eyebrow {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    text-transform: uppercase;
+    letter-spacing: .28em;
+    color: var(--c-accent);
+    text-shadow: 0 0 12px var(--c-glow);
+    margin-block-end: 1.1rem;
+  }
+  .eyebrow::before { content: "◤ "; color: var(--c-neon); }
+  .lede {
+    font-size: 1.0625rem;
+    line-height: 1.62;
+    color: var(--c-text);
+    max-width: 62ch;
+    border-inline-start: 2px solid var(--c-accent);
+    padding-inline-start: 1rem;
+  }
+  section > p[data-tid$=".lede"] { color: var(--c-muted); max-width: 70ch; }
+  .fineprint {
+    font-family: var(--font-hud);
+    font-size: .6875rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-block: .9rem 0;
+  }
+  #booking > p:last-of-type, .faq { margin-block-end: 0; }
+
+  :focus-visible {
+    outline: 3px solid var(--c-neon-2);
+    outline-offset: 2px;
+    box-shadow: 0 0 14px var(--c-glow);
+  }
+  .btn:focus-visible { outline-offset: -5px; }
+
+  /* ── Overflow guards (mandatory) ── */
+  img, svg, video, canvas { max-width: 100%; }
+  .grid > *, .card, figure { min-width: 0; }
+  main { overflow-wrap: anywhere; }
+
+  /* ══ Tier-2 decoration stack — CRT overlays, all fixed, all inert ══
+     Everything that does not move is ONE layer: a full-page capture has to
+     raster every fixed layer at document height, so 8 layers would cost 8×
+     the memory of this. Only the scanline drift and the sweep are animated. */
+  .x-stage { position: fixed; inset: 0; z-index: 60; pointer-events: none; }
+  .x-stage > * { position: absolute; inset: 0; }
+
+  .x-static {
+    color: var(--c-text);
+    background-image:
+      radial-gradient(120% 90% at 50% 45%, transparent 52%, var(--c-shadow) 100%),
+      radial-gradient(var(--c-grain) 0.5px, transparent 0.6px),
+      linear-gradient(168deg, transparent 42%, var(--c-glow-2) 46%, transparent 49%),
+      linear-gradient(152deg, transparent 61%, var(--c-glow) 64%, transparent 66%),
+      repeating-linear-gradient(90deg, var(--c-grid) 0 1px, transparent 1px 84px),
+      repeating-linear-gradient(180deg, var(--c-grid) 0 1px, transparent 1px 84px);
+    background-size: 100% 100%, 3px 3px, 100% 100%, 100% 100%, 100% 100%, 100% 100%;
+    background-repeat: no-repeat, repeat, no-repeat, no-repeat, repeat, repeat;
+  }
+  .x-scan {
+    /* oversized by exactly one period so the drift is a transform, not a
+       background-position repaint of the whole screen every frame */
+    inset: -3px 0;
+    background-image: repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 3px);
+    opacity: var(--scan-op);
+    animation: x-scan-drift 9s linear infinite;
+  }
+  .x-sweep {
+    inset-block-start: -30vh;
+    height: 26vh;
+    background: linear-gradient(180deg, transparent, var(--c-glow) 55%, transparent);
+    opacity: .16;
+    animation: x-sweep 11s linear infinite;
+  }
+  .x-spot {
+    background: radial-gradient(280px 280px at var(--mx, 50%) var(--my, 0%), var(--c-glow) 0%, transparent 62%);
+    opacity: .5;
+  }
+  .x-hbar {
+    inset: auto 0 0 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--c-accent), var(--c-neon-2), var(--c-neon));
+    box-shadow: 0 0 12px var(--c-glow);
+    transform-origin: 0 50%;
+    transform: scaleX(var(--sp, 0));
+    opacity: .95;
+  }
+  @supports (animation-timeline: scroll()) {
+    .x-hbar { animation: x-progress 1s linear both; animation-timeline: scroll(root block); }
+  }
+  /* page frame: neon corner ticks, desktop only */
+  .x-frame { position: fixed; inset: 0; z-index: 59; pointer-events: none; display: none; }
+  .x-frame > * { position: absolute; width: 30px; height: 30px; }
+  .x-frame-tl { inset-block-start: 62px; inset-inline-start: 12px; border-block-start: 1px solid var(--c-edge); border-inline-start: 1px solid var(--c-edge); }
+  .x-frame-tr { inset-block-start: 62px; inset-inline-end: 12px; border-block-start: 1px solid var(--c-edge); border-inline-end: 1px solid var(--c-edge); }
+  .x-frame-bl { inset-block-end: 12px; inset-inline-start: 12px; border-block-end: 1px solid var(--c-edge); border-inline-start: 1px solid var(--c-edge); }
+  .x-frame-br { inset-block-end: 12px; inset-inline-end: 12px; border-block-end: 1px solid var(--c-edge); border-inline-end: 1px solid var(--c-edge); }
+  /* declared escape hatch: a HUD reticle that tracks the pointer (additive) */
+  .x-reticle {
+    position: fixed; left: 0; top: 0; z-index: 70; pointer-events: none;
+    width: 34px; height: 34px; margin: -17px 0 0 -17px;
+    opacity: 0;
+    transition: opacity .25s linear;
+    background-image:
+      linear-gradient(var(--c-neon-2), var(--c-neon-2)),
+      linear-gradient(var(--c-neon-2), var(--c-neon-2)),
+      radial-gradient(circle, transparent 5px, var(--c-edge) 5px, var(--c-edge) 6px, transparent 6px);
+    background-size: 1px 12px, 12px 1px, 100% 100%;
+    background-position: 50% 50%, 50% 50%, 50% 50%;
+    background-repeat: no-repeat;
+    filter: drop-shadow(0 0 6px var(--c-glow));
+  }
+  .x-reticle[data-live="1"] { opacity: .85; }
+
+  /* ══ HERO — the terminal window ══ */
+  #hero {
+    position: relative;
+    padding-block-start: clamp(2.2rem, 6vw, 4rem);
+  }
+  #hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border: 1px solid var(--c-border);
+    background-color: var(--c-surface);
+    background-image:
+      repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 4px),
+      linear-gradient(135deg, var(--c-glow) 0%, transparent 45%);
+    clip-path: polygon(var(--notch) 0, 100% 0, 100% calc(100% - var(--notch)), calc(100% - var(--notch)) 100%, 0 100%, 0 var(--notch));
+    z-index: -1;
+  }
+  /* title-bar ticks across the top of the hero window */
+  #hero > .eyebrow::after {
+    content: "";
+    display: block;
+    margin-block-start: .55rem;
+    height: 1px;
+    background: repeating-linear-gradient(90deg, var(--c-edge) 0 6px, transparent 6px 14px);
+    opacity: .8;
+  }
+  #hero > p { position: relative; }
+  #hero > p a + a { margin-inline-end: .5rem; }
+  .hero-figure { position: relative; isolation: isolate; }
+  .hero-figure > img {
+    width: 100%;
+    height: auto;
+    border: 1px solid var(--c-border);
+    filter: var(--photo-filter);
+  }
+  /* duotone wash: magenta in the shadows, cyan at the top */
+  .hero-figure::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background:
+      linear-gradient(180deg, var(--c-glow) 0%, transparent 55%),
+      linear-gradient(0deg, var(--c-glow-2) 0%, transparent 60%);
+    mix-blend-mode: var(--duo-blend);
+    opacity: var(--duo-op);
+    pointer-events: none;
+  }
+
+  /* ══ HIGHLIGHTS ══ */
+  #highlights .card { padding-block-start: 1.1rem; }
+  #highlights .card > img {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    height: auto;
+    border: 1px solid var(--c-border);
+    filter: var(--photo-filter);
+    transition: filter .2s linear, transform .5s cubic-bezier(.2, .8, .2, 1);
+  }
+  #highlights .card:hover > img { filter: var(--photo-filter) brightness(1.14) saturate(1.2); transform: scale(1.03); }
+  #highlights .card > img { margin-block-end: 1rem; }
+  #highlights .card > p { color: var(--c-muted); font-size: .875rem; }
+
+  /* ══ ITINERARY — a vertical log rail ══ */
+  .grid--days { position: relative; counter-reset: daynum; gap: .85rem; }
+  .grid--days::before {
+    content: "";
+    position: absolute;
+    inset-block: 6px; inset-inline-start: 15px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--c-accent), var(--c-neon-2) 45%, var(--c-neon) 100%);
+    opacity: .55;
+  }
+  .day { padding-block: 1.15rem; padding-inline-start: 2.9rem; padding-inline-end: 1rem; }
+  .day::before {
+    content: counter(daynum, decimal-leading-zero);
+    counter-increment: daynum;
+    position: absolute;
+    inset-block-start: 1.15rem; inset-inline-start: 0;
+    width: 31px; height: 31px;
+    display: grid; place-items: center;
+    font-family: var(--font-hud);
+    font-size: .6875rem;
+    letter-spacing: .02em;
+    color: var(--c-accent-ink);
+    background: var(--c-accent);
+    text-shadow: none;
+    box-shadow: 0 0 14px var(--c-glow);
+    clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
+  }
+  .day > p { color: var(--c-muted); font-size: .875rem; margin-block-end: 0; }
+  .day > h3 { color: var(--c-text); }
+  .day > img {
+    margin-block-start: 1rem;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    height: auto;
+    border: 1px solid var(--c-border);
+    filter: var(--photo-filter);
+  }
+
+  /* ══ GALLERY ══ */
+  .grid--gallery { gap: var(--gap); }
+  #gallery .card { padding: .55rem .55rem .7rem; }
+  #gallery figure { position: relative; }
+  #gallery img {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    height: auto;
+    object-fit: cover;
+    border: 1px solid var(--c-border);
+    filter: var(--photo-filter);
+    transition: filter .2s linear, transform .55s cubic-bezier(.2, .8, .2, 1);
+  }
+  /* per-frame scanline glass */
+  #gallery figure::before {
+    content: "";
+    position: absolute;
+    inset: .55rem .55rem auto .55rem;
+    aspect-ratio: 4 / 3;
+    background-image: repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 3px);
+    pointer-events: none;
+    z-index: 1;
+  }
+  #gallery figure:hover img { filter: var(--photo-filter) brightness(1.16) saturate(1.25); transform: scale(1.04); }
+  #gallery figcaption { margin-block-start: .55rem; }
+
+  /* ══ REVIEWS — transcript panels ══ */
+  #reviews .card { border-inline-start: 3px solid var(--c-neon); }
+  #reviews .card::after { display: none; }
+  #reviews blockquote p { font-size: .875rem; }
+  #reviews blockquote > p:first-child { margin-block-end: .8rem; }
+  #reviews footer {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    padding-block-start: .6rem;
+    border-block-start: 1px dashed var(--c-border);
+  }
+  #reviews cite { font-style: normal; color: var(--c-neon-2); text-shadow: 0 0 10px var(--c-glow); }
+
+  /* ══ BOOKING ══ */
+  #booking .card#booking-form { padding: clamp(1.1rem, 3vw, 1.9rem); }
+  #booking-form { box-shadow: inset 0 1px 0 var(--c-glow), 0 0 26px var(--c-glow-2); }
+  #booking-form select {
+    appearance: none;
+    background-image:
+      repeating-linear-gradient(180deg, var(--c-scan) 0 1px, transparent 1px 3px),
+      linear-gradient(45deg, transparent 46%, var(--c-accent) 47%),
+      linear-gradient(-45deg, transparent 46%, var(--c-accent) 47%);
+    background-size: auto, 9px 9px, 9px 9px;
+    background-position: 0 0, calc(100% - 16px) 55%, calc(100% - 10px) 55%;
+    background-repeat: no-repeat, no-repeat, no-repeat;
+    padding-inline-end: 2.2rem;
+  }
+  #booking h3 {
+    margin-block-start: clamp(2rem, 5vw, 3rem);
+    letter-spacing: .22em;
+    color: var(--c-neon-2);
+    text-shadow: 0 0 12px var(--c-glow);
+  }
+  .faq { display: grid; gap: .7rem; }
+  .faq summary {
+    cursor: pointer;
+    list-style: none;
+    font-family: var(--font-hud);
+    font-size: .8125rem;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--c-text);
+    padding-inline-start: 1.4rem;
+    position: relative;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::before {
+    content: "+";
+    position: absolute;
+    inset-inline-start: 0;
+    color: var(--c-accent);
+    text-shadow: 0 0 10px var(--c-glow);
+  }
+  .faq details[open] > summary::before { content: "−"; color: var(--c-neon); }
+  .faq details[open] > summary { color: var(--c-accent); }
+  .faq p { color: var(--c-muted); font-size: .875rem; margin-block: .8rem 0; padding-inline-start: 1.4rem; border-inline-start: 1px solid var(--c-border); margin-inline-start: .1rem; }
+  .faq .card { padding: 1rem 1.1rem; }
+
+  /* ══ FOOTER ══ */
+  .site-footer {
+    border-block-start: 1px solid var(--c-accent);
+    background-color: var(--c-bg);
+    background-image:
+      repeating-linear-gradient(90deg, var(--c-grid) 0 1px, transparent 1px 7px),
+      linear-gradient(0deg, var(--c-glow-2), transparent 70%);
+    box-shadow: 0 0 20px var(--c-glow);
+    margin-block-start: 2rem;
+  }
+  .site-footer .wrap { padding-block: clamp(1.6rem, 4vw, 2.6rem); }
+  .site-footer p {
+    font-family: var(--font-hud);
+    font-size: .75rem;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin: 0 0 .5rem;
+  }
+  .site-footer p:last-child { margin-block-end: 0; color: var(--c-muted); opacity: .8; }
+
+  /* ══ reveal: additive only ═══════════════════════════════════════════════
+     Nothing here ever hides content. A panel entering the viewport gets one
+     short neon burn-in; a page whose script never runs is the same page as one
+     that did, which is the only safe contract under a 56-up live gallery. */
+  .x-lit { animation: x-burnin .62s steps(3, end) 1; }
+  .x-lit-h { animation: x-burnin-h .5s steps(4, end) 1; }
+  .x-flash { animation: x-jitter var(--glitch-duration) steps(2, end) 2; }
+
+  /* ══ keyframes ══ */
+  /* RGB split + micro-skew, mostly idle so it reads as a failing signal */
+  @keyframes x-glitch {
+    0%, 88%, 100% {
+      transform: none;
+      text-shadow: .045em 0 var(--c-neon), -.045em 0 var(--c-neon-2), 0 0 16px var(--c-glow), 0 0 46px var(--c-glow-2);
+    }
+    89% {
+      transform: translate3d(-2px, 0, 0) skewX(-1.4deg);
+      text-shadow: .16em 0 var(--c-neon), -.14em .04em var(--c-neon-2), 0 0 22px var(--c-glow);
+    }
+    91% {
+      transform: translate3d(2px, 0, 0) skewX(1.1deg);
+      text-shadow: -.18em .03em var(--c-neon), .17em -.03em var(--c-neon-2), 0 0 20px var(--c-glow);
+    }
+    93% { transform: translate3d(-1px, 0, 0); }
+    95% { transform: none; }
+  }
+  @keyframes x-jitter {
+    0% { transform: translate3d(0, 0, 0) skewX(0deg); }
+    50% { transform: translate3d(-2px, 1px, 0) skewX(-3deg); }
+    100% { transform: translate3d(1px, -1px, 0) skewX(2deg); }
+  }
+  @keyframes x-scan-drift { 0% { transform: translateY(0); } 100% { transform: translateY(3px); } }
+  @keyframes x-sweep { 0% { transform: translateY(0); } 100% { transform: translateY(160vh); } }
+  @keyframes x-burnin {
+    0% {
+      border-color: var(--c-neon);
+      box-shadow: inset 0 0 28px var(--c-glow), inset 0 1px 0 var(--c-glow);
+    }
+    55% {
+      border-color: var(--c-neon-2);
+      box-shadow: inset 0 0 12px var(--c-glow), inset 0 1px 0 var(--c-glow);
+    }
+    100% {
+      border-color: var(--c-border);
+      box-shadow: inset 0 1px 0 var(--c-glow), 0 2px 14px var(--c-shadow);
+    }
+  }
+  @keyframes x-burnin-h {
+    0% { opacity: .25; text-shadow: .3em 0 var(--c-neon), -.3em 0 var(--c-neon-2), 0 0 30px var(--c-glow); }
+    45% { opacity: 1; text-shadow: .08em 0 var(--c-neon), -.08em 0 var(--c-neon-2), 0 0 18px var(--c-glow); }
+    100% { opacity: 1; text-shadow: 0 0 12px var(--c-glow); }
+  }
+  @keyframes x-progress { from { transform: scaleX(0); } to { transform: scaleX(1); } }
+
+  /* ── TABLET band: 768 – 1023px ── */
+  @media (min-width: 768px) {
+    :root { --gap: 1.5rem; }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--days { grid-template-columns: 1fr; }
+    #reviews .grid { gap: 1.5rem; }
+    .frame-show { display: block; }
+  }
+
+  /* ── DESKTOP band: 1024px and up ── */
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #highlights .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1fr);
+      gap: var(--gap) clamp(1.5rem, 3vw, 2.75rem);
+      align-items: center;
+      padding-block-end: clamp(2.4rem, 5vw, 4rem);
+    }
+    #hero > h1, #hero > .eyebrow, #hero > .lede, #hero > .meta-list { grid-column: 1; }
+    #hero > .eyebrow { grid-row: 1; }
+    #hero > h1 { grid-row: 2; }
+    #hero > .lede { grid-row: 3; }
+    #hero > .meta-list { grid-row: 4; }
+    #hero > p:last-of-type { grid-column: 1; grid-row: 5; }
+    #hero .hero-figure { grid-column: 2; grid-row: 1 / span 5; align-self: stretch; }
+    #hero .hero-figure > img { height: 100%; object-fit: cover; }
+    /* the seven days read as one system log: one rail, one row per day */
+    .grid--days { grid-template-columns: 1fr; gap: .7rem; }
+    .day {
+      display: grid;
+      grid-template-columns: minmax(0, 15ch) minmax(0, 1fr);
+      column-gap: clamp(1rem, 3vw, 2.5rem);
+      align-items: baseline;
+      padding-block: 1rem;
+    }
+    .day > .day-num { grid-column: 1; grid-row: 1; }
+    .day > h3 { grid-column: 2; grid-row: 1; }
+    .day > p { grid-column: 2; grid-row: 2; max-width: 74ch; }
+    .day > img { grid-column: 2; grid-row: 3; max-width: 460px; }
+    #booking {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 0 clamp(2rem, 4vw, 3.5rem);
+      align-items: start;
+    }
+    #booking > h2 { grid-column: 1 / -1; grid-row: 1; }
+    #booking > p { grid-column: 1 / -1; grid-row: 2; max-width: 82ch; }
+    #booking-form { grid-column: 1; grid-row: 3 / span 2; }
+    #booking h3 { grid-column: 2; grid-row: 3; margin-block-start: 0; }
+    #booking .faq { grid-column: 2; grid-row: 4; }
+    .x-frame { display: block; }
+  }
+
+  /* ── MOBILE band specifics ── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; }
+    .btn { display: block; width: 100%; text-align: center; }
+    #hero > p a + a { margin-block-start: .5rem; }
+    .field > input, .field > select { width: 100%; }
+    .field > input, .field > select { font-size: 16px; }
+    h1 { letter-spacing: .01em; }
+    .day { padding-inline-start: 2.6rem; }
+    .grid--days::before { inset-inline-start: 13px; }
+    .day::before { width: 27px; height: 27px; inset-block-start: 1.25rem; }
+    /* phones: thin the CRT stack, it costs the most where the pixels are fewest */
+    :root { --scan-op: .62; }
+    .x-sweep { display: none; }
+    .x-spot { display: none; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  [data-thumb="1"] .x-reticle { display: none !important; }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation: none !important;
+      transition: none !important;
+      scroll-behavior: auto !important;
+    }
+    .x-sweep, .x-spot { display: none; }
+    .x-reticle { display: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier-2 decoration: the CRT overlay stage. One static layer carries the grid,
+     the rain-slick beams, the grain and the vignette; only the scanline drift
+     and the refresh sweep move. Inert, aria-hidden, pointer-events none. -->
+<div class="x-stage" aria-hidden="true">
+  <div class="x-static" aria-hidden="true"></div>
+  <div class="x-spot" aria-hidden="true"></div>
+  <div class="x-scan" aria-hidden="true"></div>
+  <div class="x-sweep" aria-hidden="true"></div>
+  <div class="x-hbar" aria-hidden="true"></div>
+</div>
+<div class="x-frame" aria-hidden="true">
+  <span class="x-frame-tl" aria-hidden="true"></span>
+  <span class="x-frame-tr" aria-hidden="true"></span>
+  <span class="x-frame-bl" aria-hidden="true"></span>
+  <span class="x-frame-br" aria-hidden="true"></span>
+</div>
+<div class="x-reticle" data-x-control="cyberpunk-ui" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── Cyberpunk runtime: HUD reticle, pointer spotlight, staged reveal ─────
+     Fully gated. No-ops in ?thumb=1 (no loops for 56 siblings), no-ops under
+     prefers-reduced-motion (the un-armed page is the honest static page), and
+     no-ops on coarse pointers where a reticle is meaningless. Adds no text and
+     removes nothing: the reticle node is decorative and aria-hidden. */
+  (function () {
+    var root = document.documentElement;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (window.STYLE_SCAFFOLD_THUMB || reduce) return;
+
+    /* 1 · burn-in on entry — the observer only ADDS a one-shot animation class;
+         it never hides a panel first, so a page that never scrolls (or never
+         runs this script) still shows every word and every photograph. */
+    var panels = document.querySelectorAll('.card, #hero .hero-figure');
+    var heads = document.querySelectorAll('section > h2');
+    if ('IntersectionObserver' in window) {
+      var io = new IntersectionObserver(function (entries) {
+        for (var j = 0; j < entries.length; j++) {
+          if (!entries[j].isIntersecting) continue;
+          var el = entries[j].target;
+          el.classList.add(el.tagName === 'H2' ? 'x-lit-h' : 'x-lit');
+          io.unobserve(el);
+        }
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.01 });
+      for (var k = 0; k < panels.length; k++) io.observe(panels[k]);
+      for (var m = 0; m < heads.length; m++) io.observe(heads[m]);
+    }
+
+    /* 2 · pointer HUD — reticle + spotlight, rAF-coalesced, one variable write
+         per frame, and released as soon as the pointer leaves the document. */
+    if (window.matchMedia('(pointer: fine)').matches) {
+      var ret = document.querySelector('.x-reticle');
+      var x = 0, y = 0, queued = false, raf = 0, idle = 0;
+
+      function paint() {
+        queued = false;
+        if (!ret) return;
+        ret.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+        root.style.setProperty('--mx', (x / Math.max(window.innerWidth, 1) * 100).toFixed(2) + '%');
+        root.style.setProperty('--my', (y / Math.max(window.innerHeight, 1) * 100).toFixed(2) + '%');
+      }
+
+      function onMove(ev) {
+        x = ev.clientX; y = ev.clientY;
+        if (ret) ret.setAttribute('data-live', '1');
+        if (!queued) { queued = true; raf = window.requestAnimationFrame(paint); }
+      }
+
+      document.addEventListener('pointermove', onMove, { passive: true });
+      document.addEventListener('pointerleave', function () {
+        if (ret) ret.setAttribute('data-live', '0');
+      });
+      document.addEventListener('visibilitychange', function () {
+        if (document.hidden && ret) ret.setAttribute('data-live', '0');
+      });
+
+      /* 3 · signal drop — an extra glitch burst on the wordmark, scheduled far
+         apart so it stays a fault, not a party trick. Cleared on hide. */
+      var brand = document.querySelector('.brand');
+      function burst() {
+        if (!brand) return;
+        if (document.hidden) return;
+        brand.classList.add('x-flash');
+        window.setTimeout(function () { brand.classList.remove('x-flash'); }, 520);
+        idle = window.setTimeout(burst, 9000 + Math.random() * 7000);
+      }
+      idle = window.setTimeout(burst, 9000);
+      window.addEventListener('pagehide', function () {
+        window.clearTimeout(idle);
+        if (raf) window.cancelAnimationFrame(raf);
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light" data-dom-deviation="motion-toggle+morph-slider+split-text">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE — KINETIC TYPOGRAPHY. Manuscript is the canonical skeleton; only the
+  presentation layer is mine. Three mechanisms, committed to in order:
+
+    1. Type is the hero image. Display copy is oversized, uppercase, tight, and
+       split into per-letter spans at runtime so each glyph carries its own
+       transform. (Hand-written splitter — the row names GSAP SplitText, which
+       is forbidden here.)
+    2. Motion is scroll-triggered: IntersectionObserver adds `.is-in`, CSS
+       @keyframes do the rest. (Hand-rolled ScrollTrigger.)
+    3. Fill is animated gradient text (`background-clip: text` + travelling
+       `background-position`) plus variable-font weight/width morphing.
+
+  Escape hatch, declared on <html data-dom-deviation>: a MOTION on/off button
+  and a type-morph range control, both `data-x-control="kinetic-typography"`,
+  both additive — #theme-toggle and every #booking control untouched.
+
+  Text integrity: the splitter adds and removes no character (every whitespace
+  run is re-emitted as a bare text node), so all 91 pinned strings normalise
+  identically, and no rule ever uses display/visibility to hide copy.
+
+  Motion guards: no rAF, no canvas, no scroll listener. Every loop is a CSS
+  animation, so the canonical [data-thumb="1"] and prefers-reduced-motion
+  blanket rules silence the document; JS wires nothing unless MOTION is true,
+  and `.x-kin` — the only state that can hide copy — is never set without it.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,100..900&display=swap">
+
+<style>
+  /* ── Canonical colour tokens ────────────────────────────────────────────
+     Same SET in both themes, never one more or one less. Kinetic typography
+     wants maximum figure/ground contrast: ink on paper, paper on ink, one
+     vermilion that is used as an event, not a decoration. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #f2efe9; --c-surface: #ffffff; --c-elevate: #e2ddd3; --c-text: #0a0a0c; --c-muted: #5c5663;
+    --c-accent: #e0301a; --c-accent-ink: #ffffff; --c-border: #c9c1b6; --c-shadow: rgba(10, 10, 12, 0.14);
+  }
+  [data-theme="dark"] {
+    --c-bg: #07070a; --c-surface: #101015; --c-elevate: #1b1b22; --c-text: #f6f5f2; --c-muted: #9c95a8;
+    --c-accent: #ff4d24; --c-accent-ink: #170304; --c-border: #26252f; --c-shadow: rgba(0, 0, 0, 0.62);
+  }
+
+  /* ── Style variables ───────────────────────────────────────────────────
+     Names the brief prescribes, verbatim. No --c-* token lives in a bare
+     :root block (that would break light↔dark parity). */
+  :root {
+    --text-animation-duration: 0.86s; --letter-delay: 0.05s; --typing-speed: 100ms; --morph-duration: 0.5s;
+
+    --page-max: 1180px; --gap: 1.5rem; --pad: clamp(1.25rem, 4vw, 3rem); --radius: 0px;
+
+    --font-display: "Archivo", "Archivo Black", "Haettenschweiler", "Franklin Gothic Bold", ui-sans-serif, system-ui, sans-serif;
+    --font-body: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-mono: ui-monospace, "SFMono-Regular", "Cascadia Mono", Menlo, monospace;
+
+    --k-line: rgba(10, 10, 12, 0.10); --k-ink-1: var(--c-text); --k-ink-2: var(--c-accent);
+    --k-scrim: rgba(242, 239, 233, 0.86); --k-grain: rgba(10, 10, 12, 0.30);
+    --ease-out: cubic-bezier(0.16, 0.84, 0.24, 1); --ease-back: cubic-bezier(0.34, 1.32, 0.32, 1);
+  }
+  [data-theme="dark"] {
+    --k-line: rgba(246, 245, 242, 0.12); --k-scrim: rgba(7, 7, 10, 0.86); --k-grain: rgba(255, 255, 255, 0.24);
+  }
+
+  /* The gradient fills are per-theme so a flip is unmistakable, and are
+     deliberately NOT named --c-* (parity is a colour-token rule only). */
+  [data-theme="light"], :root {
+    --gradient-text: linear-gradient(96deg, #0a0a0c 0%, #e0301a 28%, #7b2ff7 54%, #0e8b7c 74%, #0a0a0c 100%);
+  }
+  [data-theme="dark"] {
+    --gradient-text: linear-gradient(96deg, #f6f5f2 0%, #ff4d24 26%, #b388ff 52%, #35e0c8 72%, #f6f5f2 100%);
+  }
+
+  /* ── CANONICAL BREAKPOINTS — mobile-first; media queries only ever ADD.
+     mobile 0–767 (verify 375) · tablet 768–1023 (768) · desktop 1024+ (1440) */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0; background: var(--c-bg); color: var(--c-text); font-family: var(--font-body); font-size: 1rem;
+    line-height: 1.62;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--c-accent); }
+  p { margin: 0 0 1em; }
+
+  /* Display type IS the artwork: uppercase, tight, heavy, variable. */
+  h1, h2, h3 {
+    font-family: var(--font-display); font-weight: 800; line-height: 0.94; letter-spacing: -0.025em;
+    text-transform: uppercase; margin: 0 0 0.4em; font-variation-settings: "wght" 800, "wdth" 100;
+  }
+  h1 { font-size: clamp(2.9rem, 10.5vw, 6rem); }
+  h2 { font-size: clamp(2rem, 8.6vw, 4.75rem); }
+  h3 { font-size: clamp(1.25rem, 3.4vw, 1.6rem); letter-spacing: -0.015em; line-height: 1.05; }
+
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+  main { position: relative; z-index: 1; }
+  section {
+    position: relative; padding-block: clamp(3.5rem, 9vw, 7.5rem);
+    border-block-start: 1px solid var(--c-border);
+  }
+  section:first-of-type { border-block-start: 0; }
+  /* A hairline section marker: generated content, so it never touches a
+     pinned string and never needs its own DOM node. */
+  section::before {
+    content: attr(data-idx); position: absolute; inset-block-start: 0.85rem; inset-inline-end: var(--pad);
+    font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.22em; color: var(--c-muted);
+  }
+  #hero::before { content: ""; }
+
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+
+  .card {
+    position: relative; background: var(--c-surface); border: 1px solid var(--c-border);
+    border-block-start: 3px solid var(--c-accent); border-radius: var(--radius);
+    padding: 1.35rem 1.25rem 1.5rem; box-shadow: 0 1px 0 var(--k-line);
+  }
+
+  /* ── Buttons ──────────────────────────────────────────────────────────── */
+  .btn {
+    position: relative; display: inline-block; font: inherit; font-family: var(--font-display);
+    font-weight: 800; font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.08em;
+    text-decoration: none; padding: 0.85rem 1.5rem; border-radius: var(--radius);
+    border: 1px solid var(--c-accent); background: var(--c-accent); color: var(--c-accent-ink); cursor: pointer;
+    overflow: hidden;
+    transition: transform 0.28s var(--ease-back), background-color 0.28s ease, color 0.28s ease;
+  }
+  .btn::after {
+    content: ""; position: absolute; inset-block: 0; inset-inline-start: -60%; width: 45%;
+    background: linear-gradient(100deg, transparent, rgba(255, 255, 255, 0.55), transparent);
+    transform: skewX(-18deg); transition: inset-inline-start 0.45s var(--ease-out); pointer-events: none;
+  }
+  .btn:hover { transform: translateY(-2px); }
+  .btn:hover::after { inset-inline-start: 130%; }
+  .btn:active { transform: translateY(0) scale(0.99); }
+  .btn--quiet { background: transparent; color: var(--c-text); border-color: var(--c-border); }
+  .btn--quiet::after { display: none; }
+  .btn--quiet:hover { border-color: var(--c-accent); color: var(--c-accent); }
+
+  /* ── Fields ───────────────────────────────────────────────────────────── */
+  .field { display: grid; gap: 0.4rem; margin-block-end: 1.15rem; }
+  .field > label {
+    font-family: var(--font-mono); font-size: 0.6875rem; text-transform: uppercase; letter-spacing: 0.2em;
+    color: var(--c-muted); transition: color 0.24s ease, letter-spacing 0.24s var(--ease-out);
+  }
+  .field:focus-within > label { color: var(--c-accent); letter-spacing: 0.3em; }
+  .field > input, .field > select {
+    font: inherit; font-family: var(--font-display); font-weight: 600; color: inherit; padding: 0.7rem 0.75rem;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-block-end: 2px solid var(--c-text);
+    border-radius: var(--radius); transition: border-color 0.24s ease, box-shadow 0.24s ease;
+  }
+  .field > input:hover, .field > select:hover { border-block-end-color: var(--c-accent); }
+  .field > input:focus, .field > select:focus { box-shadow: 0 6px 0 -3px var(--c-accent); }
+
+  figure { margin: 0; position: relative; }
+  figcaption {
+    font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.5; letter-spacing: 0.01em;
+    color: var(--c-muted); margin-block-start: 0.6rem; text-transform: none;
+  }
+
+  .meta-list {
+    display: flex; flex-wrap: wrap; gap: 0.4rem 1.4rem; list-style: none; padding: 0; margin: 0 0 2rem;
+  }
+  .meta-list li {
+    font-family: var(--font-display); font-weight: 700; font-size: 0.8125rem; letter-spacing: 0.02em;
+    color: var(--c-text); text-transform: uppercase; padding-inline-start: 0.7rem;
+    border-inline-start: 2px solid var(--c-accent);
+  }
+
+  /* ── Header ───────────────────────────────────────────────────────────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 40;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem; padding-block: 0.7rem;
+    background: var(--k-scrim); border-block-end: 1px solid var(--c-border);
+  }
+  .brand {
+    font-family: var(--font-display); font-weight: 900; font-size: 1.0625rem; text-transform: uppercase;
+    letter-spacing: -0.01em; word-spacing: 0.1em; white-space: nowrap;
+  }
+  .site-nav { display: flex; gap: 1.15rem; font-size: 0.8125rem; }
+  .site-nav a {
+    color: var(--c-muted); text-decoration: none; font-family: var(--font-mono); text-transform: uppercase;
+    letter-spacing: 0.14em; position: relative;
+  }
+  .site-nav a::after {
+    content: ""; position: absolute; inset-inline: 0; inset-block-end: -0.35rem; height: 2px;
+    background: var(--c-accent); transform: scaleX(0); transform-origin: 0 50%;
+    transition: transform 0.3s var(--ease-out);
+  }
+  .site-nav a:hover { color: var(--c-text); }
+  .site-nav a:hover::after { transform: scaleX(1); }
+
+  .rating {
+    color: var(--c-accent); letter-spacing: 0.18em; font-size: 1.125rem; line-height: 1;
+    margin-block-end: 0.85rem;
+  }
+  .day-num {
+    font-family: var(--font-display); font-weight: 900; font-size: clamp(0.875rem, 2.6vw, 1.0625rem);
+    text-transform: uppercase; letter-spacing: 0.1em; color: var(--c-accent); margin: 0 0 0.5rem;
+  }
+
+  :focus-visible { outline: 3px solid var(--c-accent); outline-offset: 3px; }
+  :target { scroll-margin-block-start: 5.5rem; }
+
+  /* ══ 1 · KINETIC PRIMITIVES ═══════════════════════════════════════════ */
+
+  /* Split atoms. `inline-block` is what lets a glyph carry a transform;
+     `nowrap` keeps a word from being torn apart mid-animation. */
+  .x-w { display: inline-block; white-space: nowrap; }
+  .x-l { display: inline-block; white-space: pre; }
+
+  /* Pre-reveal states exist ONLY while JS has put .x-kin on <html>, which it
+     never does in thumbnail mode, under reduced motion, or with the MOTION
+     switch off — so a torn-off script can never leave the page blank, and
+     none of these rules ever uses display/visibility. */
+  .x-kin [data-kin] { opacity: 0; }
+  .x-kin [data-kin="rise"]   { transform: translate3d(0, 2.2rem, 0); }
+  .x-kin [data-kin="wipe"]   { transform: translate3d(-3.5%, 0, 0); }
+  .x-kin [data-kin="unfold"] { transform: scaleY(0.6); transform-origin: 0 0; }
+  .x-kin [data-kin="split"], .x-kin [data-kin="type"] { opacity: 1; }
+  .x-kin [data-kin="split"] .x-l { opacity: 0; transform: translate3d(0, 0.42em, 0) rotate(7deg) scale(0.82); }
+  .x-kin [data-kin="split-w"] .x-w { opacity: 0; transform: translate3d(0, 0.5em, 0) rotate(-2deg); }
+
+  .x-kin [data-kin].is-in { animation: x-block-in var(--text-animation-duration) var(--ease-out) both; }
+  .x-kin [data-kin="split"].is-in .x-l,
+  .x-kin [data-kin="split-w"].is-in .x-w {
+    animation: x-glyph-in calc(var(--text-animation-duration) * 0.8) var(--ease-back) both;
+    animation-delay: calc(var(--i, 0) * var(--letter-delay));
+  }
+
+  /* `animation` is a shorthand, so any element that needs BOTH an entrance and
+     a permanent fill sweep must declare them in one list — the higher-specificity
+     rule below wins outright rather than merging. */
+  .x-kin .x-grad[data-kin].is-in {
+    animation: x-block-in var(--text-animation-duration) var(--ease-out) both,
+               x-sweep 7s ease-in-out infinite;
+  }
+  .x-kin .x-grad[data-kin="split"].is-in .x-l {
+    animation: x-glyph-in calc(var(--text-animation-duration) * 0.8) var(--ease-back) both,
+               x-sweep 5.5s ease-in-out infinite; animation-delay: calc(var(--i, 0) * var(--letter-delay)), 0s;
+  }
+  /* The wordmark keeps morphing after it has arrived — weight and width, the
+     two axes Archivo actually ships, staggered glyph by glyph. */
+  .brand .x-l {
+    animation: x-jot 0.55s var(--ease-out) both, x-morph 9s ease-in-out infinite;
+    animation-delay: calc(var(--i, 0) * var(--letter-delay)), calc(var(--i, 0) * -0.4s);
+  }
+
+  @keyframes x-block-in {
+    from { opacity: 0; }
+    40%  { opacity: 1; }
+    /* `filter` is deliberately absent from the end frame: a lingering
+       blur(0) with fill-mode:both would keep every animated node on its own
+       composited layer, and the grain overlay seams visibly across that edge. */
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes x-glyph-in {
+    from { opacity: 0; transform: translate3d(0, 0.42em, 0) rotate(7deg) scale(0.82); filter: blur(5px); }
+    55%  { opacity: 1; }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Animated gradient text fill. Each element carries the sweep itself, so a
+     split headline paints its gradient per glyph and the wave travels across
+     the word instead of breaking on atomic inline boxes.
+     NB: with background-size > 100% a NEGATIVE percentage position parks the
+     whole image outside the box, which under `background-clip: text` makes the
+     glyph disappear mid-cycle — so the sweep ping-pongs between 0% and 100%,
+     the two positions that are always guaranteed to cover the box. */
+  .x-grad { background-image: var(--gradient-text); background-size: 200% 100%; background-repeat: no-repeat; }
+  /* Only nodes that actually OWN glyphs get the clipped fill. A wrapper whose
+     text lives entirely inside atomic inline-blocks has no text of its own to
+     clip against, and Chromium then paints the raw background box. */
+  @supports (background-clip: text) or (-webkit-background-clip: text) {
+    .x-grad,
+    .x-grad .x-l,
+    .x-grad .x-wf {
+      background-image: var(--gradient-text); background-size: 200% 100%; background-repeat: no-repeat;
+      -webkit-background-clip: text; background-clip: text; color: transparent;
+      -webkit-text-fill-color: transparent;
+    }
+  }
+  .x-grad { animation: x-sweep 7s ease-in-out infinite; }
+  .x-grad .x-l, .x-grad .x-wf { animation: x-sweep 5.5s ease-in-out infinite; }
+  /* Once an element is split, its own text is only whitespace, and Chromium
+     still paints the container's clip:text background against that empty
+     fragment — a stray gradient slab over the first glyph. So the container
+     hands the fill down to the leaves and drops it from itself. */
+  .x-grad.x-split {
+    background-image: none; -webkit-background-clip: border-box; background-clip: border-box;
+    color: var(--c-text); -webkit-text-fill-color: currentColor;
+  }
+  @keyframes x-sweep {
+    0%, 100% { background-position: 0% 50%; }
+    50%      { background-position: 100% 50%; }
+  }
+
+  /* Variable-font morph — the brief's "morphing text", driven by the
+     interpolation axes Archivo actually ships with. */
+  @keyframes x-morph {
+    0%, 100% { font-variation-settings: "wght" 420, "wdth" 74; }
+    50%      { font-variation-settings: "wght" 900, "wdth" 122; }
+  }
+  @keyframes x-blink { 0%, 46% { opacity: 1; } 50%, 96% { opacity: 0.12; } 100% { opacity: 1; } }
+  @keyframes x-breathe { from { transform: scale(1.02) translateY(0); } to { transform: scale(1.11) translateY(-1.4%); } }
+  @keyframes x-ticker { from { transform: translate3d(0, 0, 0); } to { transform: translate3d(-50%, 0, 0); } }
+  @keyframes x-jot {
+    from { opacity: 0; transform: translate3d(-0.45em, 0, 0) skewX(-14deg); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes x-star {
+    from { opacity: 0; transform: scale(0.2) rotate(-32deg); }
+    70%  { transform: scale(1.3) rotate(6deg); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Typewriter: a steps()ed clip-path reveal. Clip-path never participates in
+     layout, so the line can wrap freely at 375px and no character is added —
+     the pinned string is untouched and nothing can overflow. */
+  .x-kin .eyebrow { clip-path: inset(0 100% 0 0); }
+  .x-kin .eyebrow.is-in { animation: x-type calc(var(--typing-speed) * 16) steps(24) both; }
+  @keyframes x-type { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 -2% 0 0); } }
+  .eyebrow {
+    display: inline-block; font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.7;
+    text-transform: uppercase; letter-spacing: 0.2em; color: var(--c-accent); margin: 0 0 1.1rem;
+  }
+  .eyebrow::after {
+    content: ""; display: inline-block; width: 0.6ch; height: 1em; margin-inline-start: 0.35em;
+    vertical-align: -0.12em; background: var(--c-accent); opacity: 0;
+  }
+  .x-kin .eyebrow.is-in::after { animation: x-blink 1s step-end infinite 1.6s; }
+
+  /* Star ratings pop in one glyph at a time. */
+  .x-kin .rating.is-in .x-l { animation: x-star 0.5s var(--ease-back) both; animation-delay: calc(var(--i, 0) * 0.09s); }
+
+  /* ══ 2 · HERO ═════════════════════════════════════════════════════════ */
+  #hero { padding-block-start: clamp(2rem, 6vw, 4.5rem); }
+  /* 8.6em is exactly wide enough for "KYOTO IN" and "SEVEN DAYS" to sit on two
+     lines at any font size, so the wordmark always stacks the same way. */
+  #hero h1 { max-width: 8.6em; margin-block-end: 1.1rem; }
+  #hero .lede {
+    font-size: clamp(1.0625rem, 2.4vw, 1.375rem); line-height: 1.55; max-width: 46ch; color: var(--c-text);
+    font-weight: 400;
+  }
+  #hero > p:last-of-type { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-block-start: 1.75rem; }
+  .hero-figure { position: relative; margin-block-start: 2.5rem; }
+  .hero-figure img {
+    width: 100%; aspect-ratio: 16 / 10; object-fit: cover;
+    clip-path: polygon(0 0, 100% 0, 100% 88%, 74% 100%, 0 100%); filter: saturate(1.08) contrast(1.06);
+  }
+  .hero-figure figcaption { position: static; }
+  /* The photo is the second voice: it keeps a slow scale loop so the frame
+     that carries the biggest type is never still. */
+  .x-kin .hero-figure img { animation: x-breathe 24s ease-in-out infinite alternate; }
+
+  /* ══ 3 · HIGHLIGHTS ═══════════════════════════════════════════════════ */
+  #highlights .grid { margin-block-start: 2.5rem; counter-reset: hl; }
+  #highlights .card { padding-block-start: 2.6rem; overflow: hidden; }
+  #highlights .card::before {
+    counter-increment: hl; content: "0" counter(hl); position: absolute; inset-block-start: 0.4rem;
+    inset-inline-end: 0.6rem; font-family: var(--font-display); font-weight: 900; font-size: 2.75rem;
+    line-height: 1; letter-spacing: -0.04em; color: transparent; -webkit-text-stroke: 1px var(--k-line);
+    transition: color 0.3s ease;
+  }
+  #highlights .card img {
+    width: 100%; aspect-ratio: 4 / 3; object-fit: cover; margin-block-end: 1rem;
+    filter: saturate(1.05) contrast(1.05); transition: transform 0.6s var(--ease-out), filter 0.4s ease;
+  }
+  #highlights .card:hover img { transform: scale(1.045); filter: saturate(1.25) contrast(1.1); }
+  #highlights .card:hover::before { color: var(--c-accent); }
+  #highlights .card p { color: var(--c-muted); font-size: 0.9375rem; }
+  #highlights > p { max-width: 52ch; color: var(--c-muted); }
+
+  /* ══ 4 · ITINERARY — the seven days as a kinetic timeline ══════════════ */
+  #itinerary .grid--days {
+    grid-template-columns: 1fr; gap: 0; margin-block-start: 2.5rem; counter-reset: kd;
+    border-inline-start: 2px solid var(--c-border);
+  }
+  .day {
+    position: relative; border: 0; border-block-end: 1px solid var(--c-border); border-radius: 0;
+    background: transparent; box-shadow: none; padding: 1.5rem 0 1.6rem 1.35rem;
+    transition: padding-inline-start 0.35s var(--ease-out), background-color 0.35s ease;
+  }
+  .day::before {
+    counter-increment: kd; content: "0" counter(kd); position: absolute; inset-block-start: 1.5rem;
+    inset-inline-start: -0.05rem; transform: translateX(-50%); font-family: var(--font-mono);
+    font-size: 0.625rem; letter-spacing: 0.06em; color: var(--c-accent); background: var(--c-bg);
+    padding-block: 0.2rem;
+  }
+  .day:hover { background: var(--c-surface); padding-inline-start: 1.9rem; }
+  .day h3 { max-width: 24ch; }
+  .day p:last-of-type { color: var(--c-muted); font-size: 0.9375rem; max-width: 62ch; }
+  .day img {
+    width: 100%; max-width: 30rem; aspect-ratio: 16 / 9; object-fit: cover; margin-block-start: 0.9rem;
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); filter: contrast(1.05);
+  }
+
+  /* ══ 5 · GALLERY ══════════════════════════════════════════════════════ */
+  #gallery { border-block-start: 0; }
+  #gallery .grid--gallery { margin-block-start: 2.25rem; gap: 1.1rem; }
+  #gallery .card {
+    padding: 0.7rem 0.7rem 0.9rem; border-block-start-width: 1px; overflow: hidden;
+  }
+  #gallery img {
+    width: 100%; aspect-ratio: 3 / 2; object-fit: cover;
+    transition: transform 0.65s var(--ease-out), filter 0.45s ease; filter: saturate(0.94) contrast(1.06);
+  }
+  #gallery .card:nth-child(even) img { aspect-ratio: 4 / 5; }
+  #gallery .card:hover img { transform: scale(1.06) translateY(-1%); filter: saturate(1.2) contrast(1.1); }
+  #gallery figcaption { margin-block-start: 0.7rem; }
+
+  /* ══ 6 · REVIEWS ══════════════════════════════════════════════════════ */
+  #reviews .grid { margin-block-start: 2.25rem; }
+  #reviews blockquote.card {
+    padding-block-start: 3.2rem; border-block-start: 3px solid var(--c-border); overflow: hidden;
+  }
+  #reviews blockquote.card::before {
+    content: "\201C"; position: absolute; inset-block-start: 0.1rem; inset-inline-end: 0.75rem;
+    font-family: var(--font-display); font-weight: 900; font-size: 5.5rem; line-height: 1;
+    color: var(--c-accent); opacity: 0.16;
+  }
+  #reviews blockquote p:not(.rating) { font-size: 0.9375rem; color: var(--c-text); }
+  #reviews footer {
+    display: flex; flex-wrap: wrap; gap: 0.2rem; font-family: var(--font-display); font-weight: 800;
+    font-size: 0.8125rem; text-transform: uppercase; letter-spacing: 0.06em;
+  }
+  #reviews cite { font-style: normal; color: var(--c-text); }
+  #reviews footer span { color: var(--c-muted); font-weight: 500; }
+
+  /* ══ 7 · BOOKING + FAQ ════════════════════════════════════════════════ */
+  #booking > p { max-width: 56ch; color: var(--c-muted); }
+  #booking-form {
+    margin-block-start: 2rem; padding: 1.75rem 1.5rem; border-block-start: 3px solid var(--c-accent);
+  }
+  #booking-form .btn { width: 100%; }
+  .fineprint {
+    font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.04em; color: var(--c-muted);
+    margin-block-end: 0; margin-block-start: 0.9rem;
+  }
+  #booking h3 { margin-block-start: 3.5rem; }
+  .faq { display: grid; gap: 0; border-block-start: 1px solid var(--c-border); }
+  .faq details {
+    border-block-end: 1px solid var(--c-border); padding: 0; background: transparent; border-width: 0 0 1px;
+    border-radius: 0; box-shadow: none;
+  }
+  .faq summary {
+    list-style: none; cursor: pointer; padding-block: 1.05rem; padding-inline-end: 2.5rem;
+    font-family: var(--font-display); font-weight: 800; font-size: clamp(1rem, 3.2vw, 1.1875rem);
+    text-transform: uppercase; letter-spacing: -0.01em; line-height: 1.2;
+    transition: color 0.24s ease, letter-spacing 0.24s var(--ease-out), padding-inline-start 0.24s var(--ease-out);
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "+"; position: absolute; inset-inline-end: 0.25rem; font-family: var(--font-display);
+    font-weight: 900; font-size: 1.5rem; color: var(--c-accent); transition: transform 0.3s var(--ease-back);
+  }
+  .faq details { position: relative; }
+  .faq summary:hover { color: var(--c-accent); padding-inline-start: 0.6rem; }
+  .faq details[open] summary { letter-spacing: 0.01em; }
+  .faq details[open] summary::after { transform: rotate(135deg); }
+  .faq details p {
+    margin: 0 0 1.35rem; color: var(--c-muted); font-size: 0.9375rem; max-width: 68ch;
+  }
+  .x-kin .faq details[open] p { animation: x-jot 0.5s var(--ease-out) both; }
+
+  /* ══ 8 · FOOTER ═══════════════════════════════════════════════════════ */
+  .site-footer {
+    position: relative; z-index: 1; border-block-start: 3px solid var(--c-accent); background: var(--c-elevate);
+    padding-block: 2.25rem;
+  }
+  .site-footer p {
+    margin: 0 0 0.4rem; font-family: var(--font-display); text-transform: uppercase; letter-spacing: 0.02em;
+  }
+  .site-footer p[data-tid="footer.line"] { font-weight: 900; font-size: clamp(1.125rem, 4.6vw, 2.25rem); line-height: 1.05; }
+  .site-footer p[data-tid="footer.fine"] {
+    font-family: var(--font-mono); font-weight: 400; font-size: 0.6875rem; letter-spacing: 0.06em;
+    text-transform: none; color: var(--c-muted);
+  }
+
+  /* ══ 9 · TIER-2 DECORATION (all aria-hidden, all x-) ══════════════════ */
+  .x-stage { position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden; }
+  .x-guides {
+    position: absolute; inset: 0;
+    /* Vertical hairlines only. A second hard-stop gradient here painted a
+       visible horizontal seam across the hero — a flat wash must always fade. */
+    background: repeating-linear-gradient(90deg, var(--k-line) 0 1px, transparent 1px 8.3333%); opacity: 0.55;
+  }
+  .x-mesh {
+    position: absolute; inset: -20%;
+    background:
+      radial-gradient(38% 30% at 8% 4%, var(--c-accent) 0%, transparent 62%),
+      radial-gradient(34% 34% at 92% 22%, #7b2ff7 0%, transparent 60%); opacity: 0.10;
+  }
+  .x-grain {
+    position: fixed; inset: 0; z-index: 80; pointer-events: none; opacity: 0.055;
+    background-image: radial-gradient(circle at 1px 1px, var(--k-grain) 1px, transparent 0);
+    background-size: 4px 4px;
+  }
+  /* Section index rail — the only place the CSS scroll timeline is used. */
+  .x-rail {
+    position: fixed; inset-block: 0; inset-inline-end: 0; width: 3px; z-index: 35; pointer-events: none;
+    background: var(--k-line);
+  }
+  .x-rail i {
+    display: block; width: 100%; height: 100%; background: var(--c-accent); transform: scaleY(0.02);
+    transform-origin: 0 0;
+  }
+  @supports (animation-timeline: scroll()) {
+    .x-kin .x-rail i {
+      animation: x-grow linear both; animation-timeline: scroll(root block); animation-range: 0% 100%;
+    }
+  }
+  @keyframes x-grow { from { transform: scaleY(0.02); } to { transform: scaleY(1); } }
+
+  /* Ticker band between sections. Its text is generated, so it adds no
+     characters to any [data-tid] node, and it is aria-hidden. */
+  .x-ticker {
+    overflow: hidden; border-block: 1px solid var(--c-border); background: var(--c-elevate);
+    padding-block: 0.5rem;
+  }
+  .x-ticker i {
+    display: block; width: max-content; font-family: var(--font-display); font-weight: 900;
+    font-size: 0.8125rem; letter-spacing: 0.3em; text-transform: uppercase; color: var(--c-muted);
+    white-space: nowrap;
+  }
+  .x-kin .x-ticker i { animation: x-ticker 26s linear infinite; }
+  .x-ticker--alt i { animation-duration: 34s; animation-direction: reverse; }
+
+  /* ══ 10 · ESCAPE-HATCH CONTROLS (data-x-control) ══════════════════════ */
+  .x-ctrl-bar { display: flex; align-items: center; gap: 0.5rem; }
+  .x-motion-btn {
+    font: inherit; font-family: var(--font-mono); font-size: 0.625rem; letter-spacing: 0.16em;
+    text-transform: uppercase; display: inline-flex; align-items: center; gap: 0.4rem; padding: 0.5rem 0.65rem;
+    background: transparent; color: var(--c-text); border: 1px solid var(--c-border); border-radius: 0;
+    cursor: pointer; transition: border-color 0.24s ease, color 0.24s ease; white-space: nowrap;
+  }
+  .x-motion-btn::before {
+    content: ""; width: 0.5rem; height: 0.5rem; background: var(--c-accent);
+    box-shadow: 0 0 0 2px var(--c-bg), 0 0 0 3px var(--c-accent); border-radius: 50%; flex: none;
+  }
+  .x-motion-btn[aria-pressed="true"]::after { content: "Motion on"; }
+  .x-motion-btn[aria-pressed="false"]::after { content: "Motion off"; }
+  .x-motion-btn[aria-pressed="false"] { color: var(--c-muted); }
+  .x-motion-btn[aria-pressed="false"]::before { background: var(--c-muted); box-shadow: 0 0 0 2px var(--c-bg), 0 0 0 3px var(--c-muted); }
+  .x-motion-btn:hover { border-color: var(--c-accent); }
+
+  /* Type-morph console: drags the real variable axes of the hero wordmark. */
+  .x-morph {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.15rem 0.9rem; margin-block: 0 1.5rem;
+    padding-block-start: 1rem; border-block-start: 1px solid var(--c-border); max-width: 34rem;
+  }
+  .x-morph-out {
+    grid-column: 1; font-family: var(--font-mono); font-size: 0.6875rem; letter-spacing: 0.14em;
+    text-transform: uppercase; color: var(--c-muted);
+  }
+  .x-morph-sliders { grid-column: 1; display: grid; gap: 0.35rem; }
+  .x-morph input[type="range"] {
+    -webkit-appearance: none; appearance: none; width: 100%; height: 22px; background: transparent;
+    cursor: ew-resize; margin: 0;
+  }
+  .x-morph input[type="range"]::-webkit-slider-runnable-track {
+    height: 2px; background: var(--c-border);
+  }
+  .x-morph input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none; appearance: none; width: 12px; height: 12px; margin-block-start: -5px;
+    background: var(--c-accent); border: 0; border-radius: 50%;
+  }
+  .x-morph input[type="range"]::-moz-range-track { height: 2px; background: var(--c-border); }
+  .x-morph input[type="range"]::-moz-range-thumb { width: 12px; height: 12px; background: var(--c-accent); border: 0; border-radius: 50%; }
+  #hero h1 {
+    font-variation-settings: "wght" var(--k-wght, 860), "wdth" var(--k-wdth, 100);
+    transition: font-variation-settings var(--morph-duration) var(--ease-out);
+  }
+
+  /* Manual MOTION switch — same veto power as prefers-reduced-motion. */
+  html[data-motion="off"] *,
+  html[data-motion="off"] *::before,
+  html[data-motion="off"] *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important;
+  }
+  html[data-motion="off"] .x-kin [data-kin],
+  html[data-motion="off"] [data-kin],
+  html[data-motion="off"] .x-kin .eyebrow {
+    opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important;
+  }
+
+  /* ── TABLET band: 768 – 1023px ── */
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #hero .meta-list { gap: 0.5rem 2rem; }
+    .day { padding-left: 2.1rem; }
+    #itinerary .grid--days { border-inline-start-width: 3px; }
+    .x-morph { grid-template-columns: auto minmax(0, 1fr); align-items: center; }
+    .x-morph-out { grid-column: 1; }
+    .x-morph-sliders { grid-column: 2; }
+    section::before { inset-block-start: 1.1rem; }
+  }
+
+  /* ── DESKTOP band: 1024px and up ── */
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #highlights .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #hero {
+      display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr); gap: 2rem clamp(2rem, 5vw, 4.5rem);
+      align-items: end;
+    }
+    #hero > .eyebrow, #hero > h1, #hero > .lede, #hero > .meta-list, #hero > .x-morph { grid-column: 1; }
+    #hero > p:last-of-type { grid-column: 1; }
+    #hero .hero-figure {
+      grid-column: 2; grid-row: 1 / span 7; align-self: stretch; display: flex; flex-direction: column;
+      margin-block-start: 0;
+    }
+    #hero .hero-figure img { flex: 1 1 auto; height: auto; min-height: 0; }
+    #hero h1 { font-size: clamp(3.25rem, 5.6vw, 5.25rem); }
+    .day {
+      display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(0, 2fr); gap: 0 2.5rem; padding-block: 1.9rem;
+      padding-inline-start: 2.6rem;
+    }
+    .day .day-num { grid-column: 1 / -1; }
+    .day h3 { grid-column: 1; align-self: start; }
+    .day p:last-of-type, .day img { grid-column: 2; }
+    .day img { max-width: 100%; }
+    #booking-form { max-width: 40rem; }
+  }
+
+  /* ── MOBILE band specifics (below the tablet threshold) ── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; }
+    .btn { display: block; width: 100%; text-align: center; }
+    #hero > p:last-of-type { flex-direction: column; }
+    .field > input, .field > select { width: 100%; font-size: 16px; }
+    #highlights .card::before { font-size: 2rem; }
+    .x-rail { width: 2px; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important; transition: none !important; scroll-behavior: auto !important;
+  }
+  [data-thumb="1"] [data-kin], [data-thumb="1"] .eyebrow {
+    opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    [data-kin], .eyebrow {
+      opacity: 1 !important; transform: none !important; clip-path: none !important; filter: none !important;
+    }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier-2 decoration layers: no text, no controls, never interactive. -->
+<div class="x-stage" aria-hidden="true">
+  <div class="x-mesh" aria-hidden="true"></div>
+  <div class="x-guides" aria-hidden="true"></div>
+</div>
+<div class="x-grain" aria-hidden="true"></div>
+<div class="x-rail" aria-hidden="true"><i aria-hidden="true"></i></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <div class="x-ctrl-bar">
+      <!-- escape hatch: additive motion veto, canonical toggle untouched -->
+      <button type="button" class="x-motion-btn" data-x-control="kinetic-typography"
+              aria-label="Toggle text animation" aria-pressed="true"></button>
+      <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+        <span data-tid="theme.label">Dark</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap" data-idx="01 / KYOTO">
+    <p class="eyebrow" data-tid="hero.eyebrow" data-kin="type">Small-group journey · Limited to 8 travellers</p>
+    <h1 class="x-grad" data-tid="hero.title" data-kin="split">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede" data-kin="rise">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+
+    <!-- escape hatch: morph console drives Archivo's real wght/wdth axes -->
+    <p class="x-morph" data-x-control="kinetic-typography">
+      <span class="x-morph-out" aria-live="polite">wght 860 · wdth 100</span>
+      <span class="x-morph-sliders">
+        <input type="range" min="100" max="900" step="10" value="860"
+               data-axis="wght" aria-label="Type weight, 100 to 900">
+        <input type="range" min="62" max="125" step="1" value="100"
+               data-axis="wdth" aria-label="Type width, 62 to 125 percent">
+      </span>
+    </p>
+
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1" data-kin="split-w">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2" data-kin="split-w">¥248,000 per person</li>
+      <li data-tid="hero.meta.3" data-kin="split-w">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4" data-kin="split-w">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption" data-kin="wipe">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <div class="x-ticker" aria-hidden="true"><i aria-hidden="true"></i></div>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap" data-idx="02 / SEE">
+    <h2 class="x-grad" data-tid="highlights.title" data-kin="wipe">What you'll see</h2>
+    <p data-tid="highlights.lede" data-kin="rise">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card" data-kin="rise">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title" data-kin="split">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card" data-kin="rise">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title" data-kin="split">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card" data-kin="rise">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title" data-kin="split">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card" data-kin="rise">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title" data-kin="split">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap" data-idx="03 / DAYS">
+    <h2 class="x-grad" data-tid="itinerary.title" data-kin="wipe">The seven days</h2>
+    <p data-tid="itinerary.lede" data-kin="rise">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.1.day" data-kin="split">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.2.day" data-kin="split">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.3.day" data-kin="split">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.4.day" data-kin="split">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.5.day" data-kin="split">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.6.day" data-kin="split">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day" data-kin="rise">
+        <p class="day-num" data-tid="itinerary.7.day" data-kin="split">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <div class="x-ticker x-ticker--alt" aria-hidden="true"><i aria-hidden="true"></i></div>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap" data-idx="04 / FRAMES">
+    <h2 class="x-grad" data-tid="gallery.title" data-kin="wipe">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede" data-kin="rise">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card" data-kin="rise">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card" data-kin="rise">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card" data-kin="rise">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card" data-kin="rise">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card" data-kin="rise">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card" data-kin="rise">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap" data-idx="05 / VOICES">
+    <h2 class="x-grad" data-tid="reviews.title" data-kin="wipe">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#" data-kin="rise">
+        <p class="rating" data-tid="reviews.1.rating" data-kin="split">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#" data-kin="rise">
+        <p class="rating" data-tid="reviews.2.rating" data-kin="split">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#" data-kin="rise">
+        <p class="rating" data-tid="reviews.3.rating" data-kin="split">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap" data-idx="06 / HOLD">
+    <h2 class="x-grad" data-tid="booking.title" data-kin="wipe">Reserve a place</h2>
+    <p data-tid="booking.lede" data-kin="rise">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate data-kin="rise">
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit" data-kin="split">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title" data-kin="split">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ══ KINETIC TYPOGRAPHY runtime ═══════════════════════════════════════
+     Everything here is gated three ways: never in ?thumb=1, never under
+     prefers-reduced-motion, never while the MOTION switch is off. There is no
+     rAF loop, no canvas and no scroll listener — the only continuous motion is
+     CSS @keyframes, which the two blanket rules in the stylesheet kill. */
+  (function () {
+    var root = document.documentElement;
+
+    /* ── Thumbnail mode: defer harder, then do nothing forever.
+       The canonical pass keeps the first two photos real. On this page the
+       second one is 536 KB and sits far below the fold — a gallery card only
+       ever shows the top of the document, so keeping it real buys nothing and
+       costs 56 cards half a megabyte each. The hero photo stays real, which is
+       what the card actually previews. Layout is preserved by the same
+       same-ratio transparent placeholder the canonical pass uses. */
+    if (window.STYLE_SCAFFOLD_THUMB) {
+      var slots = document.querySelectorAll('img[data-slot]');
+      for (var z = 1; z < slots.length; z++) {
+        var im = slots[z];
+        var src = im.getAttribute('src') || '';
+        if (src.indexOf('data:') === 0) continue;
+        im.setAttribute('data-deferred-src', src);
+        im.setAttribute('src', 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+          '<svg xmlns="http://www.w3.org/2000/svg" width="' + (im.getAttribute('width') || 1280) +
+          '" height="' + (im.getAttribute('height') || 800) + '"/>'));
+      }
+      return;
+    }
+
+    /* All twelve photographs must be present for a real visit that never
+       scrolls, so lazy fetching is lifted here — after the canonical script has
+       already swapped the thumbnail-mode srcs, which is why this sits below the
+       STYLE_SCAFFOLD_THUMB guard. src, alt and data-slot are never touched. */
+    var lazy = document.querySelectorAll('img[data-slot][loading="lazy"]');
+    for (var q = 0; q < lazy.length; q++) lazy[q].loading = 'eager';
+    if (!('IntersectionObserver' in window)) return;
+
+    var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    var motion = !mq.matches;
+
+    /* ── The split-text engine (hand-written replacement for SplitText).
+       Contract: it must reproduce el.textContent character-for-character.
+       Whitespace runs are re-emitted as bare text nodes; word runs become
+       .x-w > .x-l spans with nothing between them, so normalised text is
+       identical and the pinned strings survive. */
+    function split(el, mode) {
+      if (el.dataset.xSplit) return;
+      var source = el.textContent || '';
+      if (!source.trim()) return;
+      el.dataset.xSplit = mode;
+
+      // Give AT the whole string once, instead of letter-by-letter dictation.
+      if (!el.getAttribute('aria-label')) el.setAttribute('aria-label', source);
+
+      var frag = document.createDocumentFragment();
+      var tokens = source.match(/\s+|\S+/g) || [];
+      var n = 0;
+      for (var t = 0; t < tokens.length; t++) {
+        var tok = tokens[t];
+        if (/^\s+$/.test(tok)) { frag.appendChild(document.createTextNode(tok)); continue; }
+        var word = document.createElement('span');
+        // .x-wf = a span that owns its glyphs and therefore carries the fill;
+        // in letters mode the word is a bare wrapper and must stay unfilled.
+        word.className = mode === 'letters' ? 'x-w' : 'x-w x-wf';
+        word.style.setProperty('--i', Math.min(n, 30));
+        var chars = Array.from(tok);
+        if (mode === 'letters') {
+          for (var c = 0; c < chars.length; c++) {
+            var glyph = document.createElement('span');
+            glyph.className = 'x-l';
+            glyph.textContent = chars[c];
+            glyph.style.setProperty('--i', Math.min(n++, 30));
+            word.appendChild(glyph);
+          }
+          frag.appendChild(word);
+        } else {
+          word.textContent = tok;
+          frag.appendChild(word);
+          n++;
+        }
+      }
+      el.textContent = '';
+      el.appendChild(frag);
+      el.classList.add('x-split');
+    }
+
+    var TARGETS = [
+      ['#hero h1', 'letters'],
+      ['.brand', 'letters'],
+      ['#booking button[type="submit"]', 'letters'],
+      ['[data-kin="split"]', 'letters'],
+      ['[data-kin="split-w"]', 'words'],
+    ];
+
+    var kinetic = [];
+    function collect() {
+      kinetic = [];
+      for (var g = 0; g < TARGETS.length; g++) {
+        var list = document.querySelectorAll(TARGETS[g][0]);
+        for (var i = 0; i < list.length; i++) {
+          var el = list[i];
+          if (el.closest('#theme-toggle')) continue;   // canonical script owns its text
+          if (el.tagName === 'OPTION') continue;       // native select must keep one text node
+          if (el.closest('.faq')) continue;
+          if (el.tagName === 'SUMMARY') continue;
+          kinetic.push([el, TARGETS[g][1]]);
+        }
+      }
+    }
+
+    /* ── Scroll triggers: IntersectionObserver, the replacement for the
+       forbidden ScrollTrigger. rootMargin starts an element a little before it
+       is needed; the failsafe below guarantees that nothing can stay hidden
+       just because a viewport never reached it. */
+    var io = new IntersectionObserver(function (entries) {
+      for (var e = 0; e < entries.length; e++) {
+        if (entries[e].isIntersecting) {
+          entries[e].target.classList.add('is-in');
+          io.unobserve(entries[e].target);
+        }
+      }
+    }, { rootMargin: '0px 0px 12% 0px', threshold: 0.01 });
+
+    function observeAll() {
+      var nodes = document.querySelectorAll('[data-kin]');
+      for (var i = 0; i < nodes.length; i++) {
+        if (!nodes[i].classList.contains('is-in')) io.observe(nodes[i]);
+      }
+    }
+    function revealAll() {
+      var nodes = document.querySelectorAll('[data-kin]');
+      for (var i = 0; i < nodes.length; i++) nodes[i].classList.add('is-in');
+    }
+
+    /* ── Ticker bands. Deliberately wordless: digits and rules only, so the
+       band never duplicates manuscript copy across the 56 comparisons. */
+    function fillTickers() {
+      var bands = document.querySelectorAll('.x-ticker i');
+      for (var i = 0; i < bands.length; i++) {
+        var step = '';
+        for (var w = 1; w <= 7; w++) step += (w < 10 ? '0' : '') + w + ' \u00b7 \u2014 \u00b7 ';
+        // translateX(-50%) is only seamless when the track is exactly two
+        // copies of a unit that already spans more than the widest viewport.
+        var unit = step + step;
+        bands[i].textContent = unit + unit;
+      }
+    }
+
+    /* ── Escape hatch 1: the motion veto. Additive — the canonical theme
+       toggle and every booking control are untouched. */
+    var motionBtn = document.querySelector('.x-motion-btn');
+    function setMotion(on) {
+      motion = on;
+      root.setAttribute('data-motion', on ? 'on' : 'off');
+      if (motionBtn) motionBtn.setAttribute('aria-pressed', String(on));
+      if (on) {
+        root.classList.add('x-kin');
+        reveal();
+        observeAll();
+      } else {
+        root.classList.remove('x-kin');
+        revealAll();
+        io.disconnect();
+      }
+    }
+
+    /* ── Escape hatch 2: the morph console. Writes real variable axes on the
+       hero wordmark; this is input handling, not a running animation. */
+    var heroTitle = document.querySelector('#hero h1');
+    var out = document.querySelector('.x-morph-out');
+    var axes = { wght: 860, wdth: 100 };
+    function paint() {
+      if (!heroTitle) return;
+      heroTitle.style.setProperty('--k-wght', String(axes.wght));
+      heroTitle.style.setProperty('--k-wdth', String(axes.wdth));
+      if (out) out.textContent = 'wght ' + axes.wght + ' \u00b7 wdth ' + axes.wdth;
+    }
+    var sliders = document.querySelectorAll('.x-morph input[type="range"]');
+    for (var s = 0; s < sliders.length; s++) {
+      (function (input) {
+        input.addEventListener('input', function () {
+          axes[input.getAttribute('data-axis')] = parseInt(input.value, 10) || 0;
+          paint();
+        });
+      })(sliders[s]);
+    }
+
+    var started = false;
+    function reveal() {
+      if (started) return;
+      started = true;
+      collect();
+      for (var i = 0; i < kinetic.length; i++) split(kinetic[i][0], kinetic[i][1]);
+      fillTickers();
+      paint();
+      observeAll();
+      // A page that is never scrolled must still end up fully painted.
+      window.setTimeout(revealAll, 2500);
+    }
+
+    if (motion) {
+      root.classList.add('x-kin');
+      root.setAttribute('data-motion', 'on');
+      reveal();
+    } else {
+      root.setAttribute('data-motion', 'off');
+      if (motionBtn) motionBtn.setAttribute('aria-pressed', 'false');
+    }
+
+    if (motionBtn) {
+      motionBtn.addEventListener('click', function () { setMotion(!motion); });
+    }
+
+    // If the OS preference flips while the page is open, obey it both ways.
+    var follow = function () { if (motion && mq.matches) setMotion(false); };
+    if (mq.addEventListener) mq.addEventListener('change', follow);
+    else if (mq.addListener) mq.addListener(follow);
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE · DIMENSIONAL LAYERING  (styles.csv row 46)
+
+  Mechanism, not a coat: four cast-shadow levels, real z-order, planes
+  deliberately tucked behind one another. Opaque strata — not glass, not
+  soft UI. The page is paper cut-outs stacked in a box: a recessed floor,
+  mid strata carrying content, and a top plane that owns attention.
+
+    level 0  box floor + parallax strata      (.x-box, fixed, aria-hidden)
+    level 1  recessed trays, wells, footer    (--c-elevate, no shadow)
+    level 2  section plates, body cards       (--e1 + --e2, --c-surface)
+    level 3  raised planes, hero copy         (--e1 + --e3, --c-surface)
+    level 4  the object that wins             (--e2 + --e4, accent allowed)
+
+  Backing plates (--p-1…3, an offset hard box-shadow of the box's own
+  silhouette) are what make a plane read as tucked *behind* another one.
+  Nothing here is translucent except the sticky header, where backdrop-filter
+  blur is used to say "floating chrome".
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── 1 · CANONICAL COLOUR TOKENS ──────────────────────────────────────────
+     Same NAME set in both themes (the verifier diffs these). Neutral base is
+     the row's: #FFFFFF / #F5F5F5 / #E0E0E0, with one brand accent reserved
+     for the elevated elements only. Depth tokens travel with the theme, so
+     each block below also carries its own 4-level elevation scale. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #f5f5f5;
+    --c-surface: #ffffff;
+    --c-elevate: #e0e0e0;
+    --c-text: #14171a;
+    --c-muted: #5b636c;
+    --c-accent: #b23a21;
+    --c-accent-ink: #ffffff;
+    --c-border: #dbdee2;
+    --c-shadow: rgba(16, 20, 26, 0.10);
+
+    /* Elevation scale — the four literals from the row, verbatim. */
+    --e1: 0 1px 3px rgba(0, 0, 0, 0.1);
+    --e2: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --e3: 0 10px 20px rgba(0, 0, 0, 0.1);
+    --e4: 0 20px 40px rgba(0, 0, 0, 0.15);
+    /* Highlight for top layers (row: "highlight colors for top layers"). */
+    --rim: 0 1px 0 rgba(255, 255, 255, 0.85);
+    --plate: #e0e0e0;
+    --well: #eceef0;
+    --ink-shadow: rgba(20, 23, 26, 0.16);
+
+    /* PLATE shadows. A backing stratum is drawn as a hard offset copy of the
+       box's own silhouette: box-shadow paints *behind* the element's
+       background, a negative-z child pseudo-element does NOT (it paints over
+       it and turns the card grey). Each token pairs the solid plate with the
+       shadow that plate itself casts into the box. */
+    --p-1: 8px 9px 0 -1px var(--plate), 11px 14px 16px -13px var(--c-shadow);
+    --p-2: 12px 14px 0 -1px var(--plate), 16px 21px 22px -17px var(--c-shadow);
+    --p-3: 16px 20px 0 -1px var(--plate), 22px 28px 32px -21px var(--c-shadow);
+    --p-bl: -9px 14px 0 -1px var(--plate), -11px 18px 22px -17px var(--c-shadow);
+    --p-tl: -10px -12px 0 -1px var(--plate), -13px -16px 20px -17px var(--c-shadow);
+  }
+  [data-theme="dark"] {
+    --c-bg: #0e1116;
+    --c-surface: #1a1e25;
+    --c-elevate: #262c35;
+    --c-text: #eef1f5;
+    --c-muted: #97a1ad;
+    --c-accent: #f2714b;
+    --c-accent-ink: #14100e;
+    --c-border: #343b46;
+    --c-shadow: rgba(0, 0, 0, 0.62);
+
+    /* Deviation, reported: rgba(0,0,0,.1) casts are invisible on a #0e1116
+       floor, so the same four GEOMETRIES keep their shape and only the alpha
+       is revalued; a rim light replaces the shadow as the top-layer cue. */
+    --e1: 0 1px 3px rgba(0, 0, 0, 0.42);
+    --e2: 0 4px 6px rgba(0, 0, 0, 0.46);
+    --e3: 0 10px 20px rgba(0, 0, 0, 0.52);
+    --e4: 0 20px 40px rgba(0, 0, 0, 0.6);
+    --rim: 0 1px 0 rgba(255, 255, 255, 0.08);
+    --plate: #262c35;
+    --well: #14181e;
+    --ink-shadow: rgba(0, 0, 0, 0.5);
+    --p-1: 8px 9px 0 -1px var(--plate), 11px 14px 16px -11px #000;
+    --p-2: 12px 14px 0 -1px var(--plate), 16px 21px 22px -13px #000;
+    --p-3: 16px 20px 0 -1px var(--plate), 22px 28px 32px -15px #000;
+    --p-bl: -9px 14px 0 -1px var(--plate), -11px 18px 22px -13px #000;
+    --p-tl: -10px -12px 0 -1px var(--plate), -13px -16px 20px -13px #000;
+  }
+
+  /* ── 2 · NON-COLOUR LAYOUT / DEPTH GEOMETRY (yours to override) ────────── */
+  :root {
+    --page-max: 1180px;
+    --gap: 1.15rem;
+    --pad: clamp(1.15rem, 4vw, 3rem);
+    --radius: 10px;
+    --radius-sm: 5px;
+    --step: 12px;              /* how far a backing plate peeks out */
+    --blur-amount: 8px;
+    --font-display: "Helvetica Neue", "Segoe UI Variable Display", "Liberation Sans",
+                    system-ui, -apple-system, Roboto, sans-serif;
+    --font-body: system-ui, -apple-system, "Segoe UI", Roboto, "Liberation Sans", sans-serif;
+    --font-mono: ui-monospace, "SF Mono", "DejaVu Sans Mono", Menlo, Consolas, monospace;
+    --ease: cubic-bezier(.2, .8, .2, 1);
+    --grain: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.42'/%3E%3C/svg%3E");
+  }
+
+  /* ── 3 · BASE ─────────────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.7;
+    /* the box everything is stacked inside */
+    position: relative;
+    isolation: isolate;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--c-accent); text-underline-offset: 3px; }
+  p { margin: 0 0 1em; }
+  /* the UA sheet gives figure a 1em/40px margin and blockquote 40px inline —
+     both would silently shrink every photo plate in this page. */
+  figure, blockquote { margin: 0; }
+  ul { margin: 0; }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.08;
+    margin: 0 0 .45em;
+    letter-spacing: -.03em;
+    font-weight: 800;
+  }
+  h1 { font-size: clamp(2.5rem, 9vw, 4.6rem); letter-spacing: -.042em; }
+  h2 { font-size: clamp(1.65rem, 4vw, 2.5rem); }
+  h3 { font-size: 1.18rem; letter-spacing: -.02em; font-weight: 700; }
+
+  main { position: relative; z-index: 2; }
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+
+  section {
+    position: relative;
+    padding-block: clamp(2.5rem, 5.5vw, 4.5rem);
+    isolation: isolate;
+  }
+
+  /* ── 4 · THE DEPTH SYSTEM ─────────────────────────────────────────────── */
+  .lvl-0 { box-shadow: none; }
+  .lvl-1 { box-shadow: var(--rim), var(--e1); }
+  .lvl-2 { box-shadow: var(--rim), var(--e1), var(--e2); }
+  .lvl-3 { box-shadow: var(--rim), var(--e1), var(--e3); }
+  .lvl-4 { box-shadow: var(--rim), var(--e2), var(--e4); }
+
+  /* A plane that something else is meant to sit on top of: the backing plate
+     is a second, larger, LOWER stratum peeking out below-right. */
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; min-width: 0; }
+  .grid > *, .card, figure { min-width: 0; }
+
+  .card {
+    position: relative;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    padding: 1.35rem 1.35rem 1.6rem;
+    box-shadow: var(--rim), var(--e1), var(--e2), var(--p-1);
+    z-index: 1;
+  }
+
+  /* Hover = the plane actually comes off the stack toward you.
+     No will-change and no preserve-3d here: ~20 permanently promoted
+     compositor layers is exactly what makes a software-rasterised full-page
+     capture evict the photographs of the most expensive ones. `perspective`
+     on the parent alone is enough for the child's translateZ to read. */
+  .tilt { perspective: 900px; }
+  .tilt > .card, .tilt > figure {
+    transition: transform .38s var(--ease), box-shadow .38s var(--ease), border-color .38s var(--ease);
+  }
+  .tilt > .card:hover,
+  .tilt > .card:focus-within,
+  .tilt > figure:hover,
+  .tilt > figure:focus-within {
+    transform: translateZ(26px) translateY(-4px);
+    box-shadow: var(--rim), var(--e3), var(--e4), var(--p-3);
+    z-index: 6;
+  }
+
+  /* ── 5 · CHROME — floating header bar (backdrop blur = hierarchy cue) ─── */
+  .site-header { position: sticky; top: 0; z-index: 60; padding-block: .6rem; }
+  .site-header > .wrap {
+    position: relative;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-block: .55rem .6rem;
+    /* the ONE translucent plane on the page, and the only blur() call: the
+       floating bar reads as chrome above the stack because content visibly
+       smears behind it. Kept to this small surface on purpose — a full-width
+       backdrop-filter is what makes a 5 500px capture blow the renderer away. */
+    background: color-mix(in srgb, var(--c-surface) 84%, transparent);
+    backdrop-filter: blur(var(--blur-amount)) saturate(1.25);
+    -webkit-backdrop-filter: blur(var(--blur-amount)) saturate(1.25);
+    border: 1px solid var(--c-border); border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e1), var(--e2);
+    transition: box-shadow .3s var(--ease), transform .3s var(--ease);
+  }
+  /* raised = the bar has detached from the floor and is now the top plane */
+  .site-header.is-raised > .wrap {
+    box-shadow: var(--rim), var(--e2), var(--e4);
+    transform: translateY(2px);
+  }
+
+  .brand {
+    display: inline-flex; align-items: center; gap: .6rem;
+    font-family: var(--font-display); font-size: 1.05rem; font-weight: 800; letter-spacing: -.02em;
+  }
+  .brand::before {
+    /* the 4-level elevation scale, as the logo */
+    content: ""; width: 1.5rem; height: 1.05rem; flex: 0 0 auto;
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) 0 100% / 3px 4px no-repeat,
+      linear-gradient(var(--c-elevate), var(--c-elevate)) 5px 100% / 3px 7px no-repeat,
+      linear-gradient(var(--c-elevate), var(--c-elevate)) 10px 100% / 3px 11px no-repeat,
+      linear-gradient(var(--c-text), var(--c-text)) 15px 100% / 3px 15px no-repeat;
+  }
+  .site-nav { display: flex; gap: 1rem; font-size: .875rem; font-family: var(--font-mono); }
+  .site-nav a {
+    position: relative; color: var(--c-muted); text-decoration: none;
+    padding: .35rem .55rem; border-radius: var(--radius-sm);
+    transition: color .22s var(--ease), box-shadow .22s var(--ease), background .22s var(--ease);
+  }
+  .site-nav a:hover { color: var(--c-text); background: var(--c-surface); box-shadow: var(--rim), var(--e1), var(--e2); }
+
+  .btn {
+    display: inline-block; position: relative; cursor: pointer; text-decoration: none;
+    font: inherit; font-family: var(--font-mono); font-size: .9rem; font-weight: 700; letter-spacing: .01em;
+    padding: .8rem 1.4rem; border-radius: var(--radius);
+    border: 1px solid var(--c-accent); background: var(--c-accent); color: var(--c-accent-ink);
+    box-shadow: var(--rim), var(--e1), var(--e2);
+    transition: transform .22s var(--ease), box-shadow .22s var(--ease);
+  }
+  /* the riser: the plane's visible thickness, in its own darker shade */
+  .btn::after {
+    content: ""; position: absolute; z-index: -1;
+    inset-inline: 3px; inset-block-start: 100%; height: 5px;
+    background: color-mix(in srgb, var(--c-accent) 62%, #000);
+    border-radius: 0 0 var(--radius) var(--radius);
+  }
+  .btn:hover { transform: translateY(-2px); box-shadow: var(--rim), var(--e3), var(--e4); }
+  .btn:active { transform: translateY(2px); box-shadow: var(--e1); }
+  .btn--quiet { background: var(--c-surface); color: var(--c-text); border-color: var(--c-border); }
+  .btn--quiet::after { background: var(--c-elevate); }
+  .site-header .btn--quiet { padding-block: .5rem; font-size: .8rem; }
+
+  /* ── 6 · SECTION HEAD PLATES (cards tuck over them) ───────────────────── */
+  .sec-head {
+    position: relative; z-index: 2;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius);
+    padding: 1.5rem 1.5rem 2.6rem; margin-block-end: -1.75rem;
+    box-shadow: var(--rim), var(--e1), var(--e2);
+  }
+  /* a stratum of accent running under the plate's leading edge */
+  .sec-head::after {
+    content: ""; position: absolute; height: 7px; inset-block-end: -7px;
+    inset-inline: var(--step) calc(100% - 3.4rem);
+    background: var(--c-accent); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--e1);
+  }
+  .sec-head > h2 { margin-block-end: .3em; }
+  .sec-head > p:last-child { margin-block-end: 0; color: var(--c-muted); }
+  #highlights > .grid, #itinerary > .grid, #gallery > .grid, #reviews > .grid { position: relative; z-index: 3; }
+
+  .eyebrow, .day-num, .meta-list li, figcaption, .fineprint, .rating { font-family: var(--font-mono); }
+  .eyebrow {
+    display: inline-block; margin: 0 0 1.1rem; padding: .35rem .8rem; border-radius: 99px;
+    font-size: .74rem; letter-spacing: .1em; text-transform: uppercase;
+    color: var(--c-muted); background: var(--c-elevate); box-shadow: var(--rim), var(--e1);
+  }
+  .lede { font-size: clamp(1.02rem, 1.6vw, 1.22rem); color: var(--c-muted); max-width: 54ch; }
+
+  /* ── 7 · HERO — three planes, the copy one occludes the photo one ─────── */
+  #hero { padding-block-start: clamp(1.5rem, 4vw, 3rem); }
+  .hero-copy {
+    position: relative; z-index: 3;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius);
+    padding: clamp(1.4rem, 4vw, 2.4rem);
+    box-shadow: var(--rim), var(--e1), var(--e3), var(--p-2);
+  }
+  .hero-copy h1 { margin-block-end: .3em; }
+  .meta-list { display: flex; flex-wrap: wrap; gap: .45rem .6rem; list-style: none; padding: 0; margin: 1.6rem 0 1.7rem; }
+  .meta-list li {
+    font-size: .74rem; letter-spacing: .02em; color: var(--c-text);
+    background: var(--c-elevate); border: 1px solid var(--c-border); border-radius: var(--radius-sm);
+    padding: .3rem .6rem; box-shadow: var(--rim), var(--e1);
+  }
+  /* the meta strip is its own floating plane, jutting off the copy plate */
+  .hero-copy .meta-list { position: relative; z-index: 4; margin-inline: -1.15rem; padding-inline: 1.15rem; }
+  .hero-copy > p:last-child { margin: 0; display: flex; flex-wrap: wrap; gap: .8rem; }
+  .hero-copy > p:last-child .btn + .btn { margin-inline-start: 0; }
+
+  .hero-figure {
+    position: relative; z-index: 2; margin: -1.25rem 0 0; padding: 0;
+    background: var(--c-elevate); border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e1), var(--e2), var(--p-bl);
+  }
+  .hero-figure > img {
+    position: relative; z-index: 2; width: 100%;
+    border-radius: var(--radius); border: 1px solid var(--c-border); box-shadow: var(--e2);
+  }
+  figcaption {
+    font-size: .74rem; line-height: 1.5; color: var(--c-text);
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius-sm);
+    padding: .5rem .65rem; box-shadow: var(--rim), var(--e1), var(--e2);
+  }
+  .hero-figure > figcaption {
+    position: absolute; z-index: 5; margin: 0;
+    inset-inline-start: auto; inset-inline-end: 12px; inset-block-start: -22px;
+    max-width: min(20rem, 62%);
+  }
+
+  /* ── 8 · HIGHLIGHTS — a card on a tray, in a well, on a plate ─────────── */
+  #highlights .grid { gap: calc(var(--gap) + .5rem); }
+  #highlights .card { padding: 0 0 1.25rem; overflow: visible; transform: translateY(0); }
+  #highlights .card > h3, #highlights .card > p { margin-inline: 1.3rem; }
+  #highlights .card > h3 { margin-block: 1.25rem .5rem; }
+  #highlights .card > p { color: var(--c-muted); font-size: .95rem; margin-block-end: 0; }
+  .frame {
+    position: relative; padding: 8px 8px 0; background: var(--well);
+    border-radius: var(--radius) var(--radius) 0 0; border-bottom: 1px solid var(--c-border);
+  }
+  .frame > img {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    aspect-ratio: var(--shot-ratio, 3 / 2);
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    box-shadow: var(--e2);
+  }
+  .frame::before {
+    content: ""; position: absolute; inset-inline: 16px; inset-block-start: 0; height: 14px;
+    background: var(--c-elevate); border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: var(--e1);
+  }
+  /* the staggered row: two planes high, two planes low */
+  #highlights .card:nth-child(even) {
+    transform: translateY(-16px); z-index: 4;
+    box-shadow: var(--rim), var(--e1), var(--e3), var(--p-2);
+  }
+
+  /* ── 9 · ITINERARY — the week as a physical stack of sheets ───────────── */
+  .grid--days { gap: .5rem; align-items: start; }
+  .day {
+    position: relative; padding: 1.25rem 1.25rem 1.75rem;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e1), var(--p-1);
+  }
+  /* every sheet after the first tucks its top edge under the one before it */
+  .day + .day { margin-block-start: -11px; }
+  .day > h3 { margin-block: .25rem .5rem; }
+  .day > p:not(.day-num) { color: var(--c-muted); font-size: .94rem; margin-block-end: 0; }
+  .day > .frame { margin-block: 1.1rem -.6rem; margin-inline: -.35rem; border-radius: var(--radius-sm); --shot-ratio: 16 / 9; }
+  .day-num {
+    display: flex; align-items: center; gap: .5rem; margin: 0;
+    font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: var(--c-accent);
+  }
+  .day-num::after {
+    content: ""; height: 3px; flex: 1 1 auto; border-radius: 2px;
+    background: linear-gradient(90deg, var(--c-accent), var(--c-elevate));
+  }
+  /* the sheet thickness: a darker stratum along the bottom edge */
+  .day::after {
+    content: ""; position: absolute; z-index: -1;
+    inset-inline: 8px; inset-block-start: 100%; height: 6px; margin-block-start: -3px;
+    background: var(--c-elevate); border-radius: 0 0 var(--radius) var(--radius); box-shadow: var(--e1);
+  }
+  #itinerary .day:nth-child(1) { z-index: 7; }
+  #itinerary .day:nth-child(2) { z-index: 6; }
+  #itinerary .day:nth-child(3) { z-index: 5; }
+  #itinerary .day:nth-child(4) { z-index: 4; }
+  #itinerary .day:nth-child(5) { z-index: 3; }
+  #itinerary .day:nth-child(6) { z-index: 2; }
+  #itinerary .day:nth-child(7) { z-index: 1; }
+  /* day one is the plane that is currently on top of the pile */
+  #itinerary .day:nth-child(1) {
+    box-shadow: var(--rim), var(--e1), var(--e3), var(--p-2);
+    border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-border));
+  }
+
+  /* ── 10 · GALLERY — overlapping strata, captions floating above images ── */
+  .grid--gallery { gap: 1.15rem; --shot-ratio: 4 / 3; }
+  .grid--gallery > figure { padding: 0; border: 1px solid var(--c-border); background: var(--c-surface); border-radius: var(--radius); }
+  .grid--gallery > figure > .frame { padding: 8px; border: 0; background: var(--well); border-radius: inherit; }
+  .grid--gallery > figure > .frame > img { border-radius: var(--radius-sm); }
+  /* the caption is a plane ON the photo, not text under it */
+  .grid--gallery > figure > figcaption {
+    position: absolute; z-index: 6; margin: 0; background: var(--c-surface);
+    inset-inline-start: auto; inset-inline-end: 18px; inset-block-start: auto; inset-block-end: 18px;
+    max-width: min(21rem, 66%); box-shadow: var(--rim), var(--e1), var(--e3);
+  }
+  .grid--gallery > figure:nth-child(1) { z-index: 6; box-shadow: var(--rim), var(--e2), var(--e4), var(--p-3); }
+  .grid--gallery > figure:nth-child(2) { z-index: 5; box-shadow: var(--rim), var(--e1), var(--e3), var(--p-2); }
+  .grid--gallery > figure:nth-child(3) { z-index: 4; }
+  .grid--gallery > figure:nth-child(4) { z-index: 3; }
+  .grid--gallery > figure:nth-child(5) { z-index: 2; }
+  .grid--gallery > figure:nth-child(6) { z-index: 1; }
+  /* rows below slide up INTO the row above them → interlocking planes */
+  .grid--gallery > figure:nth-child(n + 3) { margin-block-start: -14px; }
+  .grid--gallery > figure:nth-child(2) { margin-inline-start: -10px; }
+
+  /* ── 11 · REVIEWS — three sheets, the last one on top of the pile ─────── */
+  #reviews .grid { gap: 0; }
+  #reviews blockquote.card {
+    padding: 1.5rem 2.1rem 1.6rem 1.5rem; border: 1px solid var(--c-border);
+    box-shadow: var(--rim), var(--e1), var(--e2), var(--p-1);
+  }
+  /* mobile: a vertical pile of sheets */
+  #reviews blockquote.card + blockquote.card { margin-block-start: -9px; }
+  #reviews blockquote.card:nth-child(1) { z-index: 1; }
+  #reviews blockquote.card:nth-child(2) { z-index: 2; }
+  #reviews blockquote.card:nth-child(3) {
+    z-index: 3;
+    box-shadow: var(--rim), var(--e2), var(--e4), var(--p-1);
+    border-color: color-mix(in srgb, var(--c-accent) 35%, var(--c-border));
+  }
+  .rating { font-size: .95rem; letter-spacing: .22em; color: var(--c-accent); margin: 0 0 .7rem; }
+  #reviews blockquote p { font-size: .97rem; }
+  #reviews blockquote p:nth-of-type(2) { color: var(--c-text); margin-block-end: 1.2rem; }
+  #reviews blockquote footer { font-style: normal; font-family: var(--font-mono); font-size: .76rem; color: var(--c-muted); }
+  #reviews blockquote cite { font-style: normal; font-weight: 700; color: var(--c-text); }
+
+  /* ── 12 · BOOKING — the topmost plane of the page ─────────────────────── */
+  #booking .sec-head { padding-block-end: 3.2rem; }
+  #booking-form {
+    position: relative;
+    z-index: 4;
+    margin-block-start: 2.2rem;
+    padding: clamp(1.35rem, 3.5vw, 2.1rem);
+    background: var(--c-surface);
+    border: 1px solid color-mix(in srgb, var(--c-accent) 26%, var(--c-border));
+    border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e2), var(--e4), var(--p-3);
+  }
+  .field { display: grid; gap: .4rem; margin-block-end: 1.05rem; position: relative; z-index: 1; }
+  .field > label { font-family: var(--font-mono); font-size: .74rem; letter-spacing: .08em; text-transform: uppercase; color: var(--c-muted); }
+  .field > input, .field > select {
+    font: inherit; color: var(--c-text); padding: .65rem .75rem; background: var(--well);
+    border: 1px solid var(--c-border); border-block-end-width: 3px; border-block-end-color: var(--c-elevate);
+    border-radius: var(--radius-sm);
+    transition: background .2s var(--ease), border-color .2s var(--ease), transform .2s var(--ease);
+  }
+  /* a focused field presses DOWN, it does not glow — depth, not light */
+  .field > input:hover, .field > select:hover { background: var(--c-surface); box-shadow: var(--e1); }
+  .field > input:focus, .field > select:focus {
+    background: var(--c-surface); border-color: var(--c-accent);
+    border-block-end-color: var(--c-accent); transform: translateY(1px);
+  }
+  #booking-form > .btn { margin-block-start: .4rem; }
+  .fineprint {
+    margin: 1rem 0 0; padding-block-start: .9rem; border-block-start: 1px dashed var(--c-border);
+    font-size: .74rem; color: var(--c-muted);
+  }
+
+  #booking > h3 { margin-block: 3.4rem 1.1rem; }
+  .faq { display: grid; gap: .45rem; }
+  .faq > details {
+    position: relative; padding: 0; background: var(--c-surface);
+    border: 1px solid var(--c-border); border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e1);
+    transition: box-shadow .25s var(--ease), transform .25s var(--ease);
+  }
+  .faq > details + details { margin-block-start: -6px; }
+  .faq > details:nth-child(1) { z-index: 4; }
+  .faq > details:nth-child(2) { z-index: 3; }
+  .faq > details:nth-child(3) { z-index: 2; }
+  .faq > details:nth-child(4) { z-index: 1; }
+  .faq summary {
+    position: relative; cursor: pointer; list-style: none; padding: 1rem 2.6rem 1rem 1.15rem;
+    font-family: var(--font-display); font-weight: 700; letter-spacing: -.01em;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: ""; position: absolute; width: 20px; height: 20px;
+    inset-inline-end: 1.05rem; inset-block-start: 50%; margin-block-start: -10px;
+    background: var(--c-elevate); border-radius: var(--radius-sm); box-shadow: var(--rim), var(--e1);
+    clip-path: polygon(50% 68%, 22% 40%, 32% 30%, 50% 48%, 68% 30%, 78% 40%);
+    transition: background .2s var(--ease);
+  }
+  .faq details[open] {
+    transform: translateY(-2px); z-index: 8;
+    box-shadow: var(--rim), var(--e1), var(--e3);
+    border-color: color-mix(in srgb, var(--c-accent) 40%, var(--c-border));
+  }
+  .faq details[open] summary::after { background: var(--c-accent); }
+  .faq details > p {
+    margin: 0; padding: .9rem 1.15rem 1.2rem; color: var(--c-muted); font-size: .95rem;
+    border-block-start: 1px solid var(--c-elevate);
+  }
+
+  /* ── 13 · FOOTER — the recessed floor of the box ──────────────────────── */
+  .site-footer {
+    position: relative; z-index: 2; padding-block: 2.2rem 2.6rem;
+    background: var(--c-elevate); border-block-start: 1px solid var(--c-border);
+    box-shadow: 0 -14px 24px -18px var(--ink-shadow);
+  }
+  .site-footer .wrap {
+    position: relative; padding-block: 1.1rem;
+    background: var(--c-surface); border: 1px solid var(--c-border); border-radius: var(--radius);
+    box-shadow: var(--rim), var(--e1);
+  }
+  .site-footer p { margin: 0; font-size: .84rem; color: var(--c-muted); font-family: var(--font-mono); }
+  .site-footer p + p { margin-block-start: .3rem; }
+
+  /* ── 14 · TIER-2 DECORATION: the box, its strata, the depth ruler ─────── */
+  .x-box {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .x-strata { position: absolute; inset-inline: 0; will-change: transform; }
+  .x-strata--far {
+    inset-block-start: -8vh;
+    height: 74vh;
+    background:
+      radial-gradient(120% 100% at 12% 0%, var(--c-surface) 0%, transparent 62%),
+      linear-gradient(178deg, var(--c-elevate) 0%, transparent 78%);
+    opacity: .85;
+  }
+  .x-strata--mid {
+    inset-block-start: 34vh;
+    height: 52vh;
+    background: linear-gradient(96deg, transparent 0 22%, color-mix(in srgb, var(--c-accent) 8%, transparent) 22% 46%, transparent 46%);
+    transform: skewY(-2.2deg);
+  }
+  .x-strata--near {
+    inset-block-end: -12vh;
+    height: 60vh;
+    background: radial-gradient(90% 100% at 84% 100%, color-mix(in srgb, var(--c-text) 9%, transparent) 0%, transparent 70%);
+  }
+  .x-grain {
+    position: absolute;
+    inset: 0;
+    background-image: var(--grain);
+    opacity: .05;
+  }
+  [data-theme="dark"] .x-grain { opacity: .06; }
+
+  /* Ambient drift: one slow plane moving behind everything. Proves the page
+     is layered in motion, and is killed by data-thumb / reduced-motion. */
+  .x-drift {
+    position: absolute;
+    inset-inline-start: 6vw;
+    inset-block-start: 12vh;
+    width: min(46vw, 520px);
+    height: 300px;
+    background: linear-gradient(140deg, color-mix(in srgb, var(--c-accent) 10%, transparent), transparent 70%);
+    border-radius: 24px;
+    box-shadow: 0 30px 60px -30px var(--ink-shadow);
+    animation: x-drift 46s ease-in-out infinite alternate;
+  }
+  @keyframes x-drift {
+    from { transform: translate3d(0, 0, 0) rotate(-1.2deg); }
+    to   { transform: translate3d(3vw, 42px, 0) rotate(1.6deg); }
+  }
+
+  /* The depth ruler: a scale of 4 levels pinned to the box wall (desktop). */
+  .x-ruler {
+    position: fixed;
+    inset-inline-start: max(6px, calc(50vw - var(--page-max) / 2 - 46px));
+    inset-block-start: 14vh;
+    width: 34px;
+    height: 72vh;
+    z-index: 55;
+    pointer-events: none;
+    display: none;
+    background: repeating-linear-gradient(
+      to bottom,
+      var(--c-border) 0 1px,
+      transparent 1px 14px
+    );
+    mask-image: linear-gradient(to bottom, transparent, #000 12%, #000 88%, transparent);
+  }
+  .x-ruler::before {
+    content: "";
+    position: absolute;
+    inset-inline-end: 0;
+    inset-block: 0;
+    width: 3px;
+    background: var(--c-elevate);
+    box-shadow: var(--e1);
+  }
+  .x-ruler-car {
+    position: absolute;
+    inset-inline-end: -3px;
+    inset-block-start: 0;
+    width: 26px;
+    height: 26px;
+    margin-block-start: -13px;
+    background: var(--c-accent);
+    border-radius: var(--radius-sm);
+    box-shadow: var(--rim), var(--e2), var(--e3);
+    transform: translate3d(-18px, 0, 0);
+    transition: transform .12s linear;
+  }
+  .x-ruler-car::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: -8px;
+    inset-block-start: 50%;
+    width: 8px;
+    height: 3px;
+    margin-block-start: -1.5px;
+    background: var(--c-accent);
+  }
+
+  /* Per-section parallax strata: soft tonal planes receding behind the
+     section's own plate. Gradient-filled and shadowless so they read as
+     depth in the box, never as a stray card that lost its content. */
+  .x-plate {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    border-radius: var(--radius);
+    will-change: transform;
+  }
+  .x-plate--a {
+    inset-inline-start: 3%;
+    inset-inline-end: auto;
+    inset-block-start: 24%;
+    width: min(52%, 460px);
+    height: 52%;
+    background: linear-gradient(160deg, var(--plate) 0%, transparent 82%);
+    opacity: .8;
+  }
+  .x-plate--b {
+    inset-inline-end: 3%;
+    inset-inline-start: auto;
+    inset-block-end: 16%;
+    width: min(34%, 300px);
+    height: 38%;
+    background: linear-gradient(20deg, var(--plate) 0%, transparent 78%);
+    opacity: .65;
+  }
+  .x-plate--rule {
+    inset-inline: 0;
+    inset-block-start: 0;
+    height: 100%;
+    background:
+      linear-gradient(to bottom, transparent 0 12%, color-mix(in srgb, var(--c-elevate) 70%, transparent) 12% 12.4%,
+      transparent 12.4% 46%, color-mix(in srgb, var(--c-elevate) 70%, transparent) 46% 46.4%, transparent 46.4%);
+    box-shadow: none;
+    opacity: .8;
+  }
+
+  /* ── 15 · MOTION-ON SCROLL REVEAL ───────────────────────────────────────
+     Only ever applied when <html> carries .dl-motion, which the script adds
+     for real browsing and NEVER in ?thumb=1 or reduced-motion — so the page
+     is fully painted with JS off, and no element can hide forever. */
+  .dl-motion [data-rise] {
+    opacity: 0;
+    transform: translateY(22px) translateZ(0);
+    transition: opacity .6s var(--ease), transform .6s var(--ease);
+  }
+  .dl-motion [data-rise].is-in { opacity: 1; transform: translateY(0); }
+  .dl-motion #highlights [data-rise]:nth-child(2) { transition-delay: .08s; }
+  .dl-motion #highlights [data-rise]:nth-child(3) { transition-delay: .16s; }
+  .dl-motion #highlights [data-rise]:nth-child(4) { transition-delay: .24s; }
+  .dl-motion .grid--days [data-rise]:nth-child(2) { transition-delay: .06s; }
+  .dl-motion .grid--days [data-rise]:nth-child(3) { transition-delay: .12s; }
+  .dl-motion .grid--days [data-rise]:nth-child(4) { transition-delay: .18s; }
+  .dl-motion .grid--days [data-rise]:nth-child(5) { transition-delay: .24s; }
+  .dl-motion .grid--days [data-rise]:nth-child(6) { transition-delay: .3s; }
+  .dl-motion .grid--days [data-rise]:nth-child(7) { transition-delay: .36s; }
+  .dl-motion #reviews [data-rise]:nth-child(2) { transition-delay: .1s; }
+  .dl-motion #reviews [data-rise]:nth-child(3) { transition-delay: .2s; }
+  /* a lifted sheet must keep its own stack order once revealed */
+  .dl-motion #highlights [data-rise].is-in:nth-child(even) { transform: translateY(-16px); }
+  .dl-motion #reviews [data-rise].is-in:nth-child(1) { transform: translateY(10px); }
+  .dl-motion #reviews [data-rise].is-in:nth-child(2) { transform: translateY(-6px); }
+
+  /* ── 16 · FOCUS — always visible, always above its neighbours ─────────── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: var(--radius-sm);
+    position: relative;
+    z-index: 20;
+    box-shadow: var(--rim), var(--e2), var(--e3);
+  }
+  .site-header :focus-visible { z-index: 61; }
+
+  /* ── 17 · OVERFLOW GUARDS (mandatory) ─────────────────────────────────── */
+  img, svg, video, canvas { max-width: 100%; }
+  body { overflow-wrap: break-word; }
+  .sec-head, .card, .hero-copy { max-width: 100%; }
+  #hero, #highlights, #itinerary, #gallery, #reviews, #booking { overflow-x: clip; }
+
+  /* ── 18 · TABLET band: 768 – 1023px ──────────────────────────────────── */
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--days { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: .8rem 1.4rem; }
+    .day + .day { margin-block-start: 0; }
+    /* two planes per row: the right sheet tucks under the left one */
+    .grid--days > .day:nth-child(even) {
+      margin-inline-start: -14px;
+      transform: translateY(-14px);
+    }
+    .grid--days > .day:nth-child(4n+2) { z-index: 6; }
+    .grid--days > .day:nth-child(4n+3) { z-index: 5; }
+    .sec-head { padding: 2rem 2rem 3.1rem; margin-block-end: -2.1rem; }
+    .hero-copy { padding: 2.4rem 2.6rem; }
+    .hero-figure { margin-block-start: -2.5rem; margin-inline-start: 1.5rem; }
+    /* reviews become a horizontal fan once there is room for one */
+    #reviews blockquote.card + blockquote.card { margin-block-start: 0; margin-inline-start: -18px; }
+    #reviews blockquote.card { box-shadow: var(--rim), var(--e1), var(--e2), var(--p-tl); }
+    #reviews blockquote.card:nth-child(3) { box-shadow: var(--rim), var(--e2), var(--e4), var(--p-tl); }
+    #reviews blockquote.card:nth-child(1) { transform: translateY(10px); }
+    #reviews blockquote.card:nth-child(2) { transform: translateY(-6px); }
+  }
+
+  /* ── 19 · DESKTOP band: 1024px and up ─────────────────────────────────── */
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    #highlights .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.4rem; }
+    .grid--days { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 1.5rem; }
+
+    /* hero: copy plane in front, photo plane behind it, both on strata */
+    #hero {
+      display: grid;
+      grid-template-columns: minmax(0, 1.06fr) minmax(0, 1fr);
+      align-items: start;
+      gap: 1.5rem;
+      padding-block-end: clamp(3rem, 5vw, 5.5rem);
+    }
+    #hero .hero-copy { grid-column: 1; grid-row: 1; margin-inline-end: 2.5rem; }
+    /* the -6.5rem is the tuck: 60px of the photo runs under the copy plate,
+       which is opaque, so the z-order is provable by eye */
+    #hero .hero-figure { grid-column: 2; grid-row: 1; margin: 4.5rem 0 0 -6.5rem; }
+
+    /* gallery: wide sheet + narrow sheet per row, each row one level deeper,
+       and the wide plates keep the row height identical so they interlock */
+    .grid--gallery > figure:nth-child(1),
+    .grid--gallery > figure:nth-child(3),
+    .grid--gallery > figure:nth-child(5) { grid-column: span 2; --shot-ratio: 8 / 3; }
+    .grid--gallery > figure:nth-child(n + 3) { margin-block-start: -22px; }
+    .grid--gallery > figure:nth-child(2),
+    .grid--gallery > figure:nth-child(5) { margin-inline-start: -12px; }
+
+    /* itinerary: a staircase rising to the right, receding as it descends */
+    .grid--days > .day:nth-child(even) { margin-inline-start: 0; }
+    .grid--days > .day:nth-child(3n+2) { transform: translateY(-14px); }
+    .grid--days > .day:nth-child(3n+3) { transform: translateY(-28px); }
+    .grid--days > .day:nth-child(n + 4):nth-child(-n + 6),
+    .grid--days > .day:nth-child(n + 7) { margin-block-start: -18px; }
+    #itinerary .day:nth-child(1) { z-index: 12; }
+    #itinerary .day:nth-child(2) { z-index: 13; }
+    #itinerary .day:nth-child(3) { z-index: 14; }
+    #itinerary .day:nth-child(4) { z-index: 9; }
+    #itinerary .day:nth-child(5) { z-index: 10; }
+    #itinerary .day:nth-child(6) { z-index: 11; }
+    #itinerary .day:nth-child(7) { z-index: 6; }
+
+    /* reviews: one pile of three sheets, fanned. The overlap is smaller than
+       the right-hand padding, so a tucked sheet never loses a character. */
+    #reviews .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0; }
+    #reviews blockquote.card + blockquote.card { margin-inline-start: -18px; }
+    #reviews blockquote.card:nth-child(1) { transform: translateY(14px); }
+    #reviews blockquote.card:nth-child(3) { transform: translateY(-10px); }
+
+    .x-ruler { display: block; }
+    /* booking becomes two planes side by side: the form plate forward,
+       the question sheets receding beside it, instead of a half-empty row */
+    #booking {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr);
+      gap: 1.5rem 3rem;
+      align-items: start;
+    }
+    #booking .sec-head { grid-column: 1 / -1; grid-row: 1; }
+    #booking-form { grid-column: 1; grid-row: 2 / span 2; margin-block-start: 0; max-width: none; }
+    #booking > h3 { grid-column: 2; grid-row: 2; margin-block: 0 1rem; }
+    #booking .faq { grid-column: 2; grid-row: 3; grid-template-columns: 1fr; gap: .45rem; }
+    #booking .faq > details + details { margin-block-start: -6px; }
+  }
+
+  /* ── 20 · MOBILE band specifics (below the tablet threshold) ──────────── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .btn { display: block; width: 100%; text-align: center; }
+    /* …but the header's theme toggle is chrome, not a page CTA: it never
+       stretches, and the brand never wraps under it. */
+    .site-header .btn { display: inline-block; width: auto; }
+    .site-header > .wrap { flex-wrap: wrap; padding-block: .5rem; }
+    .brand { white-space: nowrap; }
+    .hero-copy > p:last-child { flex-direction: column; }
+    .field > input, .field > select { width: 100%; font-size: 16px; }
+    #booking-form { margin-block-start: 1.6rem; }
+    /* Depth survives the small screen: shadows, plates and overlaps stay —
+       the decorative side strata are what get dropped instead, and the plate
+       offsets shrink so they never reach past the page gutter. */
+    .x-plate--a, .x-plate--b { display: none; }
+    :root {
+      --p-1: 6px 7px 0 -1px var(--plate), 9px 12px 16px -12px var(--c-shadow);
+      --p-2: 9px 11px 0 -1px var(--plate), 13px 17px 22px -15px var(--c-shadow);
+      --p-3: 12px 15px 0 -1px var(--plate), 18px 24px 30px -18px var(--c-shadow);
+      --p-bl: -7px 11px 0 -1px var(--plate), -10px 18px 24px -16px var(--c-shadow);
+    }
+    .sec-head { padding: 1.15rem 1.15rem 2.2rem; margin-block-end: -1.5rem; }
+    .hero-figure > figcaption { inset-inline-end: 8px; inset-block-start: -16px; }
+    .grid--gallery > figure:nth-child(2) { margin-inline-start: 0; }
+    #reviews blockquote.card { padding: 1.25rem 1.2rem 1.4rem; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .dl-motion [data-rise] { opacity: 1; transform: none; }
+    .x-drift { animation: none !important; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier 2 · the box the page is stacked inside: three parallaxed strata
+     + grain + one ambient drifting plane. No content, no controls. -->
+<div class="x-box" aria-hidden="true">
+  <div class="x-strata x-strata--far" aria-hidden="true" data-px="0.045"></div>
+  <div class="x-strata x-strata--mid" aria-hidden="true" data-px="-0.075"></div>
+  <div class="x-strata x-strata--near" aria-hidden="true" data-px="0.13"></div>
+  <div class="x-drift" aria-hidden="true"></div>
+  <div class="x-grain" aria-hidden="true"></div>
+</div>
+
+<!-- Tier 2 · depth ruler: where the reading stack currently sits, in levels -->
+<div class="x-ruler" aria-hidden="true">
+  <span class="x-ruler-car" aria-hidden="true" data-ruler-car></span>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO — copy plane in front of the photograph plane ═══ -->
+  <section id="hero" class="wrap">
+    <div class="x-plate x-plate--a" aria-hidden="true" data-px="0.05"></div>
+    <div class="x-plate x-plate--rule" aria-hidden="true" data-px="-0.03"></div>
+    <div class="hero-copy">
+      <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+      <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+      <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+      <ul class="meta-list">
+        <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+        <li data-tid="hero.meta.2">¥248,000 per person</li>
+        <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+        <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+      </ul>
+      <p>
+        <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+        <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+      </p>
+    </div>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS — a card, on a tray, on a plate ═══ -->
+  <section id="highlights" class="wrap">
+    <div class="x-plate x-plate--b" aria-hidden="true" data-px="0.07"></div>
+    <div class="sec-head">
+      <h2 data-tid="highlights.title">What you'll see</h2>
+      <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    </div>
+    <div class="grid tilt">
+      <article class="card" data-rise>
+        <div class="frame">
+          <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        </div>
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card" data-rise>
+        <div class="frame">
+          <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        </div>
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card" data-rise>
+        <div class="frame">
+          <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        </div>
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card" data-rise>
+        <div class="frame">
+          <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        </div>
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY — the week as a stack of sheets ═══ -->
+  <section id="itinerary" class="wrap">
+    <div class="x-plate x-plate--a" aria-hidden="true" data-px="0.06"></div>
+    <div class="sec-head">
+      <h2 data-tid="itinerary.title">The seven days</h2>
+      <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    </div>
+    <div class="grid grid--days tilt">
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <div class="frame">
+          <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+        </div>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day" data-rise>
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY — rows receding one level at a time ═══ -->
+  <section id="gallery" class="wrap">
+    <div class="x-plate x-plate--b" aria-hidden="true" data-px="-0.05"></div>
+    <div class="sec-head">
+      <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+      <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    </div>
+    <div class="grid grid--gallery tilt">
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        </div>
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        </div>
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        </div>
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        </div>
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        </div>
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card" data-rise>
+        <div class="frame">
+          <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        </div>
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS — three sheets, fanned, last one on top ═══ -->
+  <section id="reviews" class="wrap">
+    <div class="sec-head">
+      <h2 data-tid="reviews.title">From past travellers</h2>
+    </div>
+    <div class="grid tilt">
+      <blockquote class="card" cite="#" data-rise>
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#" data-rise>
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#" data-rise>
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ — the topmost plane of the page ═══ -->
+  <section id="booking" class="wrap">
+    <div class="x-plate x-plate--a" aria-hidden="true" data-px="0.04"></div>
+    <div class="sec-head">
+      <h2 data-tid="booking.title">Reserve a place</h2>
+      <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+    </div>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate data-rise>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── STYLE RUNTIME · dimensional layering ─────────────────────────────
+     Three jobs, all parallax/stack related:
+       1. depth ruler   — where the viewport sits between the box floor and
+                          the top plane, driven by scroll progress
+       2. parallax      — each [data-px] stratum translates by scrollY × rate
+                          (rates are signed: negative = receding plane)
+       3. stack reveal  — sheets rise into the pile as they are reached
+     Everything here no-ops in ?thumb=1 and under prefers-reduced-motion; the
+     reveal never arms in those modes, so the page is fully painted with JS off. */
+  (function () {
+    var root = document.documentElement;
+    if (window.STYLE_SCAFFOLD_THUMB === true) return;
+
+    var mq = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (mq.matches) return;
+
+    var header = document.getElementById('site-header');
+    var car = document.querySelector('[data-ruler-car]');
+    var layers = [].slice.call(document.querySelectorAll('[data-px]')).map(function (n) {
+      return { el: n, rate: parseFloat(n.getAttribute('data-px')) || 0 };
+    });
+    var rise = [].slice.call(document.querySelectorAll('[data-rise]'));
+
+    /* Reveal is driven by the SAME scroll pass as the parallax rather than an
+       IntersectionObserver: an observer that never fires leaves a plane at
+       opacity 0 forever, which is a blank section, not a missing animation.
+       Planes are armed 1.3 viewports early, so one is always settled — and
+       never invisible — by the time the eye actually reaches it. */
+    function sweep() {
+      if (!rise.length) return;
+      var h = window.innerHeight || 0;
+      for (var i = rise.length - 1; i >= 0; i--) {
+        var r = rise[i].getBoundingClientRect();
+        if (r.top < h * 1.3) {
+          rise[i].classList.add('is-in');
+          rise.splice(i, 1);
+        }
+      }
+    }
+
+    var queued = false;
+    function paint() {
+      queued = false;
+      var y = window.pageYOffset || root.scrollTop || 0;
+      var i, L;
+
+      for (i = 0; i < layers.length; i++) {
+        L = layers[i];
+        // Cheap culling: skip strata whose host band is nowhere near view.
+        var r = L.el.getBoundingClientRect();
+        if (r.bottom < -600 || r.top > window.innerHeight + 600) continue;
+        L.el.style.transform =
+          'translate3d(0,' + (y * L.rate).toFixed(1) + 'px,0)' +
+          (L.el.classList.contains('x-strata--mid') ? ' skewY(-2.2deg)' : '');
+      }
+
+      var span = Math.max(1, (root.scrollHeight || 1) - window.innerHeight);
+      var p = Math.min(1, Math.max(0, y / span));
+      if (car) car.style.transform = 'translate3d(-18px,' + (p * 72).toFixed(2) + 'vh,0)';
+      if (header) {
+        if (y > 24) header.classList.add('is-raised');
+        else header.classList.remove('is-raised');
+      }
+      sweep();
+    }
+    function onScroll() {
+      if (!queued) { queued = true; requestAnimationFrame(paint); }
+    }
+
+    if (rise.length) root.classList.add('dl-motion');
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll, { passive: true });
+    paint();
+    // Nothing may stay invisible: one late pass catches a page never scrolled.
+    window.setTimeout(sweep, 1800);
+
+    // If the user flips to reduced motion mid-session, stop moving things.
+    var stop = function (e) {
+      if (!e.matches) return;
+      window.removeEventListener('scroll', onScroll);
+      window.removeEventListener('resize', onScroll);
+      root.classList.remove('dl-motion');
+      for (var n = 0; n < layers.length; n++) layers[n].el.style.transform = '';
+      if (car) car.style.transform = '';
+      for (var m = 0; m < rise.length; m++) rise[m].classList.add('is-in');
+    };
+    if (mq.addEventListener) mq.addEventListener('change', stop);
+    else if (mq.addListener) mq.addListener(stop);
+  })();
+</script>
+
+</body>
+</html>

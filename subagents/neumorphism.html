@@ -1,0 +1,1170 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<style>
+/* ══════════════════════════════════════════════════════════════════════════
+   NEUMORPHISM — Soft UI, original school (2020s)
+
+   THE MECHANISM, in three sentences:
+   1. There is one material and one colour for it: `--c-bg` and `--c-surface`
+      hold the SAME value, so no element is a different substance from the page.
+      Whatever reads as a "card" is the field, pushed up.
+   2. There is one light source, fixed at the top-left of the document. Every
+      edge on the page is drawn by the same paired shadow — `--c-hi` top-left,
+      `--c-lo` bottom-right — never by a border, never by a rule, never by a
+      change of hue. Put the same pair on the inside (`inset`) and the element
+      is the same material, pressed in.
+   3. Convex or concave is the whole vocabulary, so the slabs alternate: an
+      extruded panel carries concave contents, a sunken panel carries convex
+      contents, and the depth always has somewhere to come from.
+
+   Corners stay in the 12 / 14 / 16px family. Colour stays monochromatic: one
+   cool grey field, one pastel (Soft Blue #C8E0F4), one harmony tint (Soft Pink
+   #F5E0E8) that appears only inside a gradient. Contrast is repaired in the
+   INK, not in the surfaces — Soft UI's real failure mode is grey-on-grey type,
+   so body copy runs at ~10.6:1 and every muted string at ≥4.5:1 while the
+   surfaces stay pastel and shadowless of any hard line.
+   ══════════════════════════════════════════════════════════════════════════ */
+
+/* ── 1 · TOKENS ───────────────────────────────────────────────────────────
+   Fourteen --c-* names, identical in both themes. Nothing else in this file
+   ever declares a --c-* property, so the theme flip is total and auditable. */
+:root,
+[data-theme="light"] {
+  --c-bg: #e8e8e8;              /* Soft Grey — the brief's field colour */
+  --c-surface: #e8e8e8;         /* identical on purpose: one material */
+  --c-elevate: #f2f3f4;         /* +tint — the lit side of a convex face */
+  --c-sink: #dee0e3;            /* −shade — the dark side of a concave face */
+  --c-text: #28323c;
+  --c-muted: #505c68;
+  --c-accent: #c8e0f4;          /* Soft Blue — the only hue on the page */
+  --c-accent-ink: #1e3549;      /* ink laid ON the pastel */
+  --c-accent-deep: #37648c;     /* the pastel, darkened until it may be text */
+  --c-blush: #f5e0e8;           /* Soft Pink — gradient tint, never ink */
+  --c-border: rgba(163, 174, 186, 0.55); /* groove fill only; never an outline */
+  --c-shadow: rgba(74, 90, 108, 0.14);   /* the third, far shadow layer */
+  --c-hi: rgba(255, 255, 255, 0.92);     /* light source */
+  --c-lo: rgba(76, 92, 110, 0.3);        /* its partner */
+}
+[data-theme="dark"] {
+  /* The same mould in a darker room: the field drops to a blue-tinted
+     charcoal, the highlight thins to a film of white, and the pastel lifts
+     until it can carry ink instead of sitting under it. */
+  --c-bg: #262b31;
+  --c-surface: #262b31;
+  --c-elevate: #30363e;
+  --c-sink: #1d2126;
+  --c-text: #e7eef5;
+  --c-muted: #a4b1be;
+  --c-accent: #bcdcf2;
+  --c-accent-ink: #16232f;
+  --c-accent-deep: #8fc0e6;
+  --c-blush: #4a3a41;
+  --c-border: rgba(255, 255, 255, 0.09);
+  --c-shadow: rgba(0, 0, 0, 0.5);
+  --c-hi: rgba(255, 255, 255, 0.062);
+  --c-lo: rgba(0, 0, 0, 0.62);
+}
+
+:root {
+  /* ── Geometry. 12 / 14 / 16 and nothing else. ── */
+  --page-max: 1160px;
+  --pad: clamp(.95rem, 3.4vw, 2.375rem);
+  --gap: 1.25rem;
+  --radius-sm: 12px;
+  --radius: 14px;          /* the row's --border-radius */
+  --radius-lg: 16px;
+  --press-ms: 150ms;       /* the row's "smooth press (150ms)" */
+  --slab-y: clamp(1.375rem, 3.6vw, 2.75rem);
+  --slab-x: clamp(1.1rem, 3.4vw, 2.375rem);
+  --thumb: 24px;           /* theme-switch disc */
+  --travel: 26px;          /* …and how far it slides when the theme flips */
+
+  /* Soft UI type: no serif and no hairline weights (both die at 4.5:1 on a
+     pastel). Mid weight, tight tracking on the display sizes, wide on labels. */
+  --font-display: "Avenir Next", "Segoe UI Variable Display", "Nunito Sans",
+    system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-body: "Avenir Next", "Segoe UI Variable Text", "Nunito Sans",
+    system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+
+  /* ── THE PAIR. Every raised thing on the page uses one of these three,
+        every pressed thing one of these. The literals are the row's own. ── */
+  --d-raise:    -5px -5px 15px var(--c-hi),  5px 5px 15px var(--c-lo);
+  --d-raise-sm: -3px -3px   8px var(--c-hi),  3px 3px   8px var(--c-lo);
+  --d-raise-lg: -5px -5px 15px var(--c-hi),  5px 5px 15px var(--c-lo),
+                16px 16px 34px var(--c-shadow);
+  --d-press:     inset -5px -5px 15px var(--c-hi), inset 5px 5px 15px var(--c-lo);
+  --d-press-sm:  inset -3px -3px  8px var(--c-hi), inset 3px 3px  8px var(--c-lo);
+  --d-press-deep: inset -5px -5px 14px var(--c-hi), inset 5px 5px 14px var(--c-lo),
+                  inset -12px -12px 28px var(--c-hi);
+
+  /* ── Faces. background-color is always declared apart from
+        background-image, so an unsupported color-mix() degrades to the flat
+        pastel rather than to nothing. ── */
+  --g-raise:  linear-gradient(145deg, var(--c-elevate),
+                color-mix(in oklab, var(--c-surface) 90%, #0b1220));
+  --g-press:  linear-gradient(145deg,
+                color-mix(in oklab, var(--c-surface) 84%, #0b1220), var(--c-elevate));
+  --g-accent: linear-gradient(145deg,
+                color-mix(in oklab, var(--c-accent) 68%, #ffffff),
+                color-mix(in oklab, var(--c-accent) 92%, #6f9dc6));
+  --g-blush:  linear-gradient(145deg,
+                color-mix(in oklab, var(--c-blush) 88%, #ffffff),
+                color-mix(in oklab, var(--c-blush) 74%, var(--c-surface)));
+}
+
+/* ── 2 · THE FIELD, AND BASE TYPE ─────────────────────────────────────────
+   The document's single light source lives here: a viewport-fixed gradient
+   whose lit corner is the top-left — exactly where every --c-hi shadow claims
+   the light is coming from. */
+*, *::before, *::after { box-sizing: border-box; }
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-padding-block-start: 108px;
+  background: var(--c-bg);
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+html[data-thumb="1"] { scroll-behavior: auto; }
+
+body {
+  margin: 0;
+  color: var(--c-text);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+  background-color: var(--c-bg);
+  background-image:
+    radial-gradient(120% 76% at 5% -14%, var(--c-elevate) 0%, transparent 58%),
+    radial-gradient(110% 68% at 105% 116%, var(--c-shadow) 0%, transparent 62%);
+  background-attachment: fixed, fixed;
+  background-repeat: no-repeat, no-repeat;
+}
+
+h1, h2, h3 {
+  font-family: var(--font-display);
+  font-weight: 650;
+  line-height: 1.16;
+  margin: 0 0 .55em;
+  letter-spacing: -.018em;
+  /* one pixel of emboss: the letters are milled out of the same surface */
+  text-shadow: 1px 1px 0 var(--c-hi);
+}
+h1 { font-size: clamp(2.05rem, 5.4vw, 3.3rem); letter-spacing: -.028em; }
+h2 { font-size: clamp(1.4rem, 2.9vw, 1.95rem); }
+h3 { font-size: 1.0625rem; letter-spacing: -.008em; }
+p  { margin: 0 0 1em; }
+
+figure, blockquote { margin: 0; }
+img { display: block; max-width: 100%; height: auto; }
+ul { margin: 0; padding: 0; list-style: none; }
+
+a { color: var(--c-accent-deep); text-decoration: none; }
+a:not([class]) {
+  text-decoration: underline;
+  text-decoration-color: var(--c-border);
+  text-underline-offset: 3px;
+}
+a:not([class]):hover { text-decoration-color: var(--c-accent-deep); }
+
+.wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+.grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+.grid > *, .card, figure { min-width: 0; }
+
+/* ── 3 · THE TWO FACES, AS PRIMITIVES ───────────────────────────────────
+   There is no third way to draw an edge on this page. */
+.n-raise, .n-press {
+  border: 0;
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+}
+.n-raise { background-image: var(--g-raise); box-shadow: var(--d-raise); }
+.n-press { background-image: var(--g-press); box-shadow: var(--d-press); }
+
+/* ── 4 · SLABS — the sections ARE the moulded panels ─────────────────────
+   No dividers and no rules: whether a panel is proud of the field or sunk
+   into it is what tells the eye where one section stops. */
+main {
+  display: block;
+  padding-inline: clamp(.5rem, 2vw, 1.5rem);
+  padding-block-end: clamp(.75rem, 2vw, 1.5rem);
+}
+main > section {
+  position: relative;
+  overflow: hidden;
+  max-width: var(--page-max);
+  margin-inline: auto;
+  margin-block: clamp(.75rem, 2.4vw, 1.625rem);
+  padding-block: var(--slab-y);
+  border-radius: var(--radius-lg);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise-lg);
+}
+/* .wrap would otherwise out-specify the slab for inline padding */
+main > section.wrap { padding-inline: var(--slab-x); }
+main > section > * { position: relative; z-index: 1; }
+
+/* concave slabs: highlights · gallery · booking */
+#highlights, #gallery, #booking {
+  background-image: var(--g-press);
+  box-shadow: var(--d-press);
+}
+
+/* ── 5 · CHROME — header, brand, nav, theme switch, footer ────────────── */
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  padding-block: .6rem;
+  background-color: var(--c-bg);
+  background-image: linear-gradient(180deg, var(--c-elevate), var(--c-bg) 78%);
+  box-shadow: 0 14px 20px -18px var(--c-lo);
+}
+.site-header .wrap {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: .75rem;
+  flex-wrap: wrap;
+  padding-block: 0;
+}
+.brand {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 680;
+  letter-spacing: .012em;
+  padding: .5rem 1rem;
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise);
+  text-shadow: 1px 1px 0 var(--c-hi);
+}
+.site-nav { display: none; align-items: center; gap: .5rem; font-size: .875rem; }
+.site-nav a {
+  color: var(--c-muted);
+  padding: .45rem .9rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press-sm);
+  transition: color var(--press-ms) ease, box-shadow var(--press-ms) ease,
+              transform var(--press-ms) ease;
+}
+.site-nav a:hover { color: var(--c-text); box-shadow: var(--d-press); }
+.site-nav a:active { transform: scale(.97); box-shadow: var(--d-raise-sm); }
+
+/* The theme switch: a sunken track, a raised disc milled from the same
+   plastic, and the label beside it. The disc's rest position IS the theme. */
+#theme-toggle {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  gap: .625rem;
+  min-height: 46px;
+  padding: .5rem 1.05rem .5rem calc(var(--thumb) + var(--travel) + 16px);
+  font: inherit;
+  font-size: .8125rem;
+  font-weight: 660;
+  letter-spacing: .12em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press);
+  transition: box-shadow var(--press-ms) ease, color var(--press-ms) ease;
+}
+#theme-toggle::before {
+  content: "";
+  position: absolute;
+  inset-block-start: 50%;
+  inset-inline-start: 8px;
+  width: var(--thumb);
+  height: var(--thumb);
+  margin-block-start: calc(var(--thumb) / -2);
+  border-radius: var(--radius-lg);  /* clamped by the box: a soft disc */
+  background-color: var(--c-elevate);
+  background-image: var(--g-accent);
+  box-shadow: var(--d-raise-sm);
+  transform: translateX(0);
+  transition: transform var(--press-ms) ease;
+}
+[data-theme="dark"] #theme-toggle::before { transform: translateX(var(--travel)); }
+#theme-toggle:hover { color: var(--c-text); }
+#theme-toggle:active { box-shadow: var(--d-press-deep); }
+
+.site-footer {
+  padding-inline: clamp(.5rem, 2vw, 1.5rem);
+  padding-block-end: clamp(1.25rem, 3vw, 2.25rem);
+}
+.site-footer .wrap {
+  padding-block: 1.35rem;
+  border-radius: var(--radius-lg);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise);
+}
+.site-footer p { margin: 0 0 .4em; font-size: .8125rem; color: var(--c-muted); }
+.site-footer p:last-child { margin-block-end: 0; font-size: .75rem; }
+
+/* ── 6 · HERO — one extruded slab with the photo sunk into it ─────────── */
+#hero { padding-block-end: clamp(1.25rem, 3.2vw, 2rem); }
+
+.eyebrow {
+  display: inline-block;
+  justify-self: start;   /* a grid item in the hero: hug the text, don't span it */
+  margin: 0 0 1.35rem;
+  padding: .45rem 1rem;
+  font-size: .75rem;
+  font-weight: 620;
+  letter-spacing: .16em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press-sm);
+  text-shadow: none;
+}
+#hero h1 { margin-block-end: .4em; }
+.lede {
+  max-width: 46ch;
+  margin-block-end: 1.5rem;
+  font-size: clamp(1.02rem, 1.5vw, 1.185rem);
+  line-height: 1.64;
+  color: var(--c-muted);
+}
+.meta-list { display: flex; flex-wrap: wrap; gap: .5rem .625rem; margin: 0 0 1.75rem; }
+.meta-list li {
+  font-size: .8125rem;
+  color: var(--c-muted);
+  padding: .5rem .85rem;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press-sm);
+}
+
+/* the CTA row — the only unclassed paragraph in the hero */
+#hero > p:not([class]) { display: flex; flex-direction: column; gap: .75rem; margin-block-end: 1.5rem; }
+
+.hero-figure {
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press), var(--d-raise-sm);
+}
+.hero-figure img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 10;
+  object-fit: cover;
+  border-radius: var(--radius);
+  box-shadow: var(--d-press-sm);
+}
+.hero-figure figcaption, #gallery figcaption {
+  margin-block-start: 8px;
+  padding: .5rem .7rem;
+  font-size: .8125rem;
+  color: var(--c-muted);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press-sm);
+}
+
+/* ── 7 · CARDS ────────────────────────────────────────────────────────────
+   Inside a sunken slab cards extrude; inside an extruded slab they are
+   pressed. The card rule is the default (convex contents), the two sunken
+   sections therefore need no override at all. */
+.card {
+  padding: clamp(1.05rem, 2.4vw, 1.4rem);
+  border-radius: var(--radius);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise);
+}
+.card > p:not([class]) { margin-block-end: 0; font-size: .9375rem; line-height: 1.68; color: var(--c-muted); }
+.card h3 { margin-block-start: 1.05rem; }
+
+/* sunken slabs → convex cards */
+#highlights .card:hover { box-shadow: var(--d-raise-lg); }
+#highlights .card > img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 5 / 3;
+  object-fit: cover;
+  margin-block-end: 1.1rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--d-press-sm);
+}
+
+/* shared intros */
+#highlights > p, #itinerary > p, #gallery > p, #booking > p {
+  max-width: 54ch;
+  margin-block-end: clamp(1.4rem, 3.2vw, 2.1rem);
+  color: var(--c-muted);
+}
+#highlights > h2, #itinerary > h2, #gallery > h2, #reviews > h2, #booking > h2 { margin-block-end: .45em; }
+
+/* ── 8 · ITINERARY — a rail of pressed channels, each with a raised puck ─ */
+#itinerary .card, #reviews .card {
+  background-image: var(--g-press);
+  box-shadow: var(--d-press);
+}
+#itinerary .card:hover, #reviews .card:hover { box-shadow: var(--d-press-deep); }
+
+.day { position: relative; padding-block-start: 3.5rem; }
+.day-num {
+  position: absolute;
+  inset-block-start: 1rem;
+  inset-inline-start: 1.05rem;
+  margin: 0;
+  padding: .35rem .7rem;
+  font-family: var(--font-body);
+  font-size: .6875rem;
+  font-weight: 680;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+  text-shadow: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise-sm);
+}
+.day h3 { margin-block-start: 0; }
+.day > p:not([class]) { max-width: 58ch; }
+.day > img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  margin-block-start: 1rem;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--d-raise-sm);
+}
+
+/* ── 9 · GALLERY — photos set in a bezel, captions pressed beneath ─────── */
+#gallery .card {
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+}
+#gallery img {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  border-radius: var(--radius);
+  box-shadow: 0 0 14px 2px var(--c-shadow);
+}
+#gallery figcaption { margin-block-start: 8px; }
+#gallery .card:hover img { filter: saturate(1.05) contrast(1.02); }
+
+/* ── 10 · REVIEWS — pressed quotes on a raised rail ───────────────────── */
+#reviews .card { display: flex; flex-direction: column; }
+.rating {
+  display: inline-block;
+  align-self: start;     /* a flex item: the star puck hugs its own width */
+  margin: 0 0 .9rem;
+  padding: .3rem .62rem;
+  font-size: .8125rem;
+  letter-spacing: .22em;
+  color: var(--c-accent-deep);
+  text-shadow: none;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-blush);
+  background-image: var(--g-blush);
+  box-shadow: var(--d-raise-sm);
+}
+#reviews .card > p:not(.rating) { font-size: .9375rem; line-height: 1.7; color: var(--c-text); }
+#reviews footer {
+  margin-block-start: auto;   /* the author rail sits on the floor of the quote */
+  padding: .55rem .8rem;
+  padding-inline-start: calc(.8rem + 1.55rem);
+  font-size: .8125rem;
+  color: var(--c-muted);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise-sm);
+}
+#reviews cite { font-style: normal; font-weight: 660; color: var(--c-text); }
+
+/* ── 11 · BOOKING — a raised panel whose fields are holes ─────────────── */
+#booking-form.card { padding: clamp(1.15rem, 3vw, 1.9rem); display: grid; gap: 1rem; }
+
+.field { display: grid; gap: .4rem; margin-block-end: 0; }
+.field > label {
+  font-size: .75rem;
+  font-weight: 640;
+  letter-spacing: .11em;
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+.field > input, .field > select {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--c-text);
+  padding: .75rem .95rem;
+  border: 0;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-press);
+  box-shadow: var(--d-press-sm);
+  transition: box-shadow var(--press-ms) ease, background-color var(--press-ms) ease;
+}
+.field > input::placeholder { color: var(--c-muted); opacity: .85; }
+.field > input:hover, .field > select:hover { box-shadow: var(--d-press); }
+.field > input:focus, .field > select:focus {
+  box-shadow: var(--d-press-deep);
+  background-color: var(--c-elevate);
+}
+.field > select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-inline-end: 2.6rem;
+  background-image: var(--g-press),
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23505c68' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, no-repeat;
+  background-position: 0 0, calc(100% - 1.05rem) 50%;
+  background-size: auto, 14px 9px;
+}
+[data-theme="dark"] .field > select {
+  background-image: var(--g-press),
+    url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 14 9'%3E%3Cpath d='M1 1l6 6 6-6' fill='none' stroke='%23a4b1be' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E");
+}
+.fineprint { margin: 0; font-size: .8125rem; color: var(--c-muted); }
+
+/* ── 12 · BUTTONS — convex until pressed, then the same hole ─────────── */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .5rem;
+  min-height: 46px;
+  padding: .8rem 1.6rem;
+  font: inherit;
+  font-size: .9375rem;
+  font-weight: 660;
+  letter-spacing: .012em;
+  text-decoration: none;
+  cursor: pointer;
+  border: 0;
+  border-radius: var(--radius);
+  background-color: var(--c-accent);
+  background-image: var(--g-accent);
+  color: var(--c-accent-ink);
+  box-shadow: var(--d-raise);
+  transition: box-shadow var(--press-ms) ease, transform var(--press-ms) ease;
+}
+.btn--quiet {
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  color: var(--c-text);
+}
+.btn:hover { box-shadow: var(--d-raise-lg); }
+.btn:active { transform: scale(.98); box-shadow: var(--d-press); }
+#booking-form > .btn { grid-column: 1 / -1; margin-block-start: .35rem; }
+#booking-form > .fineprint { grid-column: 1 / -1; }
+
+/* ── 13 · FAQ — stacked channels that open downward ──────────────────── */
+#booking > h3 {
+  margin-block: clamp(1.9rem, 4.4vw, 2.9rem) 1rem;
+  font-size: 1.185rem;
+}
+.faq { display: grid; gap: .75rem; }
+.faq .card {
+  padding: 0;
+  overflow: hidden;
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise-sm);
+}
+.faq summary {
+  list-style: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: .95rem 1.1rem;
+  font-family: var(--font-display);
+  font-size: .97rem;
+  font-weight: 640;
+  color: var(--c-text);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  background-image: var(--g-raise);
+  box-shadow: var(--d-raise-sm);
+  transition: box-shadow var(--press-ms) ease, color var(--press-ms) ease;
+}
+.faq summary::-webkit-details-marker { display: none; }
+.faq summary::after {
+  content: "";
+  flex: 0 0 auto;
+  width: 10px;
+  height: 10px;
+  margin-inline-end: .3rem;
+  border-inline-end: 2px solid var(--c-accent-deep);
+  border-block-end: 2px solid var(--c-accent-deep);
+  transform: rotate(45deg);
+  transition: transform var(--press-ms) ease;
+}
+.faq summary:hover { color: var(--c-accent-deep); }
+.faq summary:active { box-shadow: var(--d-press-sm); }
+.faq details[open] > summary { box-shadow: var(--d-press); }
+.faq details[open] > summary::after { transform: rotate(-135deg); }
+.faq .card > p:not([class]) {
+  padding: .15rem 1.1rem 1.05rem;
+  margin: 0;
+  font-size: .9rem;
+  line-height: 1.66;
+  color: var(--c-muted);
+}
+
+/* ── 14 · DECORATION (Tier 2 — each of these is aria-hidden in the markup) */
+/* matte plastic: a half-pixel dot grid laid over the whole field */
+.x-grain {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  pointer-events: none;
+  opacity: .17;
+  background-image: radial-gradient(var(--c-lo) .45px, transparent .55px);
+  background-size: 5px 5px;
+}
+/* the milled channel that separates chrome from content, aligned with the slabs */
+.x-channel {
+  height: 4px;
+  width: calc(100% - 2 * clamp(.5rem, 2vw, 1.5rem));
+  max-width: var(--page-max);
+  margin-block: clamp(.35rem, 1.3vw, .7rem);
+  margin-inline: auto;
+  border-radius: var(--radius-sm);
+  background-color: var(--c-sink);
+  box-shadow: var(--d-press-sm);
+}
+/* a pressed seam inside the day rail */
+.x-seam {
+  height: 3px;
+  margin-block: 0 clamp(1.1rem, 2.8vw, 1.9rem);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-border);
+  box-shadow: var(--d-press-sm);
+}
+/* the light source, shown once, drifting inside the hero slab */
+.x-source {
+  position: absolute;
+  inset-block-start: -22%;
+  inset-inline-start: -12%;
+  z-index: 0;
+  width: 52%;
+  aspect-ratio: 1;
+  pointer-events: none;
+  border-radius: 50%;
+  background: radial-gradient(closest-side,
+    color-mix(in oklab, var(--c-hi) 92%, transparent), transparent 70%);
+  transform: translate3d(var(--ox, 0px), var(--oy, 0px), 0);
+  transition: transform 260ms ease;
+  animation: x-breathe 14s ease-in-out infinite;
+}
+@keyframes x-breathe {
+  0%, 100% { scale: 1;    opacity: .8; }
+  50%      { scale: 1.06; opacity: 1;  }
+}
+
+/* ── 15 · STATES — focus is never sacrificed to the aesthetic ────────── */
+:focus-visible {
+  outline: 3px solid var(--c-accent-deep);
+  outline-offset: 3px;
+}
+.btn:focus-visible,
+#theme-toggle:focus-visible,
+.site-nav a:focus-visible {
+  outline-offset: 4px;
+  box-shadow: var(--d-raise), 0 0 0 7px color-mix(in oklab, var(--c-accent) 45%, transparent);
+}
+.field > input:focus-visible,
+.field > select:focus-visible { outline: 3px solid var(--c-accent-deep); outline-offset: 2px; }
+::selection { background-color: var(--c-accent); color: var(--c-accent-ink); }
+
+/* Entrance. JS arms elements only when motion is allowed and we are not a
+   thumbnail — unarmed, the page is simply itself, fully painted. */
+.card, .hero-figure, .eyebrow, .lede, #hero h1, .meta-list, .faq .card, .site-footer .wrap {
+  transition: opacity 420ms ease, transform 420ms ease, box-shadow var(--press-ms) ease,
+              filter var(--press-ms) ease;
+}
+.is-armed { opacity: 0; transform: translateY(12px) scale(.995); }
+
+/* ── 16 · TABLET band — 768 – 1023px (adds only) ─────────────────────── */
+@media (min-width: 768px) {
+  .site-nav { display: flex; }
+  .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #hero > p:not([class]) { flex-direction: row; }
+  #hero .hero-figure { margin-block-start: 1.75rem; }
+  #booking-form { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1.15rem; }
+  .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  /* seven days, two tracks, and the last one closes the rail full width so
+     no row is left with a hole in it */
+  #itinerary .grid--days { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  #itinerary .day:last-child { grid-column: 1 / -1; }
+}
+
+/* ── 17 · DESKTOP band — 1024px and up (adds only) ───────────────────── */
+@media (min-width: 1024px) {
+  :root { --gap: 1.5rem; }
+  .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #highlights .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+  #hero {
+    display: grid;
+    grid-template-columns: minmax(0, 1.06fr) minmax(0, .94fr);
+    column-gap: clamp(1.5rem, 3.6vw, 3rem);
+    row-gap: 0;
+    align-items: center;
+    padding-block: clamp(1.75rem, 3.4vw, 2.75rem);
+  }
+  #hero > .eyebrow, #hero > h1, #hero > .lede, #hero > .meta-list, #hero > p:not([class]) {
+    grid-column: 1;
+  }
+  #hero .hero-figure { grid-column: 2; grid-row: 1 / span 5; margin-block-start: 0; }
+  #hero h1 { font-size: clamp(2.6rem, 3.7vw, 3.35rem); }
+
+  /* the day rail becomes a proper rail: the puck owns its own column, so a
+     wide day label can never collide with a title, and a short day stays
+     short beside the illustrated one */
+  #itinerary .grid--days {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    align-items: start;
+  }
+  .day {
+    display: grid;
+    grid-template-columns: auto minmax(0, 1fr);
+    gap: 0 1.15rem;
+    align-items: start;
+    padding-block-start: clamp(1.05rem, 2.4vw, 1.4rem);
+  }
+  .day-num { position: static; inset: auto; margin: 0; grid-area: 1 / 1; }
+  .day h3 { grid-area: 1 / 2; padding-block-start: 5px; }
+  .day > p:not([class]) { grid-area: 2 / 2; max-width: 62ch; }
+  .day > img { grid-area: 3 / 2; }
+  #itinerary .day:last-child { grid-column: 1 / -1; }
+
+  #gallery .card { padding: 10px; }
+  #reviews .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .btn { padding: .85rem 2rem; }
+  .x-source { inset-block-start: -26%; inset-inline-start: -10%; width: 44%; }
+}
+
+/* ── 18 · MOBILE band — below the tablet threshold ────────────────────── */
+@media (max-width: 767px) {
+  /* The section nav is the first thing to go; brand and switch stay. */
+  .site-nav { display: none; }
+  #hero > p:not([class]) .btn { display: flex; width: 100%; text-align: center; }
+  .field > input, .field > select { width: 100%; font-size: 16px; }
+  .rating { letter-spacing: .18em; }
+  #booking-form { gap: .95rem; }
+}
+@media (max-width: 400px) {
+  main > section.wrap { padding-inline: 1rem; }
+  .site-header .wrap { gap: .5rem; }
+  .brand { padding: .45rem .8rem; }
+  #theme-toggle { padding-inline-start: calc(var(--thumb) + var(--travel) + 12px); }
+}
+
+/* ── 19 · GUARDS ────────────────────────────────────────────────────────
+   Media is never wider than the viewport and one long word never pushes a
+   row out; shadows and transforms stay inside the slabs that clip them. */
+img, svg, video, canvas { max-width: 100%; }
+body { overflow-wrap: break-word; }
+.grid > *, .card, figure { min-width: 0; }
+
+/* The gallery renders every page as a live scaled iframe thumbnail. In that
+   mode motion is switched off so 56 documents can coexist. */
+[data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+  animation: none !important;
+  transition: none !important;
+  scroll-behavior: auto !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+  html { scroll-behavior: auto; }
+  .is-armed { opacity: 1; transform: none; }
+}
+</style>
+
+</head>
+
+<body>
+
+<!-- Neumorphism decoration: matte grain over the field, and one milled
+     channel under the chrome. Pure surface, no content. -->
+<div class="x-grain" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<div class="x-channel" aria-hidden="true"></div>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <span class="x-source" aria-hidden="true"></span>
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="x-seam" aria-hidden="true"></div>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+/* ══════════════════════════════════════════════════════════════════════════
+   NEUMORPHISM · style runtime
+   Two behaviours, both cheap and both event-driven — no rAF, no scroll loop:
+     1. depth-on-arrival: cards press themselves up into the field as they come
+        into view (IntersectionObserver, one-shot per element);
+     2. the hero's light-source disc drifts toward the pointer, so the single
+        light the shadows already imply is briefly, tangibly real.
+   Both no-op entirely when the gallery loads this page as a thumbnail
+   (window.STYLE_SCAFFOLD_THUMB) or when the visitor asked for reduced motion,
+   and the unarmed page is the plain, fully painted one either way.
+   ══════════════════════════════════════════════════════════════════════════ */
+(function () {
+  'use strict';
+
+  if (window.STYLE_SCAFFOLD_THUMB) return;
+  if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+  /* ── 1 · depth on arrival ───────────────────────────────────────────── */
+  var nodes = document.querySelectorAll(
+    '#hero .eyebrow, #hero h1, #hero .lede, #hero .meta-list, #hero .hero-figure, .card'
+  );
+  var armed = [];
+  for (var i = 0; i < nodes.length; i++) armed.push(nodes[i]);
+
+  function release(el) { el.classList.remove('is-armed'); }
+  function releaseAll() {
+    for (var n = 0; n < armed.length; n++) release(armed[n]);
+    armed.length = 0;
+  }
+
+  if (!('IntersectionObserver' in window)) {
+    releaseAll();
+  } else {
+    var io = new IntersectionObserver(function (entries) {
+      for (var e = 0; e < entries.length; e++) {
+        if (!entries[e].isIntersecting) continue;
+        release(entries[e].target);
+        io.unobserve(entries[e].target);
+      }
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.01 });
+
+    for (var a = 0; a < armed.length; a++) { armed[a].classList.add('is-armed'); io.observe(armed[a]); }
+    /* nothing may stay hidden because an observer misfired */
+    setTimeout(releaseAll, 2600);
+  }
+
+  /* ── 2 · the light source leans toward the pointer ──────────────────── */
+  var hero = document.getElementById('hero');
+  var orb = hero ? hero.querySelector('.x-source') : null;
+  if (orb) {
+    var last = 0;
+    hero.addEventListener('pointermove', function (ev) {
+      var now = Date.now();
+      if (now - last < 44) return;
+      last = now;
+      var r = hero.getBoundingClientRect();
+      if (!r.width || !r.height) return;
+      var dx = (ev.clientX - r.left) / r.width - 0.5;
+      var dy = (ev.clientY - r.top) / r.height - 0.5;
+      orb.style.setProperty('--ox', (dx * 30).toFixed(2) + 'px');
+      orb.style.setProperty('--oy', (dy * 22).toFixed(2) + 'px');
+    }, { passive: true });
+
+    hero.addEventListener('pointerleave', function () {
+      orb.style.setProperty('--ox', '0px');
+      orb.style.setProperty('--oy', '0px');
+    }, { passive: true });
+  }
+})();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  BENTO GRIDS (Legacy) — style id: bento-grids
+  Loose masonry corkboard: one measured CSS-Grid board per section, cards of
+  different widths (2/3/4/6 of a six-track column) and content-driven heights,
+  so bottoms never line up. Apple surfaces: #F5F5F7 page, white tiles, 24px
+  corners, hairline borders, layered soft shadows, hover scale 1.02 with the
+  shadow expanding, content revealed as you scroll. One blurred layer only
+  (the sticky header) — nothing full-viewport, no will-change, no fixed layers.
+  Content layer is canonical; only the presentation layer below is authored.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── Canonical colour tokens ────────────────────────────────────────────
+     Same NAMES in both themes; values are the style. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #f5f5f7;
+    --c-surface: #ffffff;
+    --c-elevate: #ececef;
+    --c-text: #1d1d1f;
+    --c-muted: #6e6e73;
+    --c-accent: #0066cc;
+    --c-accent-ink: #ffffff;
+    --c-border: #e3e3e8;
+    --c-shadow: rgba(18, 18, 24, 0.10);
+    --c-header: rgba(255, 255, 255, 0.76);
+    --c-accent-soft: rgba(0, 102, 204, 0.10);
+    --c-scrim: rgba(20, 20, 26, 0.52);
+  }
+  [data-theme="dark"] {
+    --c-bg: #0b0b0e;
+    --c-surface: #1c1c1e;
+    --c-elevate: #2a2a2e;
+    --c-text: #f5f5f7;
+    --c-muted: #9b9ba1;
+    --c-accent: #2997ff;
+    --c-accent-ink: #06121d;
+    --c-border: #3a3a3f;
+    --c-shadow: rgba(0, 0, 0, 0.62);
+    --c-header: rgba(22, 22, 26, 0.74);
+    --c-accent-soft: rgba(41, 151, 255, 0.18);
+    --c-scrim: rgba(6, 6, 8, 0.58);
+  }
+
+  /* ── Non-colour layout vocabulary (bento system variables) ── */
+  :root {
+    --page-max: 1200px;
+    --grid-gap: 20px;
+    --gap: var(--grid-gap);
+    --pad: clamp(1rem, 4vw, 2.5rem);
+    --card-radius: 24px;
+    --radius: var(--card-radius);
+    --chip-radius: 14px;
+    --row-unit: 8px;
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display",
+      "Segoe UI Variable Display", "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text",
+      "Segoe UI Variable Text", "Segoe UI", system-ui, Roboto, "Helvetica Neue", Arial, sans-serif;
+    --shadow-rest: 0 1px 2px rgba(18, 18, 24, 0.05), 0 4px 14px -6px rgba(18, 18, 24, 0.10);
+    --shadow-lift: 0 2px 4px rgba(18, 18, 24, 0.07), 0 26px 54px -18px rgba(18, 18, 24, 0.28);
+    --ease: cubic-bezier(0.22, 0.68, 0.28, 1);
+  }
+  [data-theme="dark"] {
+    --shadow-rest: 0 1px 2px rgba(0, 0, 0, 0.5), 0 6px 18px -8px rgba(0, 0, 0, 0.62);
+    --shadow-lift: 0 2px 6px rgba(0, 0, 0, 0.55), 0 30px 60px -20px rgba(0, 0, 0, 0.85);
+  }
+
+  /* ── CANONICAL BREAKPOINTS ──────────────────────────────────────────────
+     mobile 0–767 (verify 375) · tablet 768–1023 (verify 768) · desktop 1024+
+     (verify 1440). Written mobile-first; media queries only ever ADD. */
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.62;
+    transition: background-color .45s var(--ease), color .45s var(--ease);
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--c-accent); }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    line-height: 1.08;
+    margin: 0 0 .5em;
+    letter-spacing: -0.022em;
+    font-weight: 700;
+    text-wrap: balance;
+  }
+  h1 { font-size: clamp(2.3rem, 5.4vw, 3.9rem); letter-spacing: -0.032em; }
+  h2 { font-size: clamp(1.6rem, 3.2vw, 2.4rem); letter-spacing: -0.026em; }
+  h3 { font-size: 1.1875rem; letter-spacing: -0.016em; }
+  p { margin: 0 0 1em; }
+  p:last-child { margin-block-end: 0; }
+
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+
+  /* Section = a slab of page with its own board inside. */
+  section {
+    position: relative;
+    padding-block: clamp(2.5rem, 6vw, 4.5rem);
+    border-block-start: 0;
+    scroll-margin-block-start: 84px;
+  }
+  section:first-of-type { border-block-start: 0; }
+
+  /* ── THE BOARD — loose masonry: six-track columns, 8px row lattice,
+        dense flow, per-tile row spans measured from content in JS. ── */
+  .grid, .x-board {
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    grid-auto-rows: var(--row-unit);
+    grid-auto-flow: row dense;
+    gap: var(--grid-gap);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /* ── Tile = one card of the bento. ── */
+  .card, .x-t {
+    position: relative;
+    min-width: 0;
+    grid-column: span var(--cs, 2);
+    grid-row: span var(--rs, 12);
+    align-self: start;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: var(--card-radius);
+    padding: clamp(1.1rem, 2.2vw, 1.6rem);
+    box-shadow: var(--shadow-rest);
+    transition: transform .42s var(--ease), box-shadow .42s var(--ease),
+                background-color .45s var(--ease), border-color .45s var(--ease);
+  }
+  @media (hover: hover) {
+    .x-t:hover { transform: scale(1.02); box-shadow: var(--shadow-lift); z-index: 2; }
+  }
+  .x-t:focus-within { box-shadow: var(--shadow-lift); }
+
+  /* accent-washed tile: same surface with a whisper of the accent */
+  .x-t--tint {
+    background-color: var(--c-surface);
+    background-image: linear-gradient(150deg, var(--c-accent-soft), transparent 62%);
+  }
+  .x-t--flat { background: var(--c-elevate); }
+
+  /* ── Column spans per band. Mobile: two tracks (everything wide).
+        Tablet: four. Desktop: six, so 2/3/4/6 widths interlock. ── */
+  .x-c2, .x-c3, .x-c4, .x-c6 { --cs: 2; }
+  .x-chip { --cs: 1; }
+  @media (min-width: 768px) {
+    .grid, .x-board { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .x-c2 { --cs: 2; }
+    .x-c3 { --cs: 2; }
+    .x-c4 { --cs: 4; }
+    .x-c6 { --cs: 4; }
+    .x-chip { --cs: 1; }
+  }
+  @media (min-width: 1024px) {
+    .grid, .x-board { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+    .x-c2 { --cs: 2; }
+    .x-c3 { --cs: 3; }
+    .x-c4 { --cs: 4; }
+    .x-c6 { --cs: 6; }
+    .x-chip { --cs: 2; }
+  }
+
+  /* ── Typography inside tiles ── */
+  .eyebrow {
+    margin: 0 0 1rem;
+    font-size: .8125rem;
+    font-weight: 600;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    color: var(--c-accent);
+  }
+  .lede, .x-t > p { color: var(--c-muted); }
+  .x-t--head { background: transparent; border-color: transparent; box-shadow: none; padding-inline: .25rem; }
+  .x-t--head:hover { transform: none; box-shadow: none; }
+  .x-t--head h2 { margin-block-end: .35em; }
+  .x-t--head p { margin: 0; }
+  .x-kicker {
+    display: block;
+    width: 34px; height: 4px;
+    border-radius: 99px;
+    background: var(--c-accent);
+    margin-block-end: .9rem;
+    opacity: .9;
+  }
+  .x-kicker::before { content: none; }
+
+  /* ── Buttons: Apple pills ── */
+  .btn {
+    display: inline-block;
+    font: inherit;
+    font-weight: 600;
+    font-size: .9375rem;
+    letter-spacing: -0.01em;
+    text-decoration: none;
+    padding: .72rem 1.35rem;
+    min-height: 44px;
+    border-radius: 990px;
+    border: 1px solid transparent;
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    transition: transform .28s var(--ease), box-shadow .28s var(--ease),
+                filter .28s var(--ease), background-color .28s var(--ease), color .28s var(--ease);
+  }
+  .btn:hover { transform: scale(1.02); box-shadow: var(--shadow-lift); filter: saturate(1.08); }
+  .btn--quiet {
+    background: var(--c-elevate);
+    color: var(--c-text);
+    border-color: transparent;
+  }
+  .btn--quiet:hover { background: var(--c-surface); box-shadow: var(--shadow-rest); }
+  .x-cta { display: flex; flex-wrap: wrap; gap: .75rem; align-items: center; margin: 0; }
+
+  /* ── Hero ── */
+  #hero { padding-block-start: clamp(1.5rem, 4vw, 3rem); }
+  #hero .x-t--intro h1 { margin-block-end: .3em; }
+  #hero .x-t--intro .lede { font-size: clamp(1.0625rem, 1.5vw, 1.3rem); line-height: 1.5; color: var(--c-text); opacity: .82; }
+  .hero-figure { min-width: 0; }
+
+  /* the 2×2 meta grid inside its tile: bento within bento */
+  .meta-list {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  .meta-list li {
+    font-family: var(--font-display);
+    font-size: .9375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    color: var(--c-text);
+    background: var(--c-elevate);
+    border-radius: var(--chip-radius);
+    padding: .8rem .85rem;
+    min-width: 0;
+    overflow-wrap: anywhere;
+  }
+  .meta-list li::before {
+    content: ""; display: block; width: 18px; height: 3px; border-radius: 99px;
+    background: var(--c-accent); margin-block-end: .55rem; opacity: .85;
+  }
+
+  /* ── Photo tiles: fixed aspect, cover, caption chip floating on the image ── */
+  figure { margin: 0; min-width: 0; }
+  .x-photo {
+    padding: 0;
+    overflow: hidden;
+    background: var(--c-elevate);
+    border-radius: var(--card-radius);
+  }
+  .x-photo > img {
+    display: block;
+    width: 100%;
+    height: auto;
+    aspect-ratio: var(--ar, 4 / 3);
+    object-fit: cover;
+    background: var(--c-elevate);
+    transition: transform .6s var(--ease);
+  }
+  @media (hover: hover) {
+    .x-photo:hover > img { transform: scale(1.045); }
+  }
+  .x-photo > figcaption,
+  figcaption.x-cap {
+    position: absolute;
+    inset-inline: 12px;
+    inset-block-end: 12px;
+    margin: 0;
+    max-width: calc(100% - 24px);
+    font-size: .8125rem;
+    line-height: 1.45;
+    color: var(--c-surface);
+    background: var(--c-scrim);
+    border-radius: var(--chip-radius);
+    padding: .5rem .75rem;
+    box-shadow: 0 1px 2px var(--c-shadow);
+  }
+  [data-theme="dark"] .x-photo > figcaption,
+  [data-theme="dark"] figcaption.x-cap { color: #f2f2f5; }
+  .x-grain {
+    position: absolute; inset: 0; pointer-events: none; border-radius: inherit;
+    background-image:
+      radial-gradient(circle at 12% 18%, rgba(255, 255, 255, .10) 0 1px, transparent 1.6px),
+      radial-gradient(circle at 62% 74%, rgba(0, 0, 0, .10) 0 1px, transparent 1.6px);
+    background-size: 9px 9px, 13px 13px;
+    mix-blend-mode: overlay;
+    opacity: .5;
+  }
+
+  /* ── Highlight / day cards ── */
+  .x-t h3 { margin-block-end: .45em; }
+  .x-t h3 + p { color: var(--c-muted); font-size: .9375rem; }
+  .x-t > p { font-size: .9375rem; }
+  .day-num {
+    display: inline-block;
+    font-family: var(--font-display);
+    font-size: .6875rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: .12em;
+    color: var(--c-accent);
+    background: var(--c-accent-soft);
+    border-radius: 990px;
+    padding: .3rem .65rem;
+    margin-block-end: .85rem;
+  }
+  .x-t:not(.x-photo) > img {
+    width: 100%;
+    margin-block: 1rem .2rem;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+    border-radius: 16px;
+  }
+
+  /* ── Reviews ── */
+  blockquote.card { margin: 0; }
+  .rating {
+    color: var(--c-accent);
+    letter-spacing: .16em;
+    font-size: 1rem;
+    margin: 0 0 .7rem;
+  }
+  .x-quote {
+    font-family: var(--font-display);
+    font-size: clamp(1.0625rem, 1.5vw, 1.28rem);
+    line-height: 1.42;
+    letter-spacing: -0.014em;
+    color: var(--c-text);
+  }
+  blockquote > p:last-of-type { color: var(--c-text); opacity: .9; }
+  #reviews footer { font-style: normal; margin-block-start: 1rem; }
+  #reviews cite { font-family: var(--font-display); font-weight: 600; font-style: normal; }
+  #reviews footer span { color: var(--c-muted); font-size: .875rem; }
+  .x-ratewrap { display: flex; align-items: center; gap: .75rem; margin-block-end: .9rem; }
+  .x-ratewrap .rating { margin: 0; }
+  .x-ratewrap .x-avatar {
+    width: 30px; height: 30px; border-radius: 990px; flex: none;
+    background: linear-gradient(140deg, var(--c-accent), var(--c-elevate));
+    box-shadow: inset 0 0 0 1px var(--c-border);
+  }
+
+  /* ── Booking form ── */
+  .field { display: grid; gap: .4rem; margin-block-end: 1rem; min-width: 0; }
+  .field > label { font-size: .8125rem; font-weight: 600; color: var(--c-muted); }
+  .field > input, .field > select {
+    font: inherit; color: var(--c-text);
+    padding: .7rem .9rem;
+    min-height: 46px;
+    background: var(--c-elevate);
+    border: 1px solid transparent;
+    border-radius: 14px;
+    width: 100%;
+    transition: background-color .25s var(--ease), border-color .25s var(--ease);
+  }
+  .field > input:hover, .field > select:hover { background: var(--c-surface); border-color: var(--c-border); }
+  .field > input:focus, .field > select:focus { background: var(--c-surface); border-color: var(--c-accent); }
+  #booking-form { display: grid; gap: 0; }
+  #booking-form .x-formgrid {
+    display: grid; grid-template-columns: minmax(0, 1fr); gap: 0 var(--grid-gap);
+  }
+  @media (min-width: 1024px) {
+    #booking-form .x-formgrid--pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+  .fineprint { font-size: .8125rem; color: var(--c-muted); margin-block-start: .9rem; }
+
+  /* ── FAQ ── */
+  .x-faq-summary {
+    display: flex; align-items: baseline; justify-content: space-between; gap: 1rem;
+    font-family: var(--font-display); font-weight: 600; font-size: 1.0625rem;
+    letter-spacing: -0.014em; cursor: pointer; list-style: none;
+  }
+  .x-faq-summary::-webkit-details-marker { display: none; }
+  .x-faq-summary::after {
+    content: ""; flex: none; width: 22px; height: 22px; border-radius: 990px;
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 12px 2px no-repeat,
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 2px 12px no-repeat;
+    transform: translateY(-1px);
+    transition: transform .3s var(--ease), background-size .3s var(--ease);
+  }
+  details[open] > .x-faq-summary::after { transform: translateY(-1px) rotate(45deg); }
+  details > p { margin-block-start: .9rem; color: var(--c-muted); }
+  details.x-t--pad0 { padding: 0; }
+  details.x-t--pad0 > summary { padding: clamp(1.1rem, 2.2vw, 1.6rem); }
+  details.x-t--pad0 > p { padding: 0 clamp(1.1rem, 2.2vw, 1.6rem) clamp(1.1rem, 2.2vw, 1.6rem); }
+
+  /* ── Header chrome: single blurred layer, bounded ── */
+  .site-header {
+    position: sticky; top: 0; z-index: 30;
+    background: var(--c-header);
+    border-block-end: 1px solid var(--c-border);
+  }
+  @supports (backdrop-filter: blur(20px)) {
+    .site-header { backdrop-filter: blur(20px) saturate(180%); -webkit-backdrop-filter: blur(20px) saturate(180%); }
+  }
+  .site-header .wrap {
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    padding-block: .7rem;
+    flex-wrap: wrap;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1.0625rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    display: inline-flex; align-items: center; gap: .55rem;
+  }
+  .brand::before {
+    content: ""; width: 20px; height: 20px; border-radius: 7px; flex: none;
+    background: linear-gradient(150deg, var(--c-accent), var(--c-elevate));
+    box-shadow: inset 0 0 0 1px var(--c-border);
+  }
+  .site-nav { display: flex; gap: .35rem; font-size: .875rem; flex-wrap: wrap; }
+  .site-nav a {
+    color: var(--c-text); text-decoration: none;
+    padding: .38rem .8rem; border-radius: 990px;
+    transition: background-color .25s var(--ease), color .25s var(--ease);
+  }
+  .site-nav a:hover { background: var(--c-elevate); }
+  #theme-toggle { font-size: .8125rem; padding: .5rem 1rem; min-height: 38px; }
+
+  /* ── Footer ── */
+  .site-footer {
+    background: var(--c-surface);
+    border-block-start: 1px solid var(--c-border);
+    padding-block: clamp(2rem, 5vw, 3.5rem);
+    margin-block-start: clamp(1rem, 3vw, 2rem);
+  }
+  .site-footer .wrap { display: flex; flex-wrap: wrap; gap: .35rem 2rem; align-items: baseline; }
+  .site-footer p { margin: 0; font-size: .875rem; color: var(--c-muted); }
+  .site-footer p:first-child { color: var(--c-text); font-family: var(--font-display); font-weight: 600; }
+
+  /* ── Tier-2 decoration: page wash behind a board. One absolute layer per
+        section, never fixed, never blurred → bounded compositing. ── */
+  .x-veil {
+    position: absolute; inset: 0; pointer-events: none; overflow: hidden;
+    z-index: 0;
+    background:
+      radial-gradient(58% 42% at 8% -6%, var(--c-accent-soft), transparent 70%),
+      radial-gradient(46% 38% at 96% 12%, var(--c-accent-soft), transparent 72%);
+    opacity: .9;
+  }
+  .x-board { z-index: 1; }
+
+  /* ── Reveal (content reveal): only armed by JS when motion is welcome and
+        we are not in thumbnail mode, so nothing can be stuck at opacity 0. ── */
+  html.x-reveal .x-rv.x-armed { opacity: 0; transform: translateY(16px) scale(.994); }
+  html.x-reveal .x-rv.x-armed.x-in {
+    opacity: 1; transform: none;
+    transition: opacity .62s var(--ease) var(--rvd, 0ms), transform .62s var(--ease) var(--rvd, 0ms);
+  }
+
+  /* ── Focus ── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: 8px;
+  }
+  a:focus-visible, .btn:focus-visible, #theme-toggle:focus-visible { outline-offset: 4px; }
+
+  /* ── Overflow guards (mandatory) ── */
+  img, svg, video, canvas { max-width: 100%; }
+  body { overflow-wrap: break-word; }
+  .grid > *, .card, figure, .x-t, .field, .meta-list li { min-width: 0; }
+  .meta-list, .x-cta, .site-header .wrap, .site-footer .wrap { overflow-wrap: anywhere; }
+
+  /* ── MOBILE band specifics (below the tablet threshold) ── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    #theme-toggle { padding: .5rem .9rem; }
+    .x-cta .btn { display: block; width: 100%; text-align: center; }
+    .field > input, .field > select { font-size: 16px; }
+    section { padding-block: clamp(2rem, 7vw, 3rem); }
+    #hero { padding-block-start: 1.25rem; }
+  }
+
+  /* ── TABLET band: 768 – 1023px ── */
+  @media (min-width: 768px) {
+    .hero-figure { --ar: 4 / 3; }
+  }
+
+  /* ── DESKTOP band: 1024px and up ── */
+  @media (min-width: 1024px) {
+    .hero-figure { --ar: 5 / 4; }
+    .x-t { padding: 1.7rem; }
+    .x-t--tall { --rs: 34; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    html.x-reveal .x-rv, html.x-reveal .x-rv.x-armed { opacity: 1; transform: none; }
+  }
+
+  /* ── Print-ish safety: if the sizer never runs, static spans still stack
+        sensibly instead of collapsing. ── */
+  html:not(.x-sized) .grid, html:not(.x-sized) .x-board { grid-auto-rows: auto; }
+  html:not(.x-sized) .x-t { grid-row: auto; }
+</style>
+</head>
+
+<body>
+
+<header class="site-header" id="site-header">
+  <div class="wrap">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="card x-t x-c3 x-t--tint x-rv x-t--intro">
+        <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+        <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+        <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+      </div>
+
+      <figure class="card x-t x-c3 x-photo x-rv hero-figure">
+        <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+        <span class="x-grain" aria-hidden="true"></span>
+        <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+      </figure>
+
+      <ul class="card x-t x-c3 x-t--flat x-rv meta-list">
+        <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+        <li data-tid="hero.meta.2">¥248,000 per person</li>
+        <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+        <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+      </ul>
+
+      <p class="card x-t x-c3 x-rv x-cta">
+        <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+        <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+      </p>
+
+    </div>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="x-t x-c3 x-t--head x-rv">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h2 data-tid="highlights.title" style="margin-block-start:.5rem">What you'll see</h2>
+      </div>
+      <div class="x-t x-c2 x-t--head x-rv">
+        <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+      </div>
+
+      <article class="card x-t x-c4 x-rv">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+
+      <article class="card x-t x-c2 x-t--tint x-rv">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+
+      <article class="card x-t x-c2 x-rv">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+
+      <article class="card x-t x-c4 x-rv">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="x-t x-c3 x-t--head x-rv">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h2 data-tid="itinerary.title" style="margin-block-start:.5rem">The seven days</h2>
+      </div>
+      <div class="x-t x-c2 x-t--head x-rv">
+        <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+      </div>
+
+      <article class="card x-t x-c2 x-rv day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+
+      <article class="card x-t x-c2 x-rv day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+
+      <article class="card x-t x-c2 x-t--tint x-rv day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+
+      <article class="card x-t x-c3 x-rv day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+
+      <article class="card x-t x-c3 x-rv day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+
+      <article class="card x-t x-c2 x-rv day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+
+      <article class="card x-t x-c4 x-t--flat x-rv day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="x-t x-c3 x-t--head x-rv">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h2 data-tid="gallery.title" style="margin-block-start:.5rem">Kyoto, in pictures</h2>
+      </div>
+      <div class="x-t x-c2 x-t--head x-rv">
+        <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+      </div>
+
+      <figure class="card x-t x-c4 x-photo x-rv" style="--ar:16/10">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <span class="x-grain" aria-hidden="true"></span>
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+
+      <figure class="card x-t x-c2 x-photo x-rv" style="--ar:3/4">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+
+      <figure class="card x-t x-c2 x-photo x-rv" style="--ar:1/1">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+
+      <figure class="card x-t x-c2 x-photo x-rv" style="--ar:4/5">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+
+      <figure class="card x-t x-c2 x-photo x-rv" style="--ar:4/3">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+
+      <figure class="card x-t x-c4 x-photo x-rv" style="--ar:16/9">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <span class="x-grain" aria-hidden="true"></span>
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="x-t x-c3 x-t--head x-rv">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h2 data-tid="reviews.title" style="margin-block-start:.5rem">From past travellers</h2>
+      </div>
+
+      <blockquote class="card x-t x-c4 x-rv">
+        <span class="x-ratewrap" aria-hidden="true"><span class="x-avatar"></span></span>
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p class="x-quote" data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+
+      <blockquote class="card x-t x-c2 x-t--flat x-rv">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+
+      <blockquote class="card x-t x-c6 x-rv">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <div class="x-veil" aria-hidden="true"></div>
+    <div class="grid x-board">
+
+      <div class="x-t x-c3 x-t--head x-rv">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h2 data-tid="booking.title" style="margin-block-start:.5rem">Reserve a place</h2>
+      </div>
+      <div class="x-t x-c2 x-rv x-t--tint">
+        <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+      </div>
+
+      <form id="booking-form" class="card x-t x-c3 x-rv" method="post" action="#" novalidate>
+        <div class="x-formgrid x-formgrid--pair">
+          <div class="field">
+            <label for="booking-name" data-tid="booking.label.name">Full name</label>
+            <input id="booking-name" name="name" type="text" autocomplete="name" required>
+          </div>
+          <div class="field">
+            <label for="booking-email" data-tid="booking.label.email">Email</label>
+            <input id="booking-email" name="email" type="email" autocomplete="email" required>
+          </div>
+        </div>
+        <div class="x-formgrid x-formgrid--pair">
+          <div class="field">
+            <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+            <select id="booking-departure" name="departure" required>
+              <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+              <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+              <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+            <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+          </div>
+        </div>
+        <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+        <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+      </form>
+
+      <div class="x-t x-c3 x-rv x-t--flat">
+        <span class="x-kicker" aria-hidden="true"></span>
+        <h3 data-tid="faq.title" style="margin-block-start:.6rem">Questions</h3>
+      </div>
+
+      <details class="card x-t x-c3 x-rv">
+        <summary class="x-faq-summary" data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card x-t x-c3 x-rv">
+        <summary class="x-faq-summary" data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card x-t x-c3 x-rv">
+        <summary class="x-faq-summary" data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card x-t x-c3 x-rv">
+        <summary class="x-faq-summary" data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── bento-grids runtime ─────────────────────────────────────────────────
+     Two jobs, both cheap: (1) measure every board tile and give it a row span
+     so the masonry packs by content (uneven bottoms), (2) reveal tiles once as
+     they approach the viewport. No rAF loop, no canvas, no cursor tracking, no
+     scroll listener; one-shot sizing plus a debounced resize, and in ?thumb=1
+     mode only the single static sizing pass runs. */
+  (function () {
+    var root = document.documentElement;
+    var THUMB = window.STYLE_SCAFFOLD_THUMB === true;
+    var mq = window.matchMedia ? window.matchMedia('(prefers-reduced-motion: reduce)') : null;
+    var calm = !!(mq && mq.matches);
+
+    function rowUnit() {
+      var n = parseFloat(getComputedStyle(root).getPropertyValue('--row-unit'));
+      return isFinite(n) && n > 0 ? n : 8;
+    }
+
+    /* Pack one board: force every tile to one row to read its natural content
+       height, then give it the span that holds that height. Decorative tiles are
+       measured too, so an unsized hole can never push the board out of rhythm. */
+    function sizeBoard(board) {
+      var unit = rowUnit();
+      var gap = parseFloat(getComputedStyle(board).rowGap) || 0;
+      var kids = [];
+      var i, node;
+      for (i = 0; i < board.children.length; i++) {
+        node = board.children[i];
+        if (node.nodeType === 1) kids.push(node);
+      }
+      for (i = 0; i < kids.length; i++) kids[i].style.setProperty('--rs', '1');
+      var heights = [];
+      for (i = 0; i < kids.length; i++) heights.push(kids[i].scrollHeight);
+      for (i = 0; i < kids.length; i++) {
+        var span = Math.ceil((heights[i] + gap) / (unit + gap));
+        if (!isFinite(span) || span < 3) span = 3;
+        kids[i].style.setProperty('--rs', String(span));
+      }
+    }
+
+    function sizeAll() {
+      var boards = document.querySelectorAll('.x-board');
+      for (var i = 0; i < boards.length; i++) sizeBoard(boards[i]);
+      root.classList.add('x-sized');
+    }
+
+    /* Reveal: only the tiles that are already on screen are armed, and they
+       stagger in once. Nothing below the fold is ever held at opacity 0, so a
+       page that is never scrolled still shows all of its content. */
+    function reveal() {
+      if (THUMB || calm) return;
+      var tiles = document.querySelectorAll('.x-rv');
+      var armed = [];
+      var limit = window.innerHeight * 1.15;
+      for (var i = 0; i < tiles.length; i++) {
+        if (tiles[i].getBoundingClientRect().top < limit) armed.push(tiles[i]);
+      }
+      if (!armed.length) return;
+      for (var a = 0; a < armed.length; a++) armed[a].classList.add('x-armed');
+      root.classList.add('x-reveal');
+      for (var j = 0; j < armed.length; j++) {
+        armed[j].style.setProperty('--rvd', (j % 8) * 70 + 'ms');
+      }
+      window.setTimeout(function () {
+        for (var k = 0; k < armed.length; k++) armed[k].classList.add('x-in');
+      }, 40);
+    }
+
+    function onceAndListen() {
+      sizeAll();
+      reveal();
+      if (THUMB) return;              /* static layout is enough for a thumbnail */
+      var pending = 0;
+      function queue() {
+        window.clearTimeout(pending);
+        pending = window.setTimeout(sizeAll, 140);
+      }
+      window.addEventListener('resize', queue, { passive: true });
+      window.addEventListener('load', sizeAll);
+      var media = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < media.length; i++) {
+        media[i].addEventListener('load', queue);
+        media[i].addEventListener('error', queue);
+      }
+      if (mq) {
+        var watch = function () { calm = mq.matches; if (calm) root.classList.remove('x-reveal'); };
+        if (mq.addEventListener) mq.addEventListener('change', watch);
+        else if (mq.addListener) mq.addListener(watch);
+      }
+    }
+
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', onceAndListen);
+    } else {
+      onceAndListen();
+    }
+  })();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,282 @@
+[
+  {
+    "id": "minimalism-and-swiss-style",
+    "name": "Minimalism & Swiss Style",
+    "type": "General"
+  },
+  {
+    "id": "neumorphism",
+    "name": "Neumorphism",
+    "type": "General"
+  },
+  {
+    "id": "glassmorphism",
+    "name": "Glassmorphism",
+    "type": "General"
+  },
+  {
+    "id": "brutalism",
+    "name": "Brutalism",
+    "type": "General"
+  },
+  {
+    "id": "3d-and-hyperrealism",
+    "name": "3D & Hyperrealism",
+    "type": "General"
+  },
+  {
+    "id": "vibrant-and-block-based",
+    "name": "Vibrant & Block-based",
+    "type": "General"
+  },
+  {
+    "id": "dark-mode-oled",
+    "name": "Dark Mode (OLED)",
+    "type": "General"
+  },
+  {
+    "id": "accessible-and-ethical",
+    "name": "Accessible & Ethical",
+    "type": "General"
+  },
+  {
+    "id": "claymorphism",
+    "name": "Claymorphism",
+    "type": "General"
+  },
+  {
+    "id": "aurora-ui",
+    "name": "Aurora UI",
+    "type": "General"
+  },
+  {
+    "id": "retro-futurism",
+    "name": "Retro-Futurism",
+    "type": "General"
+  },
+  {
+    "id": "flat-design",
+    "name": "Flat Design",
+    "type": "General"
+  },
+  {
+    "id": "skeuomorphism",
+    "name": "Skeuomorphism",
+    "type": "General"
+  },
+  {
+    "id": "motion-driven",
+    "name": "Motion-Driven",
+    "type": "General"
+  },
+  {
+    "id": "micro-interactions",
+    "name": "Micro-interactions",
+    "type": "General"
+  },
+  {
+    "id": "inclusive-design",
+    "name": "Inclusive Design",
+    "type": "General"
+  },
+  {
+    "id": "zero-interface",
+    "name": "Zero Interface",
+    "type": "General"
+  },
+  {
+    "id": "soft-ui-evolution",
+    "name": "Soft UI Evolution",
+    "type": "General"
+  },
+  {
+    "id": "hero-centric-design",
+    "name": "Hero-Centric Design",
+    "type": "Landing Page"
+  },
+  {
+    "id": "conversion-optimized",
+    "name": "Conversion-Optimized",
+    "type": "Landing Page"
+  },
+  {
+    "id": "feature-rich-showcase",
+    "name": "Feature-Rich Showcase",
+    "type": "Landing Page"
+  },
+  {
+    "id": "minimal-and-direct",
+    "name": "Minimal & Direct",
+    "type": "Landing Page"
+  },
+  {
+    "id": "social-proof-focused",
+    "name": "Social Proof-Focused",
+    "type": "Landing Page"
+  },
+  {
+    "id": "interactive-product-demo",
+    "name": "Interactive Product Demo",
+    "type": "Landing Page"
+  },
+  {
+    "id": "trust-and-authority",
+    "name": "Trust & Authority",
+    "type": "Landing Page"
+  },
+  {
+    "id": "storytelling-driven",
+    "name": "Storytelling-Driven",
+    "type": "Landing Page"
+  },
+  {
+    "id": "neubrutalism",
+    "name": "Neubrutalism",
+    "type": "General"
+  },
+  {
+    "id": "bento-box-grid",
+    "name": "Bento Box Grid",
+    "type": "General"
+  },
+  {
+    "id": "y2k-aesthetic",
+    "name": "Y2K Aesthetic",
+    "type": "General"
+  },
+  {
+    "id": "cyberpunk-ui",
+    "name": "Cyberpunk UI",
+    "type": "General"
+  },
+  {
+    "id": "organic-biophilic",
+    "name": "Organic Biophilic",
+    "type": "General"
+  },
+  {
+    "id": "ai-native-ui",
+    "name": "AI-Native UI",
+    "type": "General"
+  },
+  {
+    "id": "memphis-design",
+    "name": "Memphis Design",
+    "type": "General"
+  },
+  {
+    "id": "vaporwave",
+    "name": "Vaporwave",
+    "type": "General"
+  },
+  {
+    "id": "dimensional-layering",
+    "name": "Dimensional Layering",
+    "type": "General"
+  },
+  {
+    "id": "exaggerated-minimalism",
+    "name": "Exaggerated Minimalism",
+    "type": "General"
+  },
+  {
+    "id": "kinetic-typography",
+    "name": "Kinetic Typography",
+    "type": "General"
+  },
+  {
+    "id": "parallax-storytelling",
+    "name": "Parallax Storytelling",
+    "type": "General"
+  },
+  {
+    "id": "swiss-modernism-2-0",
+    "name": "Swiss Modernism 2.0",
+    "type": "General"
+  },
+  {
+    "id": "hud-sci-fi-fui",
+    "name": "HUD / Sci-Fi FUI",
+    "type": "General"
+  },
+  {
+    "id": "pixel-art",
+    "name": "Pixel Art",
+    "type": "General"
+  },
+  {
+    "id": "bento-grids",
+    "name": "Bento Grids (Legacy)",
+    "type": "General"
+  },
+  {
+    "id": "spatial-ui-visionos",
+    "name": "Spatial UI (VisionOS)",
+    "type": "General"
+  },
+  {
+    "id": "e-ink-paper",
+    "name": "E-Ink / Paper",
+    "type": "General"
+  },
+  {
+    "id": "gen-z-chaos-maximalism",
+    "name": "Gen Z Chaos / Maximalism",
+    "type": "General"
+  },
+  {
+    "id": "biomimetic-organic-2-0",
+    "name": "Biomimetic / Organic 2.0",
+    "type": "General"
+  },
+  {
+    "id": "anti-polish-raw-aesthetic",
+    "name": "Anti-Polish / Raw Aesthetic",
+    "type": "General"
+  },
+  {
+    "id": "tactile-digital-deformable-ui",
+    "name": "Tactile Digital / Deformable UI",
+    "type": "General"
+  },
+  {
+    "id": "nature-distilled",
+    "name": "Nature Distilled",
+    "type": "General"
+  },
+  {
+    "id": "interactive-cursor-design",
+    "name": "Interactive Cursor Design",
+    "type": "General"
+  },
+  {
+    "id": "voice-first-multimodal",
+    "name": "Voice-First Multimodal",
+    "type": "General"
+  },
+  {
+    "id": "3d-product-preview",
+    "name": "3D Product Preview",
+    "type": "General"
+  },
+  {
+    "id": "gradient-mesh-aurora-evolved",
+    "name": "Gradient Mesh / Aurora Evolved",
+    "type": "General"
+  },
+  {
+    "id": "editorial-grid-magazine",
+    "name": "Editorial Grid / Magazine",
+    "type": "General"
+  },
+  {
+    "id": "chromatic-aberration-rgb-split",
+    "name": "Chromatic Aberration / RGB Split",
+    "type": "General"
+  },
+  {
+    "id": "vintage-analog-retro-film",
+    "name": "Vintage Analog / Retro Film",
+    "type": "General"
+  }
+]

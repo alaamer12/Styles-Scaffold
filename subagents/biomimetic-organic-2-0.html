@@ -1,0 +1,1402 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE — Biomimetic / Organic 2.0   (row 58 of styles.csv)
+  Nature as a SYSTEM: cells that breathe, a mycelium that grows, a chain of
+  days that sprouts. Three mechanisms, committed to:
+    1. cellular surfaces — membrane borders + morphing organic radii + breathing
+    2. generative canvas — a hand-written mycelium/venation growth in the hero
+    3. growth layout — asymmetric clustering, a sprouting itinerary chain
+  No framework, no library: SVG morphing / canvas / physics reproduced in plain
+  CSS keyframes and vanilla JS, all gated by STYLE_SCAFFOLD_THUMB and
+  prefers-reduced-motion. Composited layers bounded (ROOT §9): no
+  backdrop-filter, blur only on three small bounded blobs.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..700,0..100,0..1&family=Outfit:wght@200..600&display=swap">
+
+<style>
+  /* ── Canonical colour tokens — revalued for this style ─────────────────
+     Light: cell-culture medium, ink is chlorophyll-dark so every text pair
+     clears 4.5:1. The named CSV lights (chlorophyll, bioluminescent) are too
+     pale to sit on white, so they live in --bio-* and glow, never carry text. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #eef5ec;
+    --c-surface: #ffffff;
+    --c-elevate: #dfeee1;
+    --c-text: #0c2318;
+    --c-muted: #48685a;
+    --c-accent: #0b6e3f;
+    --c-accent-ink: #f4fff7;
+    --c-border: #b9d5c0;
+    --c-shadow: rgba(12, 35, 24, 0.14);
+  }
+  [data-theme="dark"] {
+    --c-bg: #001e3c;
+    --c-surface: #062e4c;
+    --c-elevate: #0a4066;
+    --c-text: #eafbef;
+    --c-muted: #8fc3b3;
+    --c-accent: #00ff41;
+    --c-accent-ink: #04140a;
+    --c-border: #17597f;
+    --c-shadow: rgba(0, 6, 14, 0.55);
+  }
+
+  /* ── Style palette + design-system variables from the brief ────────────
+     Non --c-* names, so theme parity is judged on the canonical ten only. */
+  [data-theme="light"] {
+    --bio-chlorophyll: #0e8f45;
+    --bio-biolum: #0e7f8c;
+    --bio-pink: #ff9999;
+    --bio-coral: #ff7f50;
+    --bio-deep: #001e3c;
+    --bio-vein: rgba(14, 143, 69, 0.38);
+    --bio-vein-2: rgba(14, 127, 140, 0.30);
+    --bio-nucleus: rgba(255, 127, 80, 0.72);
+    --bio-glow: rgba(14, 143, 69, 0.20);
+    --bio-mesh-a: rgba(255, 153, 153, 0.34);
+    --bio-mesh-b: rgba(14, 127, 140, 0.22);
+    --bio-mesh-c: rgba(14, 143, 69, 0.20);
+    --bio-cytoplasm: radial-gradient(120% 100% at 12% 0%, #ffffff 0%, #f3fbf3 46%, #e7f4e9 100%);
+    --bio-membrane: rgba(14, 143, 69, 0.24);
+    --bio-veil: rgba(238, 245, 236, 0.86);
+    --bio-seam: rgba(14, 143, 69, 0.26);
+    --bio-spore: rgba(14, 143, 69, 0.30);
+  }
+  [data-theme="dark"] {
+    --bio-chlorophyll: #00ff41;
+    --bio-biolum: #00ffff;
+    --bio-pink: #ff9999;
+    --bio-coral: #ff7f50;
+    --bio-deep: #001228;
+    --bio-vein: rgba(0, 255, 65, 0.42);
+    --bio-vein-2: rgba(0, 255, 255, 0.32);
+    --bio-nucleus: rgba(255, 153, 153, 0.8);
+    --bio-glow: rgba(0, 255, 65, 0.16);
+    --bio-mesh-a: rgba(0, 255, 255, 0.20);
+    --bio-mesh-b: rgba(255, 127, 80, 0.16);
+    --bio-mesh-c: rgba(0, 255, 65, 0.14);
+    --bio-cytoplasm: radial-gradient(120% 100% at 12% 0%, #0a3b5e 0%, #06314f 46%, #04273f 100%);
+    --bio-membrane: rgba(0, 255, 255, 0.26);
+    --bio-veil: rgba(0, 30, 60, 0.84);
+    --bio-seam: rgba(0, 255, 255, 0.24);
+    --bio-spore: rgba(0, 255, 255, 0.42);
+  }
+
+  /* ── Non-colour canonical layout vars (overridden) ── */
+  :root {
+    --page-max: 1160px;
+    --gap: 1.6rem;
+    --pad: clamp(1.15rem, 4.4vw, 3.25rem);
+    --radius: 1.1rem 1.9rem 1.2rem 2.1rem / 1.9rem 1.1rem 2rem 1.2rem;
+    --font-display: "Fraunces", ui-serif, Georgia, "Times New Roman", serif;
+    --font-body: "Outfit", ui-rounded, "Avenir Next", "Segoe UI", system-ui, sans-serif;
+
+    /* the brief's own design-system variables, used for real */
+    --breathing-duration: 4s;
+    --morph-ease: cubic-bezier(0.4, 0, 0.2, 1);
+    --organic-blur: 20px;
+    --cell-r-a: 62% 38% 46% 54% / 51% 44% 56% 49%;
+    --cell-r-b: 38% 62% 56% 44% / 44% 58% 42% 56%;
+    --stem: 2px;
+  }
+
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  /* NOTE: no document-level `scroll-behavior: smooth` here — it makes a raw
+     programmatic scrollTo() animate, which starves below-the-fold lazy images.
+     Smooth anchor travel is done in JS instead, gated like everything else. */
+  body {
+    margin: 0;
+    background:
+      radial-gradient(70% 46% at 8% 4%, var(--bio-mesh-c), transparent 62%),
+      radial-gradient(58% 40% at 96% 22%, var(--bio-mesh-b), transparent 66%),
+      radial-gradient(64% 44% at 40% 98%, var(--bio-mesh-a), transparent 68%),
+      var(--c-bg);
+    background-attachment: fixed;
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1.03rem;
+    font-weight: 350;
+    line-height: 1.7;
+    letter-spacing: .004em;
+    overflow-x: clip;
+  }
+
+  /* cytoplasm grain — one bounded fixed layer, rasterised once */
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    z-index: 4;
+    pointer-events: none;
+    opacity: .05;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml;charset=utf-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  [data-theme="dark"] body::after { mix-blend-mode: screen; opacity: .07; }
+
+  img { display: block; max-width: 100%; height: auto; }
+  a { color: var(--c-accent); text-underline-offset: .22em; }
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 64, "WONK" 1, "opsz" 96;
+    line-height: 1.06;
+    margin: 0 0 .5em;
+    letter-spacing: -.014em;
+  }
+  h1 { font-size: clamp(2.6rem, 11vw, 5.1rem); font-weight: 320; }
+  h2 { font-size: clamp(1.7rem, 4.6vw, 2.7rem); font-weight: 360; }
+  h3 { font-size: 1.22rem; font-weight: 480; line-height: 1.25; }
+  p { margin: 0 0 1em; }
+
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+
+  /* ── Sections are cells in a colony: membrane seam instead of a rule ── */
+  section { position: relative; scroll-margin-block-start: 5.5rem; padding-block: clamp(3.4rem, 9vw, 7rem); border-block-start: 0; }
+  section::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 2px;
+    inset-inline: var(--pad);
+    height: 22px;
+    pointer-events: none;
+    opacity: 1;
+    background-repeat: repeat-x;
+    background-position: center;
+    background-size: 34px 22px;
+    background-image: radial-gradient(circle at 17px 22px, transparent 0 15px, var(--bio-seam) 15px 16px, transparent 16.5px);
+  }
+  section:first-of-type::before { display: none; }
+
+  .grid { display: grid; gap: var(--gap); grid-template-columns: 1fr; }
+
+  /* ── THE CELL ─────────────────────────────────────────────────────────
+     .card is a living cell: cytoplasm fill, double membrane, breathing. */
+  .card {
+    position: relative;
+    isolation: isolate;
+    background: var(--bio-cytoplasm);
+    color: var(--c-text);
+    border: 1px solid var(--bio-membrane);
+    border-radius: var(--radius);
+    padding: 1.5rem 1.4rem 1.35rem;
+    box-shadow:
+      0 1px 0 rgba(255, 255, 255, .35) inset,
+      0 18px 34px -22px var(--c-shadow),
+      0 2px 0 -1px var(--c-shadow);
+    transition: transform .5s var(--morph-ease), box-shadow .5s var(--morph-ease), border-color .5s var(--morph-ease);
+  }
+  /* the breathing membrane: paint-only, never resizes the box (no overflow) */
+  .card::before {
+    content: "";
+    position: absolute;
+    inset: -3px;
+    z-index: -1;
+    border-radius: 1.6rem 2.6rem 1.7rem 2.9rem / 2.7rem 1.7rem 2.8rem 1.8rem;
+    border: 1px solid var(--bio-glow);
+    background: radial-gradient(60% 50% at 78% 8%, var(--bio-glow), transparent 70%);
+    opacity: .35;
+    animation: x-breathe var(--breathing-duration) var(--morph-ease) infinite;
+  }
+  .card:nth-child(2n)::before { animation-duration: 5.4s; animation-delay: -1.2s; }
+  .card:nth-child(3n)::before { animation-duration: 6.8s; animation-delay: -2.6s; }
+  .card:nth-child(4n)::before { animation-duration: 4.6s; animation-delay: -3.4s; }
+
+  @keyframes x-breathe {
+    0%, 100% { opacity: .28; border-radius: 1.6rem 2.6rem 1.7rem 2.9rem / 2.7rem 1.7rem 2.8rem 1.8rem; }
+    50%      { opacity: .72; border-radius: 2.4rem 1.5rem 2.8rem 1.6rem / 1.6rem 2.7rem 1.7rem 2.9rem; }
+  }
+  @keyframes x-drift {
+    0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
+    33%      { transform: translate3d(3%, -4%, 0) scale(1.07); }
+    66%      { transform: translate3d(-3%, 3%, 0) scale(.95); }
+  }
+  @keyframes x-morph-a {
+    0%, 100% { border-radius: var(--cell-r-a); }
+    50%      { border-radius: var(--cell-r-b); }
+  }
+  @keyframes x-pulse-ring {
+    0%   { transform: scale(.6); opacity: .55; }
+    100% { transform: scale(1.5); opacity: 0; }
+  }
+  @keyframes x-spore {
+    0%   { transform: translate3d(0, 0, 0); opacity: 0; }
+    12%  { opacity: .8; }
+    88%  { opacity: .5; }
+    100% { transform: translate3d(var(--dx, 2rem), -26vh, 0); opacity: 0; }
+  }
+
+  .card:hover, .card:focus-within {
+    border-color: var(--c-accent);
+    box-shadow: 0 26px 46px -26px var(--c-shadow), 0 0 0 1px var(--bio-glow);
+    transform: translateY(-3px);
+  }
+  .card > :last-child { margin-block-end: 0; }
+  .card > img:first-child { margin: -0.35rem -0.35rem 1.05rem; }
+
+  /* ── Buttons: nucleus pills that pulse ── */
+  .btn {
+    position: relative;
+    display: inline-block;
+    font: inherit;
+    font-weight: 560;
+    letter-spacing: .01em;
+    text-decoration: none;
+    padding: .82rem 1.55rem;
+    border-radius: 2rem 2.6rem 2.1rem 2.8rem / 2.7rem 2rem 2.9rem 2.2rem;
+    border: 1px solid var(--c-accent);
+    background:
+      radial-gradient(120% 160% at 18% 12%, var(--bio-glow), transparent 60%),
+      var(--c-accent);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    transition: transform .45s var(--morph-ease), box-shadow .45s var(--morph-ease);
+    box-shadow: 0 10px 26px -14px var(--c-accent);
+  }
+  .btn:hover { transform: translateY(-2px) scale(1.014); box-shadow: 0 16px 30px -14px var(--c-accent); }
+  .btn--quiet {
+    background: transparent;
+    color: var(--c-text);
+    border-color: var(--bio-membrane);
+    box-shadow: none;
+  }
+  .btn--quiet:hover { border-color: var(--c-accent); color: var(--c-accent); }
+
+  .field { display: grid; gap: .4rem; margin-block-end: 1.05rem; }
+  .field > label {
+    font-size: .78rem;
+    letter-spacing: .16em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+  .field > input, .field > select {
+    font: inherit;
+    font-size: 1rem;
+    color: var(--c-text);
+    padding: .66rem .95rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: 1rem 1.7rem 1.1rem 1.8rem / 1.7rem 1rem 1.8rem 1.1rem;
+    transition: border-color .35s var(--morph-ease), box-shadow .35s var(--morph-ease);
+    width: 100%;
+  }
+  .field > input:hover, .field > select:hover { border-color: var(--bio-membrane); }
+  .field > input:focus, .field > select:focus {
+    border-color: var(--c-accent);
+    box-shadow: 0 0 0 4px var(--bio-glow);
+    outline: none;
+  }
+  .field > select { appearance: none; padding-inline-end: 2.4rem; background-image:
+      radial-gradient(circle at 90% 55%, var(--c-accent) 0 3.5px, transparent 4.5px); background-repeat: no-repeat; }
+
+  figure { margin: 0; }
+  figcaption {
+    font-size: .82rem;
+    color: var(--c-muted);
+    margin-block-start: .6rem;
+    font-style: italic;
+    font-family: var(--font-display);
+  }
+
+  .meta-list {
+    display: flex; flex-wrap: wrap; gap: .5rem .7rem;
+    list-style: none; padding: 0; margin: 0 0 2rem;
+  }
+  .meta-list li {
+    font-size: .8rem;
+    color: var(--c-muted);
+    padding: .28rem .85rem;
+    border: 1px solid var(--bio-membrane);
+    border-radius: 1.4rem 1.9rem 1.5rem 2rem / 1.9rem 1.4rem 2rem 1.5rem;
+    background: color-mix(in srgb, var(--c-surface) 62%, transparent);
+  }
+
+  /* ── Chrome ── */
+  .site-header {
+    position: sticky; top: 0; z-index: 10;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    padding-block: .8rem;
+    background: var(--bio-veil);
+    border-block-end: 1px solid var(--bio-membrane);
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 90, "WONK" 1;
+    font-size: 1.16rem;
+    font-weight: 520;
+    letter-spacing: .01em;
+    display: inline-flex; align-items: center; gap: .55rem;
+  }
+  /* the brand's own cell nucleus — CSS shape, no copy added */
+  .brand::before {
+    content: "";
+    width: .72rem; height: .72rem;
+    border-radius: 62% 38% 46% 54% / 51% 44% 56% 49%;
+    background: radial-gradient(circle at 32% 30%, var(--bio-pink), var(--c-accent) 78%);
+    animation: x-morph-a var(--breathing-duration) var(--morph-ease) infinite;
+  }
+  .site-nav { display: flex; gap: 1.15rem; font-size: .875rem; }
+  .site-nav a {
+    color: var(--c-muted);
+    text-decoration: none;
+    position: relative;
+    padding-block-start: .15rem;
+  }
+  .site-nav a::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0; inset-block-end: -.15rem;
+    height: 6px;
+    background: radial-gradient(circle at 50% 100%, var(--c-accent) 0 2.2px, transparent 3px) repeat-x;
+    background-size: 8px 6px;
+    opacity: 0;
+    transition: opacity .4s var(--morph-ease);
+  }
+  .site-nav a:hover { color: var(--c-text); }
+  .site-nav a:hover::after, .site-nav a:focus-visible::after { opacity: 1; }
+
+  #theme-toggle { padding-block: .5rem; font-size: .82rem; letter-spacing: .1em; text-transform: uppercase; }
+
+  .site-footer {
+    position: relative;
+    padding-block: 2.6rem 3.2rem;
+    border-block-start: 1px solid var(--bio-membrane);
+    color: var(--c-muted);
+    font-size: .875rem;
+  }
+  .site-footer p { margin-block-end: .35rem; }
+
+  .rating { color: var(--c-accent); letter-spacing: .22em; font-size: 1rem; }
+  .day-num {
+    font-size: .7rem;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    color: var(--c-accent);
+    font-weight: 560;
+    margin-block-end: .45rem;
+  }
+  .eyebrow {
+    font-size: .76rem;
+    letter-spacing: .22em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-block-end: 1.1rem;
+  }
+  .lede { font-size: clamp(1.02rem, 1.6vw, 1.22rem); color: var(--c-muted); max-width: 46ch; }
+
+  /* ── Focus: always visible ── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: .9rem 1.4rem 1rem 1.5rem / 1.4rem .9rem 1.5rem 1rem;
+  }
+
+  /* ── Overflow guards (mandatory) ── */
+  img, svg, video, canvas { max-width: 100%; }
+  body { overflow-wrap: break-word; }
+  .grid > *, .card, figure { min-width: 0; }
+
+  /* ══ TIER 2 ORNAMENTS — all aria-hidden, all x- prefixed ══ */
+  .x-atmosphere {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    overflow: clip;
+  }
+  .x-spore {
+    position: absolute;
+    bottom: -6vh;
+    width: 7px; height: 7px;
+    border-radius: var(--cell-r-a);
+    background: var(--bio-spore);
+    animation: x-spore 26s linear infinite;
+  }
+  .x-spore:nth-child(2) { left: 14%; width: 5px; height: 5px; animation-duration: 31s; animation-delay: -6s; --dx: 3rem; }
+  .x-spore:nth-child(3) { left: 29%; animation-duration: 37s; animation-delay: -14s; --dx: -2rem; }
+  .x-spore:nth-child(4) { left: 43%; width: 4px; height: 4px; animation-duration: 29s; animation-delay: -3s; --dx: 4rem; }
+  .x-spore:nth-child(5) { left: 57%; animation-duration: 41s; animation-delay: -21s; --dx: -3rem; }
+  .x-spore:nth-child(6) { left: 68%; width: 5px; height: 5px; animation-duration: 33s; animation-delay: -9s; --dx: 2rem; }
+  .x-spore:nth-child(7) { left: 81%; width: 4px; height: 4px; animation-duration: 45s; animation-delay: -27s; --dx: -4rem; }
+  .x-spore:nth-child(8) { left: 92%; animation-duration: 35s; animation-delay: -17s; --dx: 3rem; }
+
+  /* generative mycelium host, clipped to the hero cell */
+  .x-myco {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    opacity: .85;
+    animation: x-breathe-op calc(var(--breathing-duration) * 2.6) var(--morph-ease) infinite;
+  }
+  @keyframes x-breathe-op { 0%, 100% { opacity: .58; } 50% { opacity: .95; } }
+
+  /* bioluminescent blooms: three bounded blurred blobs, nothing page-wide */
+  .x-bloom {
+    position: absolute;
+    z-index: 0;
+    width: clamp(14rem, 34vw, 26rem);
+    aspect-ratio: 1;
+    border-radius: var(--cell-r-a);
+    filter: blur(var(--organic-blur));
+    background: radial-gradient(circle closest-side at 50% 50%, var(--bio-mesh-a), transparent 72%);
+    animation: x-bloom 22s var(--morph-ease) infinite;
+    pointer-events: none;
+  }
+  /* morph the shape and the glow, never a transform: a scaled blurred layer
+     rasterises at its own bounds and shows a hard rectangular edge. */
+  @keyframes x-bloom {
+    0%, 100% { opacity: .78; border-radius: 62% 38% 46% 54% / 51% 44% 56% 49%; }
+    50%      { opacity: 1;   border-radius: 38% 62% 56% 44% / 44% 58% 42% 56%; }
+  }
+  .x-bloom--b {
+    background: radial-gradient(circle closest-side at 50% 50%, var(--bio-mesh-b), transparent 72%);
+    animation-duration: 27s;
+    animation-delay: -8s;
+  }
+  .x-bloom--c {
+    background: radial-gradient(circle closest-side at 50% 50%, var(--bio-mesh-c), transparent 72%);
+    animation-duration: 31s;
+    animation-delay: -13s;
+  }
+  #hero, #booking, #highlights { isolation: isolate; }
+  #hero .x-bloom { top: -4rem; right: -3rem; }
+  #highlights .x-bloom { bottom: 12%; left: -6rem; width: clamp(12rem, 26vw, 20rem); }
+  #booking .x-bloom { top: 8%; right: -5rem; width: clamp(12rem, 26vw, 22rem); }
+  #hero, #highlights, #booking { overflow: clip; }
+
+  /* cellular colony lattice behind the highlights heading */
+  .x-colony {
+    position: absolute;
+    inset-inline: var(--pad);
+    inset-block-start: clamp(1.4rem, 4vw, 2.6rem);
+    height: 130px;
+    z-index: -1;
+    opacity: .5;
+    pointer-events: none;
+    background-image:
+      radial-gradient(circle at 12% 30%, var(--bio-glow) 0 6px, transparent 7px),
+      radial-gradient(circle at 26% 62%, var(--bio-glow) 0 4px, transparent 5px),
+      radial-gradient(circle at 41% 24%, var(--bio-glow) 0 8px, transparent 9px),
+      radial-gradient(circle at 58% 66%, var(--bio-glow) 0 5px, transparent 6px),
+      radial-gradient(circle at 74% 30%, var(--bio-glow) 0 7px, transparent 8px),
+      radial-gradient(circle at 90% 58%, var(--bio-glow) 0 4px, transparent 5px);
+    animation: x-breathe-op calc(var(--breathing-duration) * 2) var(--morph-ease) infinite;
+  }
+
+  /* the venation spine the seven days sprout from */
+  .x-spine {
+    position: absolute;
+    z-index: 0;
+    pointer-events: none;
+    inset-inline-start: .55rem;
+    inset-block: 1.2rem auto;
+    height: calc(100% - 3rem);
+    width: var(--stem);
+    background: linear-gradient(to bottom,
+      transparent,
+      var(--bio-vein) 6%,
+      var(--bio-vein-2) 60%,
+      transparent);
+    border-radius: 2px;
+  }
+  .x-spine::after {
+    content: "";
+    position: absolute;
+    inset-inline-start: -3px;
+    top: 0;
+    width: 8px; height: 8px;
+    border-radius: 60% 40% 55% 45% / 45% 55% 42% 58%;
+    background: var(--c-accent);
+    box-shadow: 0 0 10px 2px var(--bio-glow);
+    animation: x-climb 14s var(--morph-ease) infinite;
+  }
+  @keyframes x-climb {
+    0%   { top: 0; opacity: 0; }
+    10%  { opacity: 1; }
+    90%  { opacity: 1; }
+    100% { top: 96%; opacity: 0; }
+  }
+
+  /* ring where a quote cell buds off the colony */
+  .x-ring {
+    position: absolute;
+    inset-block-start: -1.1rem;
+    inset-inline-start: 1.4rem;
+    width: 2.2rem; height: 2.2rem;
+    border-radius: 58% 42% 47% 53% / 49% 45% 55% 51%;
+    border: 1px solid var(--bio-membrane);
+    background: radial-gradient(circle at 40% 35%, var(--bio-nucleus), transparent 62%);
+    opacity: .8;
+  }
+  .x-ring::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    border: 1px solid var(--c-accent);
+    animation: x-pulse-ring 5s var(--morph-ease) infinite;
+  }
+  #reviews .card:nth-child(3) .x-ring { inset-inline-start: auto; inset-inline-end: 1.4rem; }
+  #reviews .card { padding-block-start: 2.3rem; }
+
+  /* membrane seam under the hero figure, and a second nucleus on it */
+  .x-aura {
+    position: absolute;
+    inset: -6% -8% auto auto;
+    width: 40%;
+    aspect-ratio: 1;
+    z-index: 0;
+    border-radius: var(--cell-r-b);
+    background: radial-gradient(circle closest-side at 50% 50%, var(--bio-mesh-a), transparent 72%);
+    filter: blur(var(--organic-blur));
+    animation: x-bloom 26s var(--morph-ease) infinite;
+    pointer-events: none;
+  }
+
+  /* ══ 1 · HERO ══ */
+  #hero { padding-block-start: clamp(2.6rem, 7vw, 5rem); }
+  /* only the content children are lifted above the colony — never the
+     decorative ones, or they would lose position:absolute to this rule */
+  #hero > .eyebrow, #hero > h1, #hero > .lede, #hero > .meta-list,
+  #hero > p:not(.lede):not(.eyebrow), #hero > .hero-figure { position: relative; z-index: 1; }
+  #hero .x-myco, #hero .x-bloom { z-index: 0; }
+  #hero h1 { margin-block-end: .35em; text-wrap: balance; }
+  #hero .lede { margin-block-end: 1.6rem; }
+  #hero > p:not(.lede):not(.eyebrow) { display: flex; flex-wrap: wrap; gap: .8rem; }
+  .hero-figure { position: relative; margin-block-start: 2.2rem; }
+  .hero-figure img {
+    width: 100%;
+    height: clamp(16rem, 40vw, 24rem);
+    object-fit: cover;
+    border-radius: 58% 42% 46% 54% / 51% 44% 56% 49%;
+    border: 1px solid var(--bio-membrane);
+    box-shadow: 0 30px 60px -34px var(--c-shadow);
+    animation: x-morph-a 18s var(--morph-ease) infinite;
+    position: relative;
+    z-index: 1;
+  }
+  .hero-figure figcaption { padding-inline-start: .6rem; }
+
+  /* kinetic growth split of the hero title (JS-added, bare text nodes kept).
+     Transform only and fill-mode none: a stalled animation clock can never
+     leave a word invisible. */
+  .x-word { display: inline-block; animation: x-sway .8s var(--morph-ease); animation-delay: calc(var(--i, 0) * 80ms); }
+  @keyframes x-sway {
+    from { transform: translate3d(0, .5em, 0) scale(.94); }
+    to   { transform: none; }
+  }
+
+  /* Scroll birth is deliberately opacity-free for the same reason: the gallery
+     must never show a card that a starved observer left invisible. */
+  .x-born { animation: x-sway .8s var(--morph-ease); }
+  #highlights .card.x-born:nth-child(2n) { animation-delay: .09s; }
+  #highlights .card.x-born:nth-child(3n) { animation-delay: .18s; }
+
+  /* ══ 2 · HIGHLIGHTS — a colony, not a row ══ */
+  #highlights .grid { margin-block-start: 2.4rem; }
+  #highlights .card img {
+    width: 100%;
+    height: 11.5rem;
+    object-fit: cover;
+    border-radius: 44% 56% 38% 62% / 52% 40% 60% 48%;
+    border: 1px solid var(--bio-membrane);
+    animation: x-morph-a 21s var(--morph-ease) infinite;
+  }
+  #highlights .card:nth-child(2n) img { animation-direction: reverse; animation-duration: 26s; }
+
+  /* ══ 3 · ITINERARY — the seven days sprout along one stem ══ */
+  #itinerary .grid--days {
+    position: relative;
+    margin-block-start: 2.6rem;
+    display: grid;
+    gap: 1.15rem;
+    grid-template-columns: minmax(0, 1fr);
+    padding-inline-start: 2.1rem;
+  }
+  #itinerary .card.day { padding-block: 1.25rem; }
+  #itinerary .card.day::after {
+    content: "";
+    position: absolute;
+    inset-block-start: 2rem;
+    inset-inline-start: -1.6rem;
+    width: 1.4rem; height: 2px;
+    background: linear-gradient(to right, var(--bio-vein-2), var(--c-accent));
+  }
+  #itinerary .card.day::before { inset: -3px -3px -3px -1.7rem; }
+  /* the bud on the stem for this day */
+  #itinerary .day-num::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -2.15rem;
+    inset-block-start: .1rem;
+    width: .62rem; height: .62rem;
+    border-radius: 60% 40% 52% 48% / 46% 56% 44% 54%;
+    background: var(--c-surface);
+    border: 2px solid var(--c-accent);
+    box-shadow: 0 0 8px var(--bio-glow);
+  }
+  #itinerary .day-num { position: relative; }
+  #itinerary .card.day img {
+    width: 100%;
+    height: 13rem;
+    object-fit: cover;
+    margin-block-start: 1rem;
+    border-radius: 52% 48% 40% 60% / 46% 54% 44% 56%;
+    border: 1px solid var(--bio-membrane);
+    animation: x-morph-a 24s var(--morph-ease) infinite;
+  }
+
+  /* ══ 4 · GALLERY — cells in a nest ══ */
+  .grid--gallery { margin-block-start: 2.4rem; }
+  #gallery figure.card {
+    padding: .7rem .7rem .9rem;
+    background:
+      radial-gradient(90% 80% at 88% 108%, var(--bio-glow), transparent 62%),
+      var(--c-surface);
+  }
+  #gallery figure.card img {
+    width: 100%;
+    height: 12rem;
+    object-fit: cover;
+    border-radius: 46% 54% 58% 42% / 54% 42% 58% 46%;
+    animation: x-morph-a 20s var(--morph-ease) infinite;
+  }
+  #gallery figure.card:nth-child(2n) img { animation-duration: 27s; animation-direction: reverse; }
+  #gallery figure.card figcaption { padding-inline: .35rem; }
+  #gallery figure.card::before { inset: -2px; }
+
+  /* ══ 5 · REVIEWS ══ */
+  #reviews .grid { margin-block-start: 2.4rem; }
+  #reviews blockquote { margin: 0; }
+  #reviews blockquote footer {
+    margin-block-start: 1rem;
+    font-size: .84rem;
+    color: var(--c-muted);
+  }
+  #reviews cite { font-style: normal; font-weight: 560; color: var(--c-text); }
+
+  /* ══ 6 · BOOKING + FAQ ══ */
+  #booking { display: grid; grid-template-columns: minmax(0, 1fr); gap: 1.6rem; }
+  #booking > h2, #booking > p { position: relative; z-index: 1; }
+  #booking-form { position: relative; z-index: 1; padding: 1.7rem 1.5rem 1.5rem; }
+  #booking-form .fineprint {
+    font-size: .8rem;
+    color: var(--c-muted);
+    margin-block: .9rem 0;
+    padding-block-start: .8rem;
+    border-block-start: 1px dashed var(--bio-membrane);
+  }
+  #booking .btn[type="submit"] { width: 100%; margin-block-start: .3rem; }
+  #booking h3 { margin-block-start: 2.6rem; }
+  .faq { display: grid; gap: .8rem; }
+  .faq details { padding: 0; overflow: clip; border-radius: 1.4rem 2.2rem 1.5rem 2.4rem / 2.2rem 1.4rem 2.3rem 1.5rem; }
+  .faq summary {
+    cursor: pointer;
+    list-style: none;
+    padding: 1.05rem 3rem 1.05rem 1.25rem;
+    font-family: var(--font-display);
+    font-variation-settings: "SOFT" 70, "WONK" 1;
+    font-weight: 480;
+    font-size: 1.02rem;
+    position: relative;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "";
+    position: absolute;
+    inset-inline-end: 1.2rem;
+    inset-block-start: 1.28rem;
+    width: .82rem; height: .82rem;
+    border-radius: 50%;
+    border: 1px solid var(--c-accent);
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 9px 1.5px no-repeat,
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 1.5px 9px no-repeat;
+    transition: transform .45s var(--morph-ease), background-size .45s var(--morph-ease);
+  }
+  .faq details[open] > summary::after { transform: rotate(135deg) scale(1.12); }
+  .faq details > p {
+    margin: 0;
+    padding: 0 1.25rem 1.2rem;
+    color: var(--c-muted);
+    font-size: .96rem;
+  }
+  .faq details[open] { border-color: var(--c-accent); }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     BAND 2 · TABLET  (768 – 1023px)  — adds only
+     ══════════════════════════════════════════════════════════════════════ */
+  @media (min-width: 768px) {
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid--gallery { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #highlights .grid > :nth-child(2n) { margin-block-start: 2.6rem; }
+    #gallery figure.card img { height: 14rem; }
+    #gallery figure.card:nth-child(3n + 2) { margin-block-start: 2.2rem; }
+    #reviews .card:nth-child(2) { margin-block-start: 2.4rem; }
+    #reviews .card:nth-child(3) { margin-block-start: 1.1rem; }
+    #itinerary .grid--days { padding-inline-start: 2.9rem; }
+    #itinerary article.day::after { inset-inline-start: -1.9rem; width: 1.7rem; }
+    #itinerary article.day .day-num::before { inset-inline-start: -2.45rem; }
+    #booking-form { max-width: 40rem; }
+    .faq { grid-template-columns: repeat(2, minmax(0, 1fr)); align-items: start; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     BAND 3 · DESKTOP  (1024px and up) — adds only
+     ══════════════════════════════════════════════════════════════════════ */
+  @media (min-width: 1024px) {
+    .grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+
+    /* hero: text colony left, the photographed cell right, overlapping seam */
+    #hero { display: grid; grid-template-columns: minmax(0, 1.08fr) minmax(0, .92fr); gap: 1.4rem 3.4rem; align-items: center; }
+    #hero > h1, #hero > .eyebrow, #hero > .lede, #hero > .meta-list, #hero > p:not(.lede) { grid-column: 1; }
+    #hero .hero-figure { grid-column: 2; grid-row: 1 / span 5; margin-block-start: 0; }
+    #hero .meta-list { margin-block-end: 2.4rem; }
+
+    /* highlights: an asymmetric nest on a 12-column colony */
+    #highlights .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2rem 2.2rem; margin-block-start: 3.2rem; }
+    #highlights .grid > :nth-child(1) { grid-column: 1 / span 7; margin-block-start: 0; }
+    #highlights .grid > :nth-child(2) { grid-column: 8 / span 5; margin-block-start: 4.5rem; }
+    #highlights .grid > :nth-child(3) { grid-column: 2 / span 4; margin-block-start: -2rem; }
+    #highlights .grid > :nth-child(4) { grid-column: 6 / span 7; margin-block-start: 1.4rem; }
+    #highlights .card img { height: 13.5rem; }
+    #highlights .grid > :nth-child(4) img { height: 11rem; }
+
+    /* itinerary: two branches off a central stem */
+    #itinerary .grid--days {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      column-gap: 6rem;
+      row-gap: 1.8rem;
+      padding-inline-start: 0;
+      margin-block-start: 3.4rem;
+      align-items: start;
+    }
+    .x-spine { inset-inline-start: calc(50% - 1px); }
+    /* nth-of-type, not nth-child: the stem is the grid's first child */
+    #itinerary article.day { grid-column: 1; }
+    #itinerary article.day:nth-of-type(odd) { grid-column: 1; margin-block-start: 1.6rem; }
+    #itinerary article.day:nth-of-type(even) { grid-column: 2; margin-block-start: 0; }
+    #itinerary article.day:nth-of-type(odd)::after { inset-inline-start: auto; inset-inline-end: -3.1rem; width: 2.5rem; }
+    #itinerary article.day:nth-of-type(even)::after { inset-inline-start: -3.1rem; width: 2.5rem; }
+    #itinerary article.day:nth-of-type(odd) .day-num::before { inset-inline-start: auto; inset-inline-end: -3.5rem; }
+    #itinerary article.day:nth-of-type(even) .day-num::before { inset-inline-start: -3.5rem; }
+    #itinerary article.day:nth-of-type(4) { transform: translateY(-1.2rem); }
+    #itinerary article.day img { height: 15rem; }
+
+    /* gallery: three-wide colony, staggered */
+    .grid--gallery { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 2.4rem 2rem; }
+    #gallery figure.card img { height: 13rem; }
+    #gallery figure.card:nth-child(2) { margin-block-start: 3rem; }
+    #gallery figure.card:nth-child(4) { margin-block-start: 1.6rem; }
+    #gallery figure.card:nth-child(5) { margin-block-start: 4rem; }
+    #gallery figure.card:nth-child(3n + 1) img { height: 15rem; }
+
+    /* reviews: nest of three buds */
+    #reviews .grid { grid-template-columns: repeat(12, minmax(0, 1fr)); gap: 2rem 2.4rem; margin-block-start: 3rem; }
+    #reviews .card:nth-child(1) { grid-column: 1 / span 6; margin-block-start: 0; }
+    #reviews .card:nth-child(2) { grid-column: 7 / span 6; margin-block-start: 4rem; }
+    #reviews .card:nth-child(3) { grid-column: 3 / span 8; margin-block-start: 1rem; }
+
+    /* booking: form left, questions right, one membrane apart */
+    #booking {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      column-gap: 4rem;
+      row-gap: 1.1rem;
+      align-items: start;
+      align-content: start;
+      grid-template-areas:
+        "head head"
+        "lede lede"
+        "form ask"
+        "form faq";
+    }
+    #booking > h2 { grid-area: head; }
+    #booking > .lede { grid-area: lede; max-width: 62ch; margin-block-end: 1.4rem; }
+    #booking-form { grid-area: form; max-width: none; padding: 2rem 1.8rem 1.75rem; align-self: start; }
+    #booking h3 { grid-area: ask; margin-block-start: 0; }
+    #booking .faq { grid-area: faq; grid-template-columns: 1fr; }
+    .site-nav { gap: 1.4rem; }
+  }
+
+  /* ══════════════════════════════════════════════════════════════════════
+     BAND 1 · MOBILE specifics (below 768) — the fallback for a style that
+     wants colonies and stems: everything collapses to one lane, the canvas
+     keeps only its near field, blooms shrink.
+     ══════════════════════════════════════════════════════════════════════ */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; }
+    .btn { display: block; width: 100%; text-align: center; }
+    #hero > p:not(.lede):not(.eyebrow) { flex-direction: column; }
+    .field > input, .field > select { font-size: 16px; }
+    .hero-figure img { height: 13rem; }
+    .x-bloom { width: 15rem; }
+    #highlights .card img, #gallery figure.card img { height: 10.5rem; }
+    #itinerary .card.day img { height: 11rem; }
+    .card { padding: 1.25rem 1.15rem 1.15rem; }
+    #highlights .grid > :nth-child(2n),
+    #gallery figure.card:nth-child(3n + 2) { margin-block-start: 0; }
+  }
+
+  /* ── Thumbnail run mode + reduced motion: every loop must stop ────────── */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; scroll-behavior: auto !important; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- ═══ Tier-2 colony atmosphere: drifting spores, clipped, never interactive ═══ -->
+<div class="x-atmosphere" aria-hidden="true">
+  <span class="x-spore" aria-hidden="true"></span><span class="x-spore" aria-hidden="true"></span><span class="x-spore" aria-hidden="true"></span>
+  <span class="x-spore" aria-hidden="true"></span><span class="x-spore" aria-hidden="true"></span><span class="x-spore" aria-hidden="true"></span>
+  <span class="x-spore" aria-hidden="true"></span><span class="x-spore" aria-hidden="true"></span>
+</div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO — the mother cell; a mycelium grows inside it ═══ -->
+  <section id="hero" class="wrap">
+    <canvas class="x-myco" aria-hidden="true"></canvas>
+    <span class="x-bloom" aria-hidden="true"></span>
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <span class="x-aura" aria-hidden="true"></span>
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS — four cells, an asymmetric colony ═══ -->
+  <section id="highlights" class="wrap">
+    <span class="x-bloom x-bloom--b" aria-hidden="true"></span>
+    <span class="x-colony" aria-hidden="true"></span>
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY — the week sprouts along one stem ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <span class="x-spine" aria-hidden="true"></span>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY — cells in a nest ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS — three buds ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <span class="x-ring" aria-hidden="true"></span>
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <span class="x-ring" aria-hidden="true"></span>
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <span class="x-ring" aria-hidden="true"></span>
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ — the cell that closes the colony ═══ -->
+  <section id="booking" class="wrap">
+    <span class="x-bloom x-bloom--c" aria-hidden="true"></span>
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p class="lede" data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── Biomimetic runtime: generative mycelium, kinetic title, birth scroll ──
+     Every part no-ops under STYLE_SCAFFOLD_THUMB or prefers-reduced-motion,
+     and every loop is finite: the growth run ends by itself. */
+  (function () {
+    'use strict';
+
+    var THUMB = window.STYLE_SCAFFOLD_THUMB === true;
+    var reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    var root = document.documentElement;
+
+    /* ═══ 1 · GENERATIVE MYCELIUM — hyphae that grow, branch and bud ═══════
+       Hand-written: a tip carries a velocity, wobbles on its own phase, is
+       steered back inside the membrane, branches at random and dies leaving a
+       nucleus. Canvas only; no library, no WebGL. */
+    var cv = document.querySelector('canvas.x-myco');
+    var host = cv && cv.parentElement;
+    var ctx = cv && cv.getContext ? cv.getContext('2d') : null;
+
+    var W = 0, H = 0, segs = [], tips = [], frame = 0, raf = 0, cursor = 0;
+    var MAXGEN = 190;
+    var DPR = Math.min(window.devicePixelRatio || 1, 1.5);
+
+    function cssVar(name, fallback) {
+      var v = getComputedStyle(root).getPropertyValue(name).trim();
+      return v || fallback;
+    }
+
+    function measure() {
+      var r = host.getBoundingClientRect();
+      W = Math.max(160, Math.round(r.width));
+      H = Math.max(140, Math.round(r.height));
+      cv.width = Math.round(W * DPR);
+      cv.height = Math.round(H * DPR);
+      ctx.setTransform(DPR, 0, 0, DPR, 0, 0);
+    }
+
+    function seed() {
+      tips = [];
+      segs = [];
+      frame = 0;
+      cursor = 0;
+      /* reach scales with the cell, so the colony fills it without racing */
+      var n = W < 700 ? 3 : 6;
+      for (var i = 0; i < n; i++) {
+        var t = (i + 1) / (n + 1);
+        tips.push({
+          x: W * t,
+          y: H - 2,
+          a: -Math.PI / 2 + (Math.random() - 0.5) * 0.7,
+          ph: Math.random() * 6.283,
+          sp: 0.85 + Math.random() * 0.35,
+          life: 120 + Math.random() * 110,
+          gen: 0,
+          w: 0.9 + Math.random() * 1.1
+        });
+      }
+    }
+
+    /* one generation step: a hypha advances along its own heading, curving
+       gently under its own wobble plus a tropism toward the light at the top
+       of the cell; it branches at random and leaves a nucleus when it dies. */
+    function step() {
+      var SPEED = H / 175;
+      var next = [];
+      frame++;
+      for (var i = 0; i < tips.length; i++) {
+        var p = tips[i];
+        var light = -Math.PI / 2 + (p.x > W * 0.5 ? -0.4 : 0.4);
+        p.a += 0.085 * Math.sin(frame * 0.06 + p.ph)
+             + (light - p.a) * 0.02
+             + (Math.random() - 0.5) * 0.16;
+        var nx = p.x + Math.cos(p.a) * SPEED * p.sp;
+        var ny = p.y + Math.sin(p.a) * SPEED * p.sp;
+        if (nx < 6 || nx > W - 6) p.a = Math.PI - p.a + (Math.random() - 0.5) * 0.6;
+        if (ny < H * 0.05) p.a = -p.a;
+        nx = Math.max(2, Math.min(W - 2, p.x + Math.cos(p.a) * SPEED * p.sp));
+        ny = Math.max(2, Math.min(H - 2, p.y + Math.sin(p.a) * SPEED * p.sp));
+        segs.push({ x1: p.x, y1: p.y, x2: nx, y2: ny, w: p.w, gen: p.gen });
+        p.x = nx; p.y = ny; p.life -= 1;
+
+        if (p.gen < 3 && next.length < 13 && Math.random() < 0.022) {
+          next.push({
+            x: p.x, y: p.y,
+            a: p.a + (Math.random() < 0.5 ? 1 : -1) * (0.55 + Math.random() * 0.5),
+            ph: Math.random() * 6.283,
+            sp: p.sp * 0.92,
+            life: 70 + Math.random() * 80,
+            gen: p.gen + 1,
+            w: Math.max(0.55, p.w * 0.8)
+          });
+        }
+        if (p.life > 0) next.push(p);
+        else segs.push({ dot: 1, x1: p.x, y1: p.y, r: 1.4 + Math.random() * 2.4 });
+      }
+      tips = next;
+    }
+
+    /* the whole simulation is computed up front — a few thousand operations —
+       so the frame loop only ever REVEALS it. A starved frame clock cannot
+       leave the colony half-grown. */
+    function growAll() {
+      var guard = 0;
+      while (tips.length && guard++ < MAXGEN && segs.length < 1400) step();
+    }
+
+    function paint(from, to) {
+      var vein = cssVar('--bio-vein', 'rgba(0,194,74,.4)');
+      var vein2 = cssVar('--bio-vein-2', 'rgba(14,127,140,.34)');
+      var nuc = cssVar('--bio-nucleus', 'rgba(255,127,80,.6)');
+      var end = to === undefined ? segs.length : to;
+      ctx.lineCap = 'round';
+      for (var i = from; i < end && i < segs.length; i++) {
+        var s = segs[i];
+        if (s.dot) {
+          ctx.fillStyle = nuc;
+          ctx.beginPath();
+          ctx.arc(s.x1, s.y1, s.r, 0, 6.283);
+          ctx.fill();
+          continue;
+        }
+        ctx.strokeStyle = s.gen % 2 ? vein2 : vein;
+        ctx.lineWidth = s.w;
+        ctx.beginPath();
+        ctx.moveTo(s.x1, s.y1);
+        ctx.lineTo(s.x2, s.y2);
+        ctx.stroke();
+      }
+    }
+
+    function redrawAll() {
+      ctx.clearRect(0, 0, W, H);
+      cursor = segs.length;
+      paint(0, cursor);
+    }
+
+    function reveal() {
+      var per = Math.max(4, Math.ceil(segs.length / 80));
+      var to = Math.min(segs.length, cursor + per);
+      paint(cursor, to);
+      cursor = to;
+      if (cursor >= segs.length) { raf = 0; return; }
+      raf = window.requestAnimationFrame(reveal);
+    }
+
+    function rebuild() {
+      measure();
+      seed();
+      growAll();
+      redrawAll();
+    }
+
+    if (ctx) {
+      measure();
+      seed();
+      growAll();
+
+      if (THUMB || reduce) {
+        /* no frame budget at all: the finished colony is painted once */
+        redrawAll();
+      } else {
+        reveal();
+        /* a macrotask always runs, even when rAF is starved on this box */
+        window.setTimeout(function () {
+          if (raf) { window.cancelAnimationFrame(raf); raf = 0; }
+          if (cursor < segs.length) paint(cursor, segs.length);
+          cursor = segs.length;
+        }, 2400);
+      }
+
+      /* the hero re-grows once the real layout lands (webfont + photograph) */
+      window.addEventListener('load', function () {
+        var h0 = H;
+        measure();
+        if (Math.abs(h0 - H) > 20) rebuild(); else redrawAll();
+      }, { once: true });
+
+      /* recolour the colony when the theme flips — a redraw, never a loop */
+      document.getElementById('theme-toggle').addEventListener('click', function () {
+        window.setTimeout(redrawAll, 60);
+      });
+
+      if (!THUMB) {
+        var rt = 0;
+        window.addEventListener('resize', function () {
+          window.clearTimeout(rt);
+          rt = window.setTimeout(rebuild, 260);
+        }, { passive: true });
+      }
+    }
+
+    /* ═══ 2 · KINETIC TYPE — the hero headline divides like cells ═══════════
+       Runtime split into word spans with BARE TEXT NODES between them, so the
+       normalised textContent is byte-identical. Never duplicated, never on the
+       pre-JS or reduced-motion render. */
+    var h1 = document.querySelector('#hero h1[data-tid="hero.title"]');
+    if (h1 && !THUMB && !reduce) {
+      var raw = (h1.textContent || '').replace(/\s+/g, ' ').trim();
+      var words = raw.split(' ');
+      h1.textContent = '';
+      for (var w = 0; w < words.length; w++) {
+        var span = document.createElement('span');
+        span.className = 'x-word';
+        span.style.setProperty('--i', String(w));
+        span.textContent = words[w];
+        h1.appendChild(span);
+        if (w < words.length - 1) h1.appendChild(document.createTextNode(' '));
+      }
+    }
+
+    /* ═══ 3 · GERMINATION — a cell settles as the colony is reached ═════════
+       Transform only, so a card is legible before, during and after: neither a
+       starved observer nor a stalled frame clock can blank the page. */
+    var cells = [].slice.call(document.querySelectorAll('main .card'));
+    if (!THUMB && !reduce && 'IntersectionObserver' in window && cells.length) {
+      var io = new IntersectionObserver(function (entries) {
+        entries.forEach(function (e) {
+          if (!e.isIntersecting) return;
+          e.target.classList.add('x-born');
+          io.unobserve(e.target);
+        });
+      }, { rootMargin: '0px 0px -6% 0px', threshold: 0.08 });
+      cells.forEach(function (el) { io.observe(el); });
+    }
+
+    /* ═══ 4 · SMOOTH TRAVEL — in-page only, so raw scrollTo stays instant ══ */
+    if (!THUMB && !reduce) {
+      document.addEventListener('click', function (ev) {
+        var a = ev.target.closest ? ev.target.closest('a[href^="#"]') : null;
+        if (!a) return;
+        var target = document.getElementById(a.getAttribute('href').slice(1));
+        if (!target) return;
+        ev.preventDefault();
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (history.replaceState) history.replaceState(null, '', a.getAttribute('href'));
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>

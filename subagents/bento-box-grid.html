@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  STYLE · BENTO BOX GRID  (styles.csv row 39 — 2020s Apple)
+
+  Mechanism, not a coat:
+   1. Every section is a TRAY (a rounded panel on a neutral mat).
+   2. Every content block inside a tray is a COMPARTMENT — a white tile with
+      one radius (24px) and one soft shadow elevation.
+   3. Compartments have DELIBERATE spans on a regular 4-column track
+      (2x2, 2x1, 1x2, 1x1) placed explicitly, so the mosaic is flush:
+      no orphan cells, no masonry drift. This is what separates it from the
+      loose "bento-grids" sibling — the track is fixed, the spans are chosen.
+   4. Depth comes from shadow + one hover elevation (scale 1.02), never borders.
+   5. Type is one grotesque family at three weights with negative tracking;
+      hierarchy is carried by size and space, not ornament.
+
+  DOM: the body markup below is the canonical skeleton, byte-for-byte, plus
+  two Tier-2 decorative layers (`x-lattice`, `x-sheen`) and no interactive
+  additions — so no `data-dom-deviation` is declared.
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ── Canonical colour tokens ──────────────────────────────────────────────
+     Neutral Apple mat (#F5F5F7 family) + white compartments + one brand
+     accent. The CSV row names "brand primary" without a hex; resolved to
+     #0071e3 (see receipt). Both themes carry the SAME token set. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #f5f5f7;
+    --c-tray: #eaeaed;
+    --c-surface: #ffffff;
+    --c-elevate: #f4f4f7;
+    --c-text: #1d1d1f;
+    --c-muted: #63636a;
+    --c-accent: #0071e3;
+    --c-accent-2: #b45309;
+    --c-accent-ink: #ffffff;
+    --c-border: #dcdee3;
+    --c-hair: rgba(0, 0, 0, 0.07);
+    --c-shadow: rgba(20, 22, 28, 0.07);
+    --c-shadow-lift: rgba(20, 22, 28, 0.16);
+    --c-scrim: rgba(10, 12, 16, 0.74);
+    --c-focus: rgba(0, 113, 227, 0.28);
+  }
+  [data-theme="dark"] {
+    --c-bg: #0b0b0d;
+    --c-tray: #17171a;
+    --c-surface: #26262b;
+    --c-elevate: #32323a;
+    --c-text: #f5f5f7;
+    --c-muted: #a1a1a6;
+    --c-accent: #6cb8ff;
+    --c-accent-2: #ffd45f;
+    --c-accent-ink: #04121f;
+    --c-border: #3b3b42;
+    --c-hair: rgba(255, 255, 255, 0.09);
+    --c-shadow: rgba(0, 0, 0, 0.5);
+    --c-shadow-lift: rgba(0, 0, 0, 0.68);
+    --c-scrim: rgba(4, 5, 8, 0.82);
+    --c-focus: rgba(108, 184, 255, 0.34);
+  }
+
+  /* ── Non-colour layout vocabulary (the bento tray system) ──────────────── */
+  :root {
+    --page-max: 1240px;
+    --tile-gap: 14px;
+    --pad: clamp(.9rem, 2.4vw, 1.6rem);
+    --radius: 24px;              /* compartment radius — consistent everywhere */
+    --radius-inner: 16px;        /* anything nested inside a compartment      */
+    --radius-pill: 999px;
+    --tray-radius: clamp(22px, 3.2vw, 34px);
+    --row-min: 10rem;           /* the fixed track pitch the spans multiply  */
+    --gap: var(--tile-gap);
+    --hover-scale: 1.02;
+    --shadow-1: 0 1px 2px var(--c-shadow), 0 4px 10px -6px var(--c-shadow);
+    --shadow-2: 0 2px 4px var(--c-shadow), 0 18px 34px -14px var(--c-shadow-lift);
+    --font-display: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
+    --font-body: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", "Segoe UI", Roboto, system-ui, sans-serif;
+    --x-dot: rgba(0, 0, 0, 0.055);
+    --x-sheen: rgba(0, 113, 227, 0.13);
+    --x-on-scrim: #f7f7fa;
+  }
+  [data-theme="dark"] {
+    --x-dot: rgba(255, 255, 255, 0.05);
+    --x-sheen: rgba(108, 184, 255, 0.16);
+  }
+
+  /* ── Reset & page mat ──────────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    line-height: 1.6;
+    overflow-wrap: break-word;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+  img { display: block; max-width: 100%; height: auto; }
+  img, svg, video, canvas { max-width: 100%; }
+  /* The UA gives <figure> a 40px inline margin, which would pull every photo
+     cell off its grid track — kill it before the mosaic is laid out. */
+  figure { margin: 0; }
+  figcaption { font-size: .8125rem; }
+  a { color: var(--c-accent); text-decoration: none; }
+  p { margin: 0 0 1em; }
+  p:last-child { margin-block-end: 0; }
+
+  h1, h2, h3 { font-family: var(--font-display); line-height: 1.06; margin: 0 0 .5em; }
+  h1 { font-size: clamp(2.35rem, 5.4vw, 4.15rem); font-weight: 700; letter-spacing: -.035em; }
+  h2 { font-size: clamp(1.4rem, 2.6vw, 2.05rem); font-weight: 700; letter-spacing: -.025em; }
+  h3 { font-size: 1.0625rem; font-weight: 600; line-height: 1.25; letter-spacing: -.015em; }
+
+  /* ── Tier-2 decoration: the mat under the boxes, and a single overhead
+        sheen so the neutral base is never dead flat. Both aria-hidden. ──── */
+  .x-lattice {
+    position: fixed; inset: 0; z-index: 0; pointer-events: none;
+    background-image: radial-gradient(circle at 1px 1px, var(--x-dot) 1px, transparent 1.6px);
+    background-size: 22px 22px;
+  }
+  .x-sheen {
+    position: fixed; inset: -20% -20% auto -20%; height: 70vh; z-index: 0; pointer-events: none;
+    background:
+      radial-gradient(58% 100% at 50% 0%, var(--x-sheen), transparent 70%),
+      radial-gradient(30% 60% at 78% 8%, var(--x-sheen), transparent 72%);
+  }
+  main, .site-header, .site-footer { position: relative; z-index: 1; }
+
+  /* ── Compartments ────────────────────────────────────────────────────────
+     One rule owns every tile face so radius, elevation and edge never drift
+     between sections. */
+  .card,
+  #hero > :where(:not(.hero-figure)),
+  main > section > :where(h2, p, h3) {
+    background: var(--c-surface);
+    border: 0;
+    border-radius: var(--radius);
+    padding: clamp(1.05rem, 2vw, 1.5rem);
+    box-shadow: var(--shadow-1);
+    min-width: 0;
+    position: relative;
+    isolation: isolate;
+    transition: transform .3s cubic-bezier(.22,.72,.2,1), box-shadow .3s cubic-bezier(.22,.72,.2,1);
+  }
+  /* The pointer gloss: --mx/--my are written by JS on hover only (gated). */
+  .card::before,
+  #hero > :where(:not(.hero-figure))::before,
+  main > section > :where(h2, p, h3)::before {
+    content: "";
+    position: absolute; inset: 0; z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(340px 200px at var(--mx, 50%) var(--my, 0%), var(--c-hair), transparent 62%);
+    opacity: 0; transition: opacity .35s ease;
+    pointer-events: none;
+  }
+  .card:hover::before,
+  #hero > :where(:not(.hero-figure)):hover::before { opacity: 1; }
+
+  /* A compartment seam along the top edge — reads as the lip of a bento lid. */
+  .card::after,
+  main > section > :where(h2, p, h3)::after {
+    content: "";
+    position: absolute; inset-inline: clamp(1.05rem, 2vw, 1.5rem); inset-block-start: 0;
+    height: 1px; background: var(--c-hair); border-radius: 1px;
+    opacity: .8; pointer-events: none;
+  }
+  main > section > :where(h2, p, h3)::after { display: none; } /* no seam on a 1-line tile */
+
+  /* ── Trays: each section is one box of compartments ──────────────────── */
+  .wrap { width: 100%; max-width: var(--page-max); margin-inline: auto; padding-inline: var(--pad); }
+
+  main > section {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: var(--tile-gap);
+    align-content: start;
+    background:
+      radial-gradient(circle at 1px 1px, var(--x-dot) 1px, transparent 1.6px) var(--c-tray);
+    background-size: 22px 22px;
+    background-attachment: local;
+    border-block-start: 0;
+    border-radius: var(--tray-radius);
+    /* The gutter inside the tray IS the compartment gap, so the mosaic reads as
+       one continuous grid of cells rather than boxes floating in a panel. */
+    padding-block: var(--tile-gap);
+    padding-inline: var(--tile-gap);
+    margin-inline: clamp(.35rem, 1.6vw, 1.1rem);
+    margin-block: clamp(.5rem, 1.6vw, 1rem);
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+    scroll-margin-top: 92px;
+    min-width: 0;
+  }
+  main > section > .grid { grid-column: 1 / -1; }
+  main > section > :where(h2, p, h3) { margin: 0; }
+  main > section > h2 { letter-spacing: -.025em; }
+  main > section > p { color: var(--c-muted); font-size: 1.0625rem; }
+  /* The outer tray track carries the title cells' side gutter; the inner grids
+     then sit flush with the compartments below them. */
+  @media (min-width: 768px) {
+    main > section { padding-inline: clamp(.2rem, .8vw, .5rem); }
+  }
+
+  .grid { display: grid; gap: var(--tile-gap); grid-template-columns: 1fr; min-width: 0; }
+  .grid > *, .card, figure { min-width: 0; }
+
+  /* Section titles + ledes sit in the outer tray track. */
+  #highlights > h2, #itinerary > h2, #gallery > h2, #reviews > h2 { grid-column: 1 / -1; }
+  #highlights > p, #itinerary > p, #gallery > p, #reviews > h2 + p { grid-column: 1 / -1; }
+
+  /* ── Chrome: header pill + footer tray ─────────────────────────────────── */
+  .site-header {
+    position: sticky; top: 0; z-index: 20;
+    padding-block: clamp(.5rem, 1.4vw, .8rem);
+    background: var(--c-bg);
+    border-block-end: 1px solid var(--c-hair);
+  }
+  .site-header .wrap {
+    display: flex; align-items: center; justify-content: space-between; gap: .75rem;
+    flex-wrap: wrap;
+    background: var(--c-tray);
+    border-radius: var(--radius-pill);
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+    padding-block: .4rem !important;
+  }
+  .brand {
+    font-family: var(--font-display);
+    font-size: 1.0625rem; font-weight: 700; letter-spacing: -.02em;
+    display: inline-flex; align-items: center; gap: .55rem;
+    padding-inline: .2rem;
+  }
+  .brand::before {
+    content: "";
+    width: 18px; height: 18px; flex: 0 0 auto;
+    border-radius: 6px;
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) 0 0 / 8px 8px no-repeat,
+      linear-gradient(var(--c-accent-2), var(--c-accent-2)) 100% 0 / 8px 8px no-repeat,
+      linear-gradient(var(--c-text), var(--c-text)) 0 100% / 8px 8px no-repeat,
+      linear-gradient(var(--c-muted), var(--c-muted)) 100% 100% / 8px 8px no-repeat;
+    box-shadow: 0 0 0 2px var(--c-surface);
+  }
+  .site-nav { display: flex; gap: .25rem; font-size: .875rem; }
+  .site-nav a {
+    color: var(--c-muted); padding: .45rem .85rem; border-radius: var(--radius-pill);
+    font-weight: 550; letter-spacing: -.01em;
+    transition: background-color .25s ease, color .25s ease;
+  }
+  .site-nav a:hover { color: var(--c-text); background: var(--c-surface); box-shadow: var(--shadow-1); }
+
+  .site-footer {
+    margin-block: clamp(1rem, 3vw, 2rem) 0;
+    padding-block: clamp(1.1rem, 2.6vw, 1.8rem) clamp(1.6rem, 4vw, 2.6rem);
+  }
+  .site-footer .wrap {
+    display: grid; gap: var(--tile-gap);
+    background: var(--c-tray);
+    border-radius: var(--tray-radius);
+    padding-block: clamp(1rem, 2.2vw, 1.4rem);
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+  }
+  .site-footer p {
+    margin: 0;
+    background: var(--c-surface);
+    border-radius: var(--radius-inner);
+    padding: .9rem 1.1rem;
+    font-size: .875rem;
+    color: var(--c-muted);
+    box-shadow: var(--shadow-1);
+  }
+  .site-footer p:first-child { color: var(--c-text); font-weight: 600; letter-spacing: -.01em; }
+
+  /* ── Buttons ───────────────────────────────────────────────────────────── */
+  .btn {
+    display: inline-block;
+    font: inherit; font-weight: 600; letter-spacing: -.01em;
+    text-decoration: none;
+    padding: .74rem 1.45rem;
+    border-radius: var(--radius-pill);
+    border: 1px solid transparent;
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+    cursor: pointer;
+    box-shadow: var(--shadow-1);
+    transition: transform .22s cubic-bezier(.22,.72,.2,1), box-shadow .22s ease, filter .22s ease, background-color .22s ease, color .22s ease;
+  }
+  .btn:hover { filter: saturate(1.12) brightness(1.06); box-shadow: var(--shadow-2); transform: translateY(-1px); }
+  .btn:active { transform: translateY(0) scale(.985); }
+  .btn--quiet {
+    background: var(--c-elevate); color: var(--c-text);
+    border-color: var(--c-border); box-shadow: none;
+  }
+  .btn--quiet:hover { background: var(--c-surface); box-shadow: var(--shadow-1); filter: none; }
+  #theme-toggle { padding: .5rem 1rem; font-size: .875rem; font-weight: 600; }
+  #theme-toggle::before {
+    content: "";
+    display: inline-block; vertical-align: -.12em;
+    width: 8px; height: 8px; margin-inline-end: .5rem;
+    border-radius: 3px; background: var(--c-accent);
+    box-shadow: 12px 0 0 -1px var(--c-accent-2);
+  }
+
+  /* ── Hero: 1 col of stacked compartments on phones ────────────────────── */
+  #hero { padding-block-start: clamp(1.1rem, 3vw, 1.8rem); }
+  #hero > .eyebrow {
+    background: var(--c-elevate);
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+    color: var(--c-accent);
+    font-size: .75rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .12em;
+    padding: .8rem 1rem;
+    line-height: 1.35;
+  }
+  #hero > h1 { margin: 0; padding-block-end: clamp(1.3rem, 3vw, 2rem); }
+  #hero > .lede { font-size: clamp(1.02rem, 1.4vw, 1.28rem); line-height: 1.5; color: var(--c-text); }
+  #hero > .meta-list { margin: 0; }
+  #hero > p:not(.eyebrow):not(.lede) { display: flex; flex-wrap: wrap; gap: .6rem; margin: 0; }
+
+  .meta-list {
+    display: grid; grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: .55rem .8rem; list-style: none; padding: 0; margin: 0 0 1.4rem;
+  }
+  .meta-list li {
+    font-size: .8125rem; color: var(--c-muted); line-height: 1.35;
+    background: var(--c-elevate);
+    border-radius: calc(var(--radius-inner) - 4px);
+    padding: .55rem .7rem;
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+  }
+
+  /* Media-filled compartments: image bleeds to the lid, caption sits on a scrim. */
+  .hero-figure {
+    position: relative; isolation: isolate; overflow: hidden; padding: 0;
+    min-height: 15rem;
+    background: var(--c-elevate);
+  }
+  .hero-figure::after { display: none; }
+  .hero-figure > img {
+    position: absolute; inset: 0 0 auto; z-index: -1;
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .hero-figure > figcaption {
+    position: absolute; inset-inline: 0; bottom: 0; margin: 0;
+    padding: 2.4rem clamp(1.05rem, 2vw, 1.5rem) clamp(1rem, 2vw, 1.3rem);
+    font-size: .875rem; line-height: 1.4; color: var(--x-on-scrim);
+    background: linear-gradient(to top, var(--c-scrim) 12%, rgba(0,0,0,0) 100%);
+    text-wrap: pretty;
+  }
+
+  /* ── Highlights: media lid + title + body, one flex column per cell ───── */
+  #highlights .card {
+    display: flex; flex-direction: column; padding: 0; overflow: hidden;
+  }
+  #highlights .card::after { display: none; }
+  #highlights .card > img {
+    width: 100%; height: auto; flex: 1 1 auto;
+    min-height: 9.5rem; object-fit: cover;
+    background: var(--c-elevate);
+  }
+  #highlights .card > h3,
+  #highlights .card > p { padding-inline: clamp(1.05rem, 2vw, 1.5rem); }
+  #highlights .card > h3 { margin: 1.05rem 0 .4rem; font-size: 1.125rem; }
+  #highlights .card > p { margin: 0 0 clamp(1.05rem, 2vw, 1.4rem); font-size: .9375rem; color: var(--c-muted); line-height: 1.55; }
+  #highlights .card > :last-child { margin-block-end: clamp(1.05rem, 2vw, 1.4rem); }
+
+  /* ── Itinerary: numbered cells, day 4 carries the tall rock-garden photo ─ */
+  .day { display: flex; flex-direction: column; }
+  .day-num {
+    align-self: flex-start; margin: 0 0 .8rem;
+    display: inline-flex; align-items: center; gap: .45rem;
+    font-family: var(--font-display);
+    font-size: .6875rem; font-weight: 700;
+    text-transform: uppercase; letter-spacing: .14em;
+    color: var(--c-accent);
+    background: var(--c-elevate);
+    border-radius: var(--radius-pill);
+    padding: .32rem .7rem;
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+  }
+  .day-num::before {
+    content: ""; width: 6px; height: 6px; border-radius: 2px; background: var(--c-accent-2);
+  }
+  .day > h3 { margin: 0 0 .5rem; font-size: 1.0625rem; }
+  .day > p { font-size: .9375rem; line-height: 1.55; color: var(--c-muted); margin: 0; }
+  .day > img {
+    width: 100%; height: auto; object-fit: cover;
+    margin-block-start: 1rem; border-radius: var(--radius-inner);
+    background: var(--c-elevate);
+  }
+
+  /* ── Gallery: pure photo cells, caption on a scrim ─────────────────────── */
+  .grid--gallery > .card {
+    position: relative; overflow: hidden; padding: 0;
+    min-height: var(--row-min);
+    background: var(--c-elevate);
+  }
+  .grid--gallery > .card::after { display: none; }
+  .grid--gallery > .card > img {
+    position: absolute; inset: 0 0 auto; z-index: -1;
+    width: 100%; height: 100%; object-fit: cover;
+  }
+  .grid--gallery > .card > figcaption {
+    position: absolute; inset-inline: 0; bottom: 0; margin: 0;
+    padding: 2.2rem 1.05rem .95rem;
+    font-size: .8125rem; line-height: 1.4; color: var(--x-on-scrim);
+    background: linear-gradient(to top, var(--c-scrim) 18%, rgba(0,0,0,0) 100%);
+  }
+
+  /* ── Reviews: quote cells, first one is the feature cell ───────────────── */
+  .grid blockquote.card { margin: 0; display: flex; flex-direction: column; }
+  .rating { margin: 0 0 .7rem; color: var(--c-accent-2); font-size: .875rem; letter-spacing: .22em; }
+  blockquote.card > p:nth-of-type(2) { font-size: .9375rem; line-height: 1.6; color: var(--c-text); margin: 0 0 1rem; }
+  blockquote.card:first-child > p:nth-of-type(2) { font-size: clamp(1.05rem, 1.6vw, 1.35rem); line-height: 1.42; letter-spacing: -.018em; }
+  blockquote.card footer { margin-block-start: auto; font-size: .8125rem; color: var(--c-muted); font-style: normal; }
+  blockquote.card cite { font-style: normal; font-weight: 600; color: var(--c-text); }
+
+  /* ── Booking: the form is one big cell, its fields are inner compartments ─ */
+  #booking-form {
+    display: grid; gap: var(--tile-gap);
+    grid-template-columns: 1fr;
+    align-content: start;
+  }
+  #booking-form .field {
+    margin: 0;
+    background: var(--c-elevate);
+    border-radius: var(--radius-inner);
+    padding: .7rem .85rem .85rem;
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+  }
+  .field { display: grid; gap: .3rem; margin-block-end: 0; position: relative; }
+  .field > label {
+    font-size: .6875rem; font-weight: 700; text-transform: uppercase; letter-spacing: .1em;
+    color: var(--c-muted);
+  }
+  .field > input, .field > select {
+    font: inherit; font-size: .9375rem; color: var(--c-text);
+    padding: .6rem .75rem;
+    background: var(--c-surface);
+    border: 1px solid var(--c-border);
+    border-radius: calc(var(--radius-inner) - 6px);
+    width: 100%;
+    transition: border-color .2s ease, box-shadow .2s ease;
+  }
+  .field > input:hover, .field > select:hover { border-color: var(--c-muted); }
+  .field > select { appearance: none; padding-inline-end: 2.1rem; cursor: pointer; }
+  .field:has(> select)::after {
+    content: "";
+    position: absolute; inset-inline-end: 1.5rem; inset-block-end: 1.15rem;
+    width: .5rem; height: .5rem; pointer-events: none;
+    border-inline-end: 2px solid var(--c-muted);
+    border-block-end: 2px solid var(--c-muted);
+    transform: rotate(45deg) translateY(-2px);
+  }
+  #booking-form > .btn { justify-self: start; grid-column: 1 / -1; }
+  #booking-form > .fineprint {
+    grid-column: 1 / -1; margin: 0;
+    font-size: .8125rem; color: var(--c-muted);
+    background: var(--c-elevate);
+    border-radius: var(--radius-inner);
+    padding: .75rem .9rem;
+    box-shadow: inset 0 0 0 1px var(--c-hair);
+  }
+
+  .faq { display: contents; }
+  .faq details { margin: 0; padding: 0; overflow: hidden; }
+  .faq details::after { display: none; }
+  .faq summary {
+    cursor: pointer; list-style: none;
+    padding: clamp(.95rem, 1.8vw, 1.15rem) clamp(1.05rem, 2vw, 1.5rem);
+    font-family: var(--font-display);
+    font-size: .9375rem; font-weight: 600; letter-spacing: -.015em;
+    display: flex; align-items: center; justify-content: space-between; gap: 1rem;
+    transition: color .2s ease, background-color .2s ease;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary:hover { color: var(--c-accent); background: var(--c-elevate); }
+  .faq summary::after {
+    content: "";
+    flex: 0 0 auto; width: 1.1rem; height: 1.1rem; border-radius: 50%;
+    background:
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 10px 1.6px no-repeat,
+      linear-gradient(var(--c-accent), var(--c-accent)) center / 1.6px 10px no-repeat;
+    transition: transform .3s cubic-bezier(.22,.72,.2,1), background-color .2s ease;
+  }
+  .faq details[open] summary::after { transform: rotate(45deg); }
+  .faq details > p {
+    margin: 0;
+    padding: 0 clamp(1.05rem, 2vw, 1.5rem) clamp(1.05rem, 2vw, 1.4rem);
+    font-size: .9375rem; line-height: 1.6; color: var(--c-muted);
+    border-block-start: 1px solid var(--c-hair);
+    padding-block-start: .9rem;
+  }
+  #booking > h3 {
+    background: transparent; box-shadow: none; padding-block: .2rem .1rem;
+    font-size: .75rem; text-transform: uppercase; letter-spacing: .16em;
+    color: var(--c-muted); font-weight: 700;
+  }
+
+  /* ── Focus: always visible, both themes, ring + halo ───────────────────── */
+  :focus-visible {
+    outline: 3px solid var(--c-accent);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 7px var(--c-focus);
+    border-radius: calc(var(--radius-inner) - 6px);
+  }
+  .btn:focus-visible, #theme-toggle:focus-visible { outline-color: var(--c-text); box-shadow: 0 0 0 6px var(--c-focus); }
+
+  /* ── Hover elevation — the row's 1.02, on pointer devices only ─────────── */
+  @media (hover: hover) and (pointer: fine) {
+    .card:hover,
+    #hero > :where(:not(.hero-figure)):hover,
+    main > section > :where(h2, p):hover {
+      transform: scale(var(--hover-scale));
+      box-shadow: var(--shadow-2);
+      z-index: 3;
+    }
+    .faq summary:hover { transform: none; }
+    .grid--gallery > .card:hover > img { transform: scale(1.045); }
+    .grid--gallery > .card > img { transition: transform .55s cubic-bezier(.22,.72,.2,1); }
+    #hero > .eyebrow:hover { transform: scale(var(--hover-scale)); }
+  }
+
+  /* ══ TABLET band — 768–1023px: 2 tracks, spans become deliberate ═══════ */
+  @media (min-width: 768px) {
+    main > section { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(var(--row-min), auto); }
+    #hero { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-auto-rows: minmax(var(--row-min), auto); }
+    #booking { grid-auto-rows: minmax(var(--row-min), auto); }
+
+    /* hero */
+    #hero > h1 { grid-column: 1 / span 2; grid-row: 1; }
+    #hero > .eyebrow { grid-column: 1; grid-row: 2; }
+    #hero .hero-figure { grid-column: 2; grid-row: 2 / span 3; min-height: 20rem; }
+    #hero > .lede { grid-column: 1; grid-row: 3; }
+    #hero > .meta-list { grid-column: 1; grid-row: 4; }
+    #hero > p:not(.eyebrow):not(.lede) { grid-column: 1 / span 2; grid-row: 5; }
+
+    /* highlights: wide feature, then a pair, then a wide cell */
+    #highlights > h2 { grid-column: 1; }
+    #highlights > p { grid-column: 2; }
+    #highlights .grid > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1; }
+    #highlights .grid > :nth-child(2) { grid-column: 1; grid-row: 2; }
+    #highlights .grid > :nth-child(3) { grid-column: 2; grid-row: 2; }
+    #highlights .grid > :nth-child(4) { grid-column: 1 / span 2; grid-row: 3; }
+    #highlights .grid > :nth-child(1) > img,
+    #highlights .grid > :nth-child(4) > img { min-height: 11rem; }
+
+    /* itinerary */
+    #itinerary > h2 { grid-column: 1; }
+    #itinerary > p { grid-column: 2; }
+    .grid--days > :nth-child(1) { grid-column: 1; grid-row: 1; }
+    .grid--days > :nth-child(2) { grid-column: 2; grid-row: 1; }
+    .grid--days > :nth-child(3) { grid-column: 1 / span 2; grid-row: 2; }
+    .grid--days > :nth-child(4) { grid-column: 1; grid-row: 3; }
+    .grid--days > :nth-child(5) { grid-column: 2; grid-row: 3; }
+    .grid--days > :nth-child(6) { grid-column: 1; grid-row: 4; }
+    .grid--days > :nth-child(7) { grid-column: 2; grid-row: 4; }
+
+    /* gallery */
+    #gallery > h2 { grid-column: 1; }
+    #gallery > p { grid-column: 2; }
+    .grid--gallery > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1; min-height: 17rem; }
+    .grid--gallery > :nth-child(2) { grid-column: 1; grid-row: 2; min-height: 13rem; }
+    .grid--gallery > :nth-child(3) { grid-column: 2; grid-row: 2; min-height: 13rem; }
+    .grid--gallery > :nth-child(4) { grid-column: 1 / span 2; grid-row: 3; min-height: 12rem; }
+    .grid--gallery > :nth-child(5) { grid-column: 1; grid-row: 4; min-height: 13rem; }
+    .grid--gallery > :nth-child(6) { grid-column: 2; grid-row: 4; min-height: 13rem; }
+
+    /* reviews */
+    #reviews .grid > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1; }
+    #reviews .grid > :nth-child(2) { grid-column: 1; grid-row: 2; }
+    #reviews .grid > :nth-child(3) { grid-column: 2; grid-row: 2; }
+
+    /* booking */
+    #booking > h2 { grid-column: 1; grid-row: 1; }
+    #booking > p { grid-column: 2; grid-row: 1; }
+    #booking > h3 { grid-column: 1 / span 2; grid-row: 2; }
+    #booking-form { grid-column: 1 / span 2; grid-row: 3; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .faq :nth-child(1) { grid-column: 1; grid-row: 4; }
+    .faq :nth-child(2) { grid-column: 2; grid-row: 4; }
+    .faq :nth-child(3) { grid-column: 1; grid-row: 5; }
+    .faq :nth-child(4) { grid-column: 2; grid-row: 5; }
+
+    .site-footer .wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  }
+
+  /* ══ DESKTOP band — 1024px+: the full 4-track mosaic ═══════════════════ */
+  @media (min-width: 1024px) {
+    :root { --row-min: 9.5rem; }
+    main > section { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(6rem, auto); }
+    .grid { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(var(--row-min), auto); }
+    #hero { grid-template-columns: repeat(4, minmax(0, 1fr)); grid-auto-rows: minmax(6.5rem, auto); }
+    #booking { grid-auto-rows: minmax(6.5rem, auto); }
+
+    /* hero — [eyebrow][  title ×3 ] over [lede ×2][ photo ×2 ×3 ] */
+    #hero > .eyebrow { grid-column: 1; grid-row: 1; }
+    #hero > h1 { grid-column: 2 / span 3; grid-row: 1; padding-block: clamp(1.4rem, 2.4vw, 2.2rem); }
+    #hero > .lede { grid-column: 1 / span 2; grid-row: 2; }
+    #hero > .meta-list { grid-column: 1 / span 2; grid-row: 3; }
+    #hero > p:not(.eyebrow):not(.lede) { grid-column: 1 / span 2; grid-row: 4; }
+    #hero .hero-figure { grid-column: 3 / span 2; grid-row: 2 / span 3; min-height: 24rem; }
+    #hero > .meta-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+
+    /* highlights — 2x2 feature, two 1x1, one 2x1 */
+    #highlights > h2 { grid-column: 1 / span 2; }
+    #highlights > p { grid-column: 3 / span 2; }
+    #highlights .grid > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1 / span 2; }
+    #highlights .grid > :nth-child(2) { grid-column: 3; grid-row: 1; }
+    #highlights .grid > :nth-child(3) { grid-column: 4; grid-row: 1; }
+    #highlights .grid > :nth-child(4) { grid-column: 3 / span 2; grid-row: 2; }
+    #highlights .grid > :nth-child(1) > img { min-height: 17rem; }
+    #highlights .grid > :nth-child(1) > h3 { font-size: 1.375rem; }
+    #highlights .grid > :nth-child(1) > p { font-size: 1rem; }
+    #highlights .grid > :nth-child(4) > img { min-height: 9rem; }
+    #highlights .grid > :nth-child(2) > img,
+    #highlights .grid > :nth-child(3) > img { min-height: 7.5rem; }
+    #highlights .grid > :nth-child(2) > p,
+    #highlights .grid > :nth-child(3) > p { font-size: .875rem; }
+
+    /* itinerary — three across, day 4 tall with the garden, three under */
+    #itinerary > h2 { grid-column: 1 / span 2; }
+    #itinerary > p { grid-column: 3 / span 2; }
+    .grid--days { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .grid--days > :nth-child(1) { grid-column: 1; grid-row: 1; }
+    .grid--days > :nth-child(2) { grid-column: 2; grid-row: 1; }
+    .grid--days > :nth-child(3) { grid-column: 3; grid-row: 1; }
+    .grid--days > :nth-child(4) { grid-column: 4; grid-row: 1 / span 2; }
+    .grid--days > :nth-child(5) { grid-column: 1; grid-row: 2; }
+    .grid--days > :nth-child(6) { grid-column: 2; grid-row: 2; }
+    .grid--days > :nth-child(7) { grid-column: 3; grid-row: 2; }
+    .grid--days > :nth-child(4) { justify-content: space-between; }
+    .grid--days > :nth-child(4) > img { margin-block-start: auto; margin-block-end: .2rem; min-height: 11rem; }
+
+    /* gallery — photo cells, sized by orientation rather than by a flat min.
+       A portrait crop in a 1/4-track cell needs the height to stay vertical. */
+    #gallery > h2 { grid-column: 1 / span 2; }
+    #gallery > p { grid-column: 3 / span 2; }
+    .grid--gallery > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1 / span 2; min-height: 26rem; }
+    .grid--gallery > :nth-child(2) { grid-column: 3; grid-row: 1; min-height: 15rem; }
+    .grid--gallery > :nth-child(3) { grid-column: 4; grid-row: 1; min-height: 15rem; }
+    .grid--gallery > :nth-child(4) { grid-column: 3 / span 2; grid-row: 2; min-height: 10.5rem; }
+    .grid--gallery > :nth-child(5) { grid-column: 1 / span 2; grid-row: 3; min-height: 14rem; }
+    .grid--gallery > :nth-child(6) { grid-column: 3 / span 2; grid-row: 3; min-height: 18rem; }
+    .grid--gallery > :nth-child(1) figcaption { font-size: 1rem; padding-block-end: 1.3rem; }
+
+    /* reviews — feature quote 2x2 beside two wide quotes */
+    #reviews > h2 { grid-column: 1 / span 2; }
+    #reviews .grid > :nth-child(1) { grid-column: 1 / span 2; grid-row: 1 / span 2; }
+    #reviews .grid > :nth-child(2) { grid-column: 3 / span 2; grid-row: 1; }
+    #reviews .grid > :nth-child(3) { grid-column: 3 / span 2; grid-row: 2; }
+
+    /* booking — form 2x4 beside the four question cells */
+    #booking > h2 { grid-column: 1 / span 2; grid-row: 1; }
+    #booking > p { grid-column: 3 / span 2; grid-row: 1; }
+    #booking > h3 { grid-column: 1 / span 4; grid-row: 2; }
+    #booking-form { grid-column: 1 / span 2; grid-row: 3 / span 4; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    #booking-form .field:nth-child(5) { grid-column: 1 / span 2; }
+    .faq :nth-child(1) { grid-column: 3 / span 2; grid-row: 3; }
+    .faq :nth-child(2) { grid-column: 3 / span 2; grid-row: 4; }
+    .faq :nth-child(3) { grid-column: 3 / span 2; grid-row: 5; }
+    .faq :nth-child(4) { grid-column: 3 / span 2; grid-row: 6; }
+
+    .site-footer .wrap { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .site-footer .wrap p:first-child { grid-column: 1 / span 2; }
+    .site-footer .wrap p:last-child { grid-column: 3 / span 2; }
+  }
+
+  /* ── Entrance choreography: compartments settle into the tray.
+        Opt-in via JS class, so the pre-JS and reduced-motion state is the
+        finished, fully visible layout. The from-state never reaches zero
+        opacity — a compartment is only ever dimmed mid-flight, never blank,
+        so a fast scroll or a mid-animation capture cannot show an empty tray. */
+  @keyframes tile-in {
+    from { opacity: .28; transform: translateY(12px); }
+    to   { opacity: 1; transform: none; }
+  }
+  @keyframes tray-in {
+    from { opacity: .82; transform: translateY(16px); }
+    to   { opacity: 1; transform: none; }
+  }
+  .x-reveal { animation: tile-in .46s cubic-bezier(.2,.75,.2,1) backwards; animation-delay: var(--d, 0ms); }
+  .x-reveal-tray { animation: tray-in .5s cubic-bezier(.2,.75,.2,1) backwards; }
+
+  /* ── MOBILE band specifics (below the tablet threshold) ────────────────── */
+  @media (max-width: 767px) {
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: wrap; border-radius: var(--tray-radius); }
+    .btn { display: block; width: 100%; text-align: center; }
+    #hero > p:not(.eyebrow):not(.lede) { flex-direction: column; }
+    .field > input, .field > select { width: 100%; font-size: 16px; }
+    #booking-form > .btn { width: 100%; }
+    main > section { margin-inline: .3rem; }
+
+    /* One column cannot vary width, so the spans vary height by orientation —
+       the mosaic still reads as deliberate compartments, not a flat feed. */
+    #hero .hero-figure { min-height: 16rem; }
+    .grid--gallery > :nth-child(1) { min-height: 14rem; }
+    .grid--gallery > :nth-child(4) { min-height: 11rem; }
+    .grid--gallery > :nth-child(6) { min-height: 16rem; }
+    #highlights .grid > :nth-child(1) > img { min-height: 13rem; }
+    #highlights .grid > :nth-child(2) > img { min-height: 12rem; }
+    #highlights .grid > :nth-child(3) > img { min-height: 10rem; }
+    #highlights .grid > :nth-child(4) > img { min-height: 12rem; }
+    .grid--days > :nth-child(4) > img { min-height: 12rem; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier-2 decoration only: the mat and the sheen under the boxes. -->
+<div class="x-lattice" aria-hidden="true"></div>
+<div class="x-sheen" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap" style="display:flex;align-items:center;justify-content:space-between;gap:1rem;padding-block:0">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── BENTO BOX GRID runtime ───────────────────────────────────────────────
+     Two behaviours, both fully gated:
+       · compartments settle into their tray as it scrolls into view
+         (IntersectionObserver stands in for any scroll-trigger library);
+       · a pointer gloss tracks the hovered compartment.
+     Both no-op in ?thumb=1 and under prefers-reduced-motion, and neither runs
+     a frame loop — the visible state before, after and without JS is the
+     finished layout. */
+  (function () {
+    var root = document.documentElement;
+    if (window.STYLE_SCAFFOLD_THUMB) return;
+    var calm = window.matchMedia('(prefers-reduced-motion: reduce)');
+    if (calm.matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    /* ── 1 · staggered compartment reveal ──
+       Cells inside one tray fire as a group with a fixed stagger, so the
+       mosaic assembles left-to-right instead of trickling. */
+    var trays = [].slice.call(document.querySelectorAll('main > section, .site-footer .wrap'));
+    var seen = [];
+    seen.push.apply(seen, trays);
+
+    function cellsOf(tray) {
+      var out = [];
+      var kids = tray.children;
+      for (var i = 0; i < kids.length; i++) {
+        var k = kids[i];
+        if (k.classList.contains('grid')) {
+          var gk = k.children;
+          for (var j = 0; j < gk.length; j++) out.push(gk[j]);
+        } else if (k.classList.contains('faq')) {
+          var fk = k.children;
+          for (var m = 0; m < fk.length; m++) out.push(fk[m]);
+        } else {
+          out.push(k);
+        }
+      }
+      return out;
+    }
+
+    var io = new IntersectionObserver(function (entries) {
+      for (var n = 0; n < entries.length; n++) {
+        if (!entries[n].isIntersecting) continue;
+        var tray = entries[n].target;
+        io.unobserve(tray);
+        var cells = cellsOf(tray);
+        for (var c = 0; c < cells.length; c++) {
+          var cell = cells[c];
+          if (cell.classList.contains('x-reveal')) continue;
+          cell.style.setProperty('--d', (Math.min(c, 8) * 26) + 'ms');
+          cell.classList.add('x-reveal');
+        }
+        tray.classList.add('x-reveal-tray');
+      }
+    }, { rootMargin: '0px 0px -6% 0px', threshold: 0.012 });
+
+    for (var t = 0; t < seen.length; t++) io.observe(seen[t]);
+
+    /* If the tray is already on screen when the observer is created, the
+       class lands on the next frame; nothing is ever left invisible, because
+       the base state of every cell is the finished state. */
+
+    /* ── 2 · pointer gloss ── single delegated handler, no rAF loop. */
+    if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
+      document.addEventListener('pointermove', function (e) {
+        var tile = e.target && e.target.closest
+          ? e.target.closest('.card, #hero > *:not(.hero-figure)')
+          : null;
+        if (!tile) return;
+        var b = tile.getBoundingClientRect();
+        if (b.width === 0) return;
+        tile.style.setProperty('--mx', (((e.clientX - b.left) / b.width) * 100).toFixed(1) + '%');
+        tile.style.setProperty('--my', (((e.clientY - b.top) / b.height) * 100).toFixed(1) + '%');
+      }, { passive: true });
+    }
+
+    /* If the user flips "reduce motion" mid-session, stop observing so no new
+       animation can be queued; already-revealed cells stay visible. */
+    if (calm.addEventListener) {
+      calm.addEventListener('change', function (ev) { if (ev.matches) io.disconnect(); });
+    }
+    void root;
+  })();
+</script>
+
+</body>
+</html>

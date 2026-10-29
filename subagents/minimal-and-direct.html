@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kyoto in Seven Days — Kōan Travel</title>
+<meta name="description" content="A small-group Kyoto itinerary: seven days, eight travellers, temples at first light, maple valleys and a ryokan night in the Higashiyama hills.">
+
+<!--
+  ══════════════════════════════════════════════════════════════════════════
+  CANONICAL SKELETON — copy this file to subagents/<your-style-id>.html and
+  rewrite ONLY the presentation layer.
+
+  Everything inside <body> is Tier 0 content: identical across all 56 style
+  pages, so the pages stay comparable. See brief/dom-contract.md for exactly
+  what you may and may not touch.
+
+  Your job is the <style> block below and the decoration you add. The baseline
+  CSS here is deliberately plain: it exists so no page can ever look broken.
+  Replace it with your style, but keep every custom property NAME that starts
+  with --c- (that is what makes a theme actually flip).
+  ══════════════════════════════════════════════════════════════════════════
+-->
+
+<style>
+  /* ══════════════════════════════════════════════════════════════════════
+     MINIMAL & DIRECT — a funnel, not a gallery.
+     The whole style is three decisions, taken to the end:
+       1. ONE column, 680px wide, centred in an otherwise empty page.
+       2. Borders only: no fill, no radius beyond 2px, no shadow at all.
+       3. ONE accent, spent on the one action that sells; everything else is
+          black, white and grey type at 18–20px / 1.6.
+     Removal is the design work. Nothing here is decorative.
+     ══════════════════════════════════════════════════════════════════════ */
+
+  /* ── Canonical colour tokens ────────────────────────────────────────────
+     Same nine names on both sides, so the flip is real. White background,
+     black/dark-grey text, one accent — the monochromatic set the style asks
+     for, with a single warm accent kept for the primary CTA. */
+  :root,
+  [data-theme="light"] {
+    --c-bg: #ffffff;
+    --c-surface: #ffffff;
+    --c-elevate: #fafaf9;
+    --c-text: #1a1a1a;
+    --c-muted: #67645f;
+    --c-accent: #b23a1e;
+    --c-accent-ink: #ffffff;
+    --c-border: #e4e2de;
+    --c-shadow: rgba(0, 0, 0, 0);
+    /* theme-local, non-canonical: hairline, CTA hover, form panel */
+    --hairline: #ebeae7;
+    --accent-hover: #8e2c14;
+    --panel: #fcfbfa;
+  }
+  [data-theme="dark"] {
+    --c-bg: #111113;
+    --c-surface: #111113;
+    --c-elevate: #191a1d;
+    --c-text: #f2f1ef;
+    --c-muted: #a3a19c;
+    --c-accent: #f0764c;
+    --c-accent-ink: #170701;
+    --c-border: #2e2f33;
+    --c-shadow: rgba(0, 0, 0, 0);
+    --hairline: #24252a;
+    --accent-hover: #ff9270;
+    --panel: #151618;
+  }
+
+  /* ── Non-colour canonical layout vars (yours to override) ──
+     --page-max is the measure: 680px, and it never becomes two columns. */
+  :root {
+    --page-max: 680px;
+    --gap: 0px;
+    --pad: clamp(1.25rem, 5vw, 2rem);
+    --radius: 2px;
+    --font-display: var(--font-body);
+    --font-body: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+      "Helvetica Neue", Arial, "Noto Sans", sans-serif;
+
+    /* Vertical rhythm — white space is the product, so it is on a scale. */
+    --s-1: 0.375rem;
+    --s-2: 0.75rem;
+    --s-3: 1.25rem;
+    --s-4: 2rem;
+    --s-5: 2.75rem;
+    --s-6: 4rem;          /* --spacing-large */
+    --s-7: 5.5rem;
+    --band: clamp(3.5rem, 11vw, 6rem);
+
+    /* Type scale — 18–20px body, 1.6, nothing louder than that. */
+    --fs-body: clamp(1.125rem, 1.055rem + 0.28vw, 1.25rem);
+    --lh: 1.6;
+    --fs-h1: clamp(2.125rem, 1.62rem + 2.4vw, 3.125rem);
+    --fs-h2: clamp(1.4375rem, 1.32rem + 0.5vw, 1.75rem);
+    --fs-h3: 1.1875rem;
+    --fs-lede: clamp(1.1875rem, 1.1rem + 0.36vw, 1.375rem);
+    --fs-label: 0.6875rem;
+    --fs-small: 0.875rem;
+  }
+
+  /* ── CANONICAL BREAKPOINTS ──────────────────────────────────────────────
+     Every one of the 56 pages uses this same three-band vocabulary, so a
+     "tablet" view means the same thing in brutalism as it does in glassmorphism.
+     Write mobile-first: the rules below the :root block ARE the mobile layout,
+     and each media query only ever ADDS.
+
+       band      viewport        verify width
+       mobile    0 – 767px           375px
+       tablet    768 – 1023px        768px
+       desktop   1024px and up     1440px
+
+     Never introduce your own breakpoint numbers; use these three.
+     For this style the bands change the RHYTHM, never the column count: one
+     column at 375, 768 and 1440 alike. */
+
+  /* ── Reset and surfaces ─────────────────────────────────────────────── */
+  *, *::before, *::after { box-sizing: border-box; }
+  html {
+    -webkit-text-size-adjust: 100%;
+    /* smooth scroll is the only motion the style claims; it is dropped for
+       reduced motion and in thumbnail mode below. */
+    scroll-behavior: smooth;
+  }
+  body {
+    position: relative;
+    margin: 0;
+    background: var(--c-bg);
+    color: var(--c-text);
+    font-family: var(--font-body);
+    font-size: var(--fs-body);
+    line-height: var(--lh);
+    letter-spacing: -0.004em;
+    font-kerning: normal;
+  }
+
+  /* ── The measure ────────────────────────────────────────────────────────
+     Sections run full-bleed (so a band could paint edge to edge) but their
+     padding pushes every line of content into one 680px column, centred.
+     No max-width on the element itself: the column is made of whitespace. */
+  .wrap {
+    width: 100%;
+    max-width: 100%;
+    margin-inline: auto;
+    padding-inline: max(var(--pad), calc((100% - var(--page-max)) / 2));
+  }
+
+  /* ── Typography: one family, four sizes, no display face ─────────────── */
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    font-weight: 650;
+    letter-spacing: -0.026em;
+    line-height: 1.14;
+    margin: 0 0 var(--s-3);
+    text-wrap: balance;
+  }
+  h1 {
+    font-size: var(--fs-h1);
+    line-height: 1.05;
+    letter-spacing: -0.036em;
+    margin-block-end: var(--s-4);
+  }
+  h2 {
+    font-size: var(--fs-h2);
+    letter-spacing: -0.018em;
+    margin-block-end: var(--s-2);
+  }
+  h3 {
+    font-size: var(--fs-h3);
+    letter-spacing: -0.012em;
+    line-height: 1.35;
+    margin-block-end: var(--s-1);
+  }
+  p { margin: 0 0 var(--s-3); }
+  p:last-child { margin-block-end: 0; }
+  ul { margin: 0; padding: 0; }
+
+  a {
+    color: var(--c-accent);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: color 0.15s ease;
+  }
+  a:hover { color: var(--accent-hover); }
+
+  strong { font-weight: 650; }
+
+  /* ── Focus: always visible, always the same 2px accent ring ──────────── */
+  :focus-visible {
+    outline: 2px solid var(--c-accent);
+    outline-offset: 3px;
+    border-radius: 0;
+  }
+
+  /* ── Overflow guards (mandatory; the verifier fails a page that scrolls sideways) ──
+     Media must never be wider than the viewport, and long unbroken strings —
+     the email in the form, a URL — must break rather than push the page out. */
+  img, svg, video, canvas { max-width: 100%; }
+  img { display: block; width: 100%; height: auto; }
+  body { overflow-wrap: break-word; }
+  /* A grid/flex child is allowed to shrink below its content's natural width,
+     otherwise one long word in one card blows out the entire row on mobile. */
+  .grid > *, .card, figure { min-width: 0; }
+  input, select, button, textarea { max-width: 100%; }
+
+  /* ── Chrome: header ───────────────────────────────────────────────────
+     Static on purpose. A sticky bar is chrome competing with the CTA; the
+     funnel only needs the brand, four words of nav, and the theme flip. */
+  .site-header {
+    position: static;
+    display: block;
+    padding-block: 1.15rem;
+    background: var(--c-bg);
+    border-block-end: 1px solid var(--hairline);
+  }
+  .site-header .wrap {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 0.5rem var(--s-3);
+    padding-block: 0;
+  }
+  .brand {
+    font-size: 1rem;
+    font-weight: 650;
+    letter-spacing: -0.012em;
+    line-height: 1.2;
+  }
+  .site-nav { display: flex; flex-wrap: wrap; gap: var(--s-3); font-size: 0.8125rem; }
+  .site-nav a {
+    color: var(--c-muted);
+    text-decoration: none;
+    letter-spacing: -0.004em;
+  }
+  .site-nav a:hover { color: var(--c-text); text-decoration: underline; text-underline-offset: 4px; }
+
+  /* ── Buttons ────────────────────────────────────────────────────────────
+     One primary treatment (solid accent, square-ish, no shadow) and one quiet
+     treatment that is not a button at all — a plain underlined sentence. The
+     page therefore shows exactly one CTA, as the style requires. */
+  .btn {
+    display: inline-block;
+    font: inherit;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.25;
+    text-decoration: none;
+    padding: 0.95rem 1.7rem;
+    border-radius: var(--radius);
+    border: 1px solid var(--c-accent);
+    background: var(--c-accent);
+    color: var(--c-accent-ink);
+    box-shadow: none;
+    cursor: pointer;
+    transition: background-color 0.16s ease, border-color 0.16s ease, color 0.16s ease;
+  }
+  .btn:hover { background: var(--accent-hover); border-color: var(--accent-hover); color: var(--c-accent-ink); }
+  .btn:active { transform: translateY(1px); }
+
+  .btn--quiet {
+    background: transparent;
+    border: 1px solid transparent;
+    color: var(--c-text);
+    padding-inline: 0;
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+  .btn--quiet:hover { background: transparent; border-color: transparent; color: var(--c-accent); }
+  .site-header .btn--quiet {
+    font-size: 0.8125rem;
+    font-weight: 500;
+    color: var(--c-muted);
+    padding-block: 0.4rem;
+    text-decoration: none;
+  }
+  .site-header .btn--quiet:hover { color: var(--c-text); text-decoration: underline; }
+
+  /* ── Sections ───────────────────────────────────────────────────────── */
+  section {
+    padding-block: var(--band);
+    border-block-start: 1px solid var(--hairline);
+    scroll-margin-block-start: 1.5rem;
+  }
+  section:first-of-type { border-block-start: 0; }
+
+  /* The only motion in the style: one 8px rise as a block enters, once. */
+  .x-in { animation: x-rise 0.5s cubic-bezier(0.2, 0.6, 0.2, 1) both; }
+  @keyframes x-rise {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  /* One column, every band. The grid exists only to give vertical rhythm. */
+  .grid { display: grid; gap: var(--s-5); grid-template-columns: 1fr; }
+
+  /* Cards carry no chrome of their own: no fill, no edge, no lift.
+     Anything that needs a box (the booking form) asks for it explicitly. */
+  .card {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+    padding: 0;
+    box-shadow: none;
+  }
+
+  figure { margin: 0; }
+  figcaption {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    letter-spacing: 0;
+    color: var(--c-muted);
+    margin-block-start: 0.8rem;
+  }
+
+  /* ── 1 · HERO — headline, promise, facts, one action. Nothing else. ─── */
+  #hero { padding-block-start: clamp(3.5rem, 13vh, 7rem); padding-block-end: var(--band); }
+  .eyebrow {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin: 0 0 var(--s-3);
+  }
+  .lede {
+    font-size: var(--fs-lede);
+    line-height: 1.5;
+    letter-spacing: -0.012em;
+    color: var(--c-muted);
+    max-width: 46ch;
+    margin-block-end: var(--s-4);
+  }
+  .meta-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem 0;
+    list-style: none;
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+    margin: 0 0 var(--s-5);
+  }
+  .meta-list li {
+    padding-inline-end: 0.95rem;
+    margin-inline-end: 0.95rem;
+    border-inline-end: 1px solid var(--hairline);
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+    line-height: 1.4;
+  }
+  .meta-list li:last-child { border-inline-end: 0; margin-inline-end: 0; padding-inline-end: 0; }
+
+  /* The action row: primary button, then a sentence that is not a button. */
+  #hero > p:not([class]) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem var(--s-4);
+    margin-block-end: var(--s-6);
+  }
+  .hero-figure { margin-block-start: var(--s-4); }
+  .hero-figure figcaption { margin-block-start: 0.9rem; }
+
+  /* ── 2 · HIGHLIGHTS — four blocks, hairline between, image first ────── */
+  #highlights .grid { gap: var(--s-5); }
+  #highlights .card > img { margin-block-end: var(--s-3); }
+  #highlights .card > h3 { margin-block-end: 0.5rem; }
+  #highlights .card + .card {
+    border-block-start: 1px solid var(--hairline);
+    padding-block-start: var(--s-5);
+  }
+
+  /* ── 3 · ITINERARY — the seven days as one ruled list, not a grid ───── */
+  .grid--days { gap: var(--s-4); }
+  .day {
+    position: relative;
+    padding-inline-start: var(--s-3);
+    border-inline-start: 1px solid var(--hairline);
+  }
+  /* Tick on the rule. Grey: the accent belongs to the CTA and nowhere else. */
+  .day::before {
+    content: "";
+    position: absolute;
+    inset-inline-start: -2.5px;
+    inset-block-start: 0.6rem;
+    width: 5px;
+    height: 5px;
+    background: var(--c-muted);
+    opacity: 0.55;
+  }
+  .day-num {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+    margin-block-end: 0.35rem;
+  }
+  .day > h3 { margin-block-end: 0.45rem; }
+  .day > p:last-of-type { color: var(--c-muted); }
+  .day > img { margin-block-start: var(--s-3); }
+
+  /* ── 4 · GALLERY — photographs at full measure, stacked, captioned ─── */
+  #gallery .grid--gallery { gap: var(--s-6); }
+  #gallery img { margin-block-end: 0; }
+  #gallery figcaption { margin-block-start: 0.85rem; }
+
+  /* ── 5 · REVIEWS — three ruled quotes, no bubbles, no avatars ───────── */
+  #reviews .grid { gap: var(--s-5); }
+  #reviews .card {
+    border-block-start: 1px solid var(--hairline);
+    padding-block-start: var(--s-3);
+  }
+  blockquote { margin: 0; font-style: normal; }
+  .rating {
+    color: var(--c-text);
+    font-size: 0.8125rem;
+    letter-spacing: 0.22em;
+    margin-block-end: 0.7rem;
+  }
+  #reviews .card > p { color: var(--c-text); }
+  #reviews .card > footer {
+    font-size: var(--fs-small);
+    color: var(--c-muted);
+  }
+  #reviews cite {
+    font-style: normal;
+    font-weight: 600;
+    color: var(--c-text);
+  }
+
+  /* ── 6 · BOOKING — the ask: one boxed form, four fields, one button ── */
+  #booking-form {
+    display: grid;
+    gap: var(--s-3);
+    padding: clamp(1.25rem, 5vw, 2rem);
+    background: var(--panel);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    box-shadow: none;
+    margin-block-start: var(--s-4);
+  }
+  .field { display: grid; gap: 0.45rem; margin-block-end: 0; }
+  .field > label {
+    font-size: var(--fs-label);
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--c-muted);
+  }
+  .field > input, .field > select {
+    font: inherit;
+    font-size: 1rem;
+    color: var(--c-text);
+    width: 100%;
+    padding: 0.8rem 0.9rem;
+    background: var(--c-bg);
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius);
+    transition: border-color 0.15s ease;
+  }
+  .field > input:hover, .field > select:hover { border-color: var(--c-muted); }
+  .field > input::placeholder { color: var(--c-muted); opacity: 0.8; }
+  #booking-form .btn { justify-self: start; margin-block-start: 0.35rem; }
+  .fineprint {
+    font-size: 0.8125rem;
+    line-height: 1.5;
+    color: var(--c-muted);
+    margin: 0;
+  }
+
+  /* ── FAQ — ruled rows, chevron drawn with borders (no glyphs added) ─── */
+  #booking > h3 {
+    font-size: var(--fs-h2);
+    letter-spacing: -0.018em;
+    margin-block: var(--s-7) var(--s-3);
+  }
+  .faq { display: grid; gap: 0; }
+  .faq details {
+    border-block-end: 1px solid var(--hairline);
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+  .faq details:first-of-type { border-block-start: 1px solid var(--hairline); }
+  .faq summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-3);
+    padding-block: 1.05rem;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: -0.012em;
+    cursor: pointer;
+    list-style: none;
+  }
+  .faq summary::-webkit-details-marker { display: none; }
+  .faq summary::after {
+    content: "";
+    flex: none;
+    width: 8px;
+    height: 8px;
+    margin-block-start: -3px;
+    border-inline-end: 1.5px solid var(--c-muted);
+    border-block-end: 1.5px solid var(--c-muted);
+    transform: rotate(45deg);
+    transition: transform 0.18s ease;
+  }
+  .faq details[open] > summary::after { transform: rotate(-135deg); margin-block-start: 3px; }
+  .faq details > p {
+    padding-block-end: 1.15rem;
+    max-width: 62ch;
+    color: var(--c-muted);
+  }
+
+  /* ── Footer ─────────────────────────────────────────────────────────── */
+  .site-footer {
+    border-block-start: 1px solid var(--hairline);
+    padding-block: var(--s-5) var(--s-7);
+    margin-block-start: var(--s-6);
+  }
+  .site-footer p {
+    font-size: var(--fs-small);
+    line-height: 1.55;
+    color: var(--c-muted);
+    margin: 0 0 0.45rem;
+  }
+  .site-footer p:last-child { margin-block-end: 0; font-size: 0.8125rem; }
+
+  /* ── Tier-2 decoration ──────────────────────────────────────────────────
+     The style tolerates exactly one ornament: a 2px accent rule across the
+     top of the document, which also marks where the page begins. */
+  .x-topline {
+    position: absolute;
+    inset-inline: 0;
+    inset-block-start: 0;
+    height: 2px;
+    background: var(--c-accent);
+    pointer-events: none;
+  }
+
+  /* ── TABLET band: 768 – 1023px — more air, day list grows a label rail ── */
+  @media (min-width: 768px) {
+    :root { --s-6: 4.5rem; --band: clamp(4.5rem, 9vw, 6rem); }
+    .grid { gap: var(--s-6); }
+    #highlights .grid { gap: var(--s-5); }
+    #hero > p:not([class]) { gap: 0.5rem var(--s-5); }
+    .grid--days { gap: var(--s-5); }
+    .day {
+      grid-template-columns: 6.5rem 1fr;
+      column-gap: var(--s-3);
+      display: grid;
+      padding-inline-start: var(--s-4);
+    }
+    .day::before { inset-inline-start: calc(var(--s-4) * -1 - 2.5px); }
+    .day-num { grid-column: 1; grid-row: 1; margin-block-end: 0; padding-block-start: 0.2rem; }
+    .day > h3 { grid-column: 2; grid-row: 1; }
+    .day > p:not(.day-num) { grid-column: 2; }
+    .day > img { grid-column: 2; max-width: 22rem; }
+    #booking-form { gap: var(--s-4); padding: 2rem; }
+  }
+
+  /* ── DESKTOP band: 1024px and up — the column simply gets lonelier ─── */
+  @media (min-width: 1024px) {
+    :root { --s-6: 5rem; --band: 6.5rem; }
+    #hero { padding-block-start: clamp(5rem, 15vh, 8.5rem); }
+    h1 { margin-block-end: var(--s-5); }
+    .lede { max-width: 42ch; }
+    #gallery .grid--gallery { gap: var(--s-7); }
+    #reviews .grid { gap: var(--s-6); }
+    .day > img { max-width: 26rem; }
+    #booking-form { padding: 2.5rem; }
+  }
+
+  /* ── MOBILE band specifics (below the tablet threshold) ── */
+  @media (max-width: 767px) {
+    /* The section nav is the first thing to go; brand and theme toggle stay. */
+    .site-nav { display: none; }
+    .site-header .wrap { flex-wrap: nowrap; }
+    /* The toggle is chrome, not a call to action: it never becomes a bar. */
+    .site-header .btn, .site-header .btn--quiet {
+      display: inline-block;
+      width: auto;
+      text-align: start;
+    }
+    .btn { display: block; width: 100%; text-align: center; }
+    #hero > p:not([class]) { flex-direction: column; align-items: stretch; gap: var(--s-2); }
+    /* The quiet secondary is a sentence, not a button: it stays one. */
+    #hero > p:not([class]) .btn--quiet { width: auto; text-align: start; }
+    #booking-form .btn { width: 100%; }
+    .field > input, .field > select { width: 100%; }
+    /* Keep the form and its labels comfortable as native controls on phones. */
+    .field > input, .field > select { font-size: 16px; }
+    .faq summary { font-size: 1rem; }
+  }
+
+  /* The gallery renders every page as a live scaled iframe thumbnail. In that
+     mode motion is switched off so 56 documents can coexist. */
+  [data-thumb="1"] *, [data-thumb="1"] *::before, [data-thumb="1"] *::after {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+    .x-in { animation: none !important; opacity: 1; transform: none; }
+  }
+</style>
+</head>
+
+<body>
+
+<!-- Tier-2 decoration: the one ornament this style allows itself. -->
+<div class="x-topline" aria-hidden="true"></div>
+
+<header class="site-header" id="site-header">
+  <div class="wrap">
+    <span class="brand" data-tid="brand">Kōan Travel</span>
+    <nav class="site-nav" aria-label="Sections">
+      <a href="#highlights" data-tid="nav.highlights">Highlights</a>
+      <a href="#itinerary" data-tid="nav.itinerary">Itinerary</a>
+      <a href="#gallery" data-tid="nav.gallery">Gallery</a>
+      <a href="#booking" data-tid="nav.booking">Book</a>
+    </nav>
+    <button type="button" id="theme-toggle" class="btn btn--quiet" aria-pressed="false">
+      <span data-tid="theme.label">Dark</span>
+    </button>
+  </div>
+</header>
+
+<main>
+
+  <!-- ═══ 1 · HERO ═══ -->
+  <section id="hero" class="wrap">
+    <p class="eyebrow" data-tid="hero.eyebrow">Small-group journey · Limited to 8 travellers</p>
+    <h1 data-tid="hero.title">Kyoto in Seven Days</h1>
+    <p class="lede" data-tid="hero.lede">Temple gates before the crowds, maple valleys at their peak, and a last night in a machiya townhouse — one week with a guide who grew up in these streets.</p>
+    <ul class="meta-list">
+      <li data-tid="hero.meta.1">7 nights · April 12–18, 2026</li>
+      <li data-tid="hero.meta.2">¥248,000 per person</li>
+      <li data-tid="hero.meta.3">English &amp; Japanese guiding</li>
+      <li data-tid="hero.meta.4">Departures from Kyoto Station</li>
+    </ul>
+    <p>
+      <a class="btn" href="#booking" data-tid="hero.cta.primary">Reserve a place</a>
+      <a class="btn btn--quiet" href="#itinerary" data-tid="hero.cta.secondary">See the itinerary</a>
+    </p>
+    <figure class="hero-figure">
+      <img data-slot="temple" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto01.jpg?width=1280" width="1280" height="823" alt="The Nio-mon gate of Kiyomizu-dera temple rising above Kyoto in late afternoon light">
+      <figcaption data-tid="hero.caption">Kiyomizu-dera, the temple the city was built around.</figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ 2 · HIGHLIGHTS ═══ -->
+  <section id="highlights" class="wrap">
+    <h2 data-tid="highlights.title">What you'll see</h2>
+    <p data-tid="highlights.lede">Four places set the shape of the week. Everything else hangs off them.</p>
+    <div class="grid">
+      <article class="card">
+        <img data-slot="torii" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/20181110%20Fushimi%20Inari%20Torii%2012.jpg?width=1280" width="1280" height="831" alt="A tunnel of vermilion torii gates climbing the hillside path at Fushimi Inari Taisha">
+        <h3 data-tid="highlights.1.title">Fushimi Inari at first light</h3>
+        <p data-tid="highlights.1.body">Ten thousand vermilion gates climb a mountain. We start at 06:00, before the first bus arrives, and walk it upward while it is still silent.</p>
+      </article>
+      <article class="card">
+        <img data-slot="bamboo" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/2021%20Sagano%20Bamboo%20forest%20in%20Arashiyama%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="873" alt="Tall green bamboo stalks closing over a walking path in the Sagano bamboo grove">
+        <h3 data-tid="highlights.2.title">The Sagano bamboo grove</h3>
+        <p data-tid="highlights.2.body">A windless day in Arashiyama still moves — the whole canopy knocks overhead. We go late afternoon, then tea at a teahouse at the edge of the grove.</p>
+      </article>
+      <article class="card">
+        <img data-slot="pavilion" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Shariden%2C%20Kinkaku-ji%2C%20Kyoto%2C%20East%20View%2020130811%201.jpg?width=1280" width="1280" height="799" alt="The gold-leaf Shariden pavilion of Kinkaku-ji reflected in its pond on a clear winter day">
+        <h3 data-tid="highlights.3.title">Kinkaku-ji, the golden pavilion</h3>
+        <p data-tid="highlights.3.body">Two of its three storeys are covered in gold leaf, and the pond was designed to give the building a second, steadier copy.</p>
+      </article>
+      <article class="card">
+        <img data-slot="street" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Gion%20Streets%2C%20Kyoto%2C%202024.jpg?width=1280" width="1280" height="848" alt="A quiet Gion lane at dusk, wooden machiya frontages and paper lanterns lit along the street">
+        <h3 data-tid="highlights.4.title">Gion after dark</h3>
+        <p data-tid="highlights.4.body">The lanterns come on around 17:40 and the teahouse lanes change character completely. We walk them slowly, and then eat.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 3 · ITINERARY ═══ -->
+  <section id="itinerary" class="wrap">
+    <h2 data-tid="itinerary.title">The seven days</h2>
+    <p data-tid="itinerary.lede">Each morning is planned; each afternoon leaves room. Nothing starts before the group has had coffee.</p>
+    <div class="grid grid--days">
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.1.day">Day one</p>
+        <h3 data-tid="itinerary.1.title">Arrival, and the station roof</h3>
+        <p data-tid="itinerary.1.body">Meet at Kyoto Station, drop bags, then walk the old south side. Easy evening — Hirano shrine, and dinner wherever the group feels like stopping.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.2.day">Day two</p>
+        <h3 data-tid="itinerary.2.title">Higashiyama on foot</h3>
+        <p data-tid="itinerary.2.body">Ninenzaka and Sannenzaka before the shops open, Kiyomizu-dera from the rear approach, then down to Gion for the evening walk.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.3.day">Day three</p>
+        <h3 data-tid="itinerary.3.title">Inari at 06:00</h3>
+        <p data-tid="itinerary.3.body">The full climb while the gates are empty. Afternoon at leisure — the museum row, or a second attempt on the mountain if your legs allow.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.4.day">Day four</p>
+        <h3 data-tid="itinerary.4.title">North-west, and a rock garden</h3>
+        <p data-tid="itinerary.4.body">Kinkaku-ji early, then Ryoan-ji's fifteen stones and the Nyojindō pavilion. This is the day the guide explains what a garden is actually doing.</p>
+        <img data-slot="garden" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kyoto%20Ryoanji.jpg?width=1280" width="1280" height="1179" alt="The raked gravel and moss of the Ryoan-ji rock garden seen from the viewing veranda">
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.5.day">Day five</p>
+        <h3 data-tid="itinerary.5.title">Arashiyama and the bamboo</h3>
+        <p data-tid="itinerary.5.body">Tenryū-ji garden in the morning, the grove and Okochi villa after, a boat down the Hozugawa if the water is high enough.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.6.day">Day six</p>
+        <h3 data-tid="itinerary.6.title">Day trip, and a ryokan night</h3>
+        <p data-tid="itinerary.6.body">Train to Nara for the hall at Tōdai-ji, back by late afternoon, then north into the Higashiyama hills — the machiya, and kaiseki dinner served in your room.</p>
+      </article>
+      <article class="card day">
+        <p class="day-num" data-tid="itinerary.7.day">Day seven</p>
+        <h3 data-tid="itinerary.7.title">Maples, market, departure</h3>
+        <p data-tid="itinerary.7.body">Ginkaku-ji's moss garden first thing, the Nishiki market for anything you want to take home, and the station by two o'clock.</p>
+      </article>
+    </div>
+  </section>
+
+  <!-- ═══ 4 · GALLERY ═══ -->
+  <section id="gallery" class="wrap">
+    <h2 data-tid="gallery.title">Kyoto, in pictures</h2>
+    <p data-tid="gallery.lede">Everything below is on the route. Nothing is a stock photo.</p>
+    <div class="grid grid--gallery">
+      <figure class="card">
+        <img data-slot="autumn" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Momiji%20in%20Ginkaku-ji.jpg?width=1280" width="1280" height="854" alt="Red and orange maples in the garden of Ginkaku-ji, the Silver Pavilion">
+        <figcaption data-tid="gallery.1.caption">Maples at Ginkaku-ji, mid-November.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="ryokan" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Interior%20of%20a%20ryokan%20room%20%282999708441%29.jpg?width=1280" width="1280" height="960" alt="A tatami guest room with low table, floor cushions and a shoji screen">
+        <figcaption data-tid="gallery.2.caption">Our room for night six, tatami and shoji.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="food" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Kaiseki%20-%20Kyoto.jpg?width=1280" width="1280" height="955" alt="A kaiseki course arranged on lacquerware and ceramic plates">
+        <figcaption data-tid="gallery.3.caption">The sixth course of the kaiseki dinner.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="train" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/020%20N700%20Series%20Shinkansen%20%E6%96%B0%E5%B9%B9%E7%B7%9A%20arriving%20at%20Kyoto%20Station%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="An N700 series Shinkansen pulling into a platform at Kyoto Station">
+        <figcaption data-tid="gallery.4.caption">Nara is forty-five minutes away, twice an hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="lantern" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Yasaka-dori%20early%20morning%20with%20street%20lanterns%20and%20the%20Tower%20of%20Yasaka%20%28Hokan-ji%20Temple%29%2C%20Kyoto%2C%20Japan.jpg?width=1280" width="1280" height="853" alt="Yasaka-dori lane at dawn, paper lanterns along the street and the five-storey pagoda at the end">
+        <figcaption data-tid="gallery.5.caption">Yasaka-dori at dawn, which is the only honest hour.</figcaption>
+      </figure>
+      <figure class="card">
+        <img data-slot="pagoda" loading="lazy" decoding="async" src="https://commons.wikimedia.org/wiki/Special:FilePath/Cherry%20blossoms%20and%20Five-storied%20Pagoda%2C%20Daigo-ji%20temple%2C%20Kyoto%20-%20Mar%2027%2C%202009.jpg?width=1280" height="1706" width="1138" alt="A five-storied pagoda at Daigo-ji seen through cherry blossom in spring">
+        <figcaption data-tid="gallery.6.caption">Daigo-ji, three weeks before we arrive.</figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ 5 · REVIEWS ═══ -->
+  <section id="reviews" class="wrap">
+    <h2 data-tid="reviews.title">From past travellers</h2>
+    <div class="grid">
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.1.rating">★★★★★</p>
+        <p data-tid="reviews.1.body">The 06:00 Inari start is the single best decision I have ever taken on a trip. I was alone on the mountain for an hour, and by the time the tour buses came up I was already back in town eating breakfast.</p>
+        <footer><cite data-tid="reviews.1.author">Mariam Osei</cite><span data-tid="reviews.1.origin"> · London, November 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.2.rating">★★★★★</p>
+        <p data-tid="reviews.2.body">Seven days sounds long until you realise how much of it is the same four streets, and they are all different every time. Our guide never once read from a phone.</p>
+        <footer><cite data-tid="reviews.2.author">Daniel Whitcombe</cite><span data-tid="reviews.2.origin"> · Toronto, April 2025</span></footer>
+      </blockquote>
+      <blockquote class="card" cite="#">
+        <p class="rating" data-tid="reviews.3.rating">★★★★☆</p>
+        <p data-tid="reviews.3.body">The ryokan night is the highlight and also the tightest logistics — we arrived later than the schedule said. Worth the wait, but I would build in an extra hour.</p>
+        <footer><cite data-tid="reviews.3.author">Ines Ferreira</cite><span data-tid="reviews.3.origin"> · Lisbon, October 2025</span></footer>
+      </blockquote>
+    </div>
+  </section>
+
+  <!-- ═══ 6 · BOOKING + FAQ ═══ -->
+  <section id="booking" class="wrap">
+    <h2 data-tid="booking.title">Reserve a place</h2>
+    <p data-tid="booking.lede">Eight places per departure, held in booking order. A ¥30,000 deposit secures one; the balance is due sixty days before arrival.</p>
+
+    <form id="booking-form" class="card" method="post" action="#" novalidate>
+      <div class="field">
+        <label for="booking-name" data-tid="booking.label.name">Full name</label>
+        <input id="booking-name" name="name" type="text" autocomplete="name" required>
+      </div>
+      <div class="field">
+        <label for="booking-email" data-tid="booking.label.email">Email</label>
+        <input id="booking-email" name="email" type="email" autocomplete="email" required>
+      </div>
+      <div class="field">
+        <label for="booking-departure" data-tid="booking.label.departure">Departure</label>
+        <select id="booking-departure" name="departure" required>
+          <option value="2026-04-12" data-tid="booking.option.1">12–18 April 2026 · 3 places left</option>
+          <option value="2026-11-08" data-tid="booking.option.2">8–14 November 2026 · 7 places left</option>
+          <option value="2027-04-11" data-tid="booking.option.3">11–17 April 2027 · open</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="booking-travellers" data-tid="booking.label.travellers">Travellers</label>
+        <input id="booking-travellers" name="travellers" type="number" min="1" max="8" value="1" required>
+      </div>
+      <button class="btn" type="submit" data-tid="booking.submit">Hold my place</button>
+      <p class="fineprint" data-tid="booking.fineprint">No payment is taken here. We reply within two working days.</p>
+    </form>
+
+    <h3 data-tid="faq.title">Questions</h3>
+    <div class="faq">
+      <details class="card">
+        <summary data-tid="faq.1.q">How much walking is involved?</summary>
+        <p data-tid="faq.1.a">Between six and nine kilometres a day, most of it on flat paved lane. Day three includes the Inari climb — about four hundred metres of steady steps, and you can stop at the Yotsutsuji viewpoint halfway instead of continuing.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.2.q">Is the April departure before the maple colour?</summary>
+        <p data-tid="faq.2.a">Yes. April is cherry blossom, not momiji. The maple photographs on this page are from the November departure. If maples are the reason you are coming, book November 8.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.3.q">What is included in the price?</summary>
+        <p data-tid="faq.3.a">Seven nights' accommodation, all temple and garden admissions, guiding, and dinner on six of the seven evenings. International flights, travel insurance and lunch are not included.</p>
+      </details>
+      <details class="card">
+        <summary data-tid="faq.4.q">Can I do this alone?</summary>
+        <p data-tid="faq.4.a">Roughly half of each group travels alone. Solo travellers share a twin room and pay the listed price; a private room is an extra ¥34,000 for the week.</p>
+      </details>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer" id="site-footer">
+  <div class="wrap">
+    <p data-tid="footer.line">Kōan Travel · Kyoto · Licensed travel operator 2-0481</p>
+    <p data-tid="footer.fine">Photographs from Wikimedia Commons contributors, used under their original licences.</p>
+  </div>
+</footer>
+
+<script>
+  /* ── Canonical runtime: theme + thumbnail run mode ──────────────────────
+     Keep this script. Your style-specific JS goes in a SEPARATE <script>
+     below it, and must no-op when STYLE_SCAFFOLD_THUMB is true. */
+  (function () {
+    var root = document.documentElement;
+
+    // The gallery loads every page as ?thumb=1 inside a scaled iframe. In that
+    // mode: no canvas/WebGL init, no scroll or cursor loops, no autoplay.
+    var THUMB = new URLSearchParams(location.search).get('thumb') === '1';
+    window.STYLE_SCAFFOLD_THUMB = THUMB;
+    if (THUMB) root.setAttribute('data-thumb', '1');
+
+    /* Below-the-fold photography is deferred EXPLICITLY in thumbnail mode.
+       loading="lazy" alone is not sufficient — measured behaviour is that all
+       twelve photos still fetch — and 56 cards × ~1 MB would be a 56 MB gallery.
+       Only the first two images keep their real src; the rest get a transparent
+       same-ratio placeholder so layout is preserved without a network request.
+       If you restyle figures, keep data-slot on the <img> or this breaks. */
+    if (THUMB) {
+      var imgs = document.querySelectorAll('img[data-slot]');
+      for (var i = 0; i < imgs.length; i++) {
+        if (i < 2) continue;
+        var el = imgs[i];
+        el.setAttribute('data-deferred-src', el.getAttribute('src'));
+        el.setAttribute('src',
+          'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(
+            '<svg xmlns="http://www.w3.org/2000/svg" width="' + (el.getAttribute('width') || 1280) +
+            '" height="' + (el.getAttribute('height') || 800) + '"/>'));
+      }
+    }
+
+    var btn = document.getElementById('theme-toggle');
+    var label = btn.querySelector('[data-tid="theme.label"]');
+
+    function apply(mode) {
+      root.setAttribute('data-theme', mode);
+      btn.setAttribute('aria-pressed', String(mode === 'dark'));
+      label.textContent = mode === 'dark' ? 'Light' : 'Dark';
+    }
+
+    // Initial theme follows the OS, then the toggle owns it outright.
+    apply(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+
+    btn.addEventListener('click', function () {
+      apply(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+    });
+  })();
+</script>
+
+<script>
+  /* ── Style runtime: Minimal & Direct ──────────────────────────────────
+     Exactly one behaviour: each block does an 8px rise the first time it
+     enters the viewport, then the observer unsubscribes from it. No scroll
+     handler, no rAF, no canvas, nothing that keeps running.
+
+     It is skipped entirely in thumbnail mode and under prefers-reduced-motion,
+     and it never touches the markup the checker reads: the class is added to
+     elements whose text is already Tier 0, and without it the page renders in
+     its final state anyway (the animation is opt-in, never opt-out). */
+  (function () {
+    if (window.STYLE_SCAFFOLD_THUMB) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+    if (!('IntersectionObserver' in window)) return;
+
+    var targets = document.querySelectorAll('main > section > *');
+    var seen = 0;
+
+    var io = new IntersectionObserver(function (entries) {
+      for (var i = 0; i < entries.length; i++) {
+        if (!entries[i].isIntersecting) continue;
+        entries[i].target.classList.add('x-in');
+        io.unobserve(entries[i].target);
+        seen++;
+      }
+      if (seen >= targets.length) io.disconnect();
+    }, { rootMargin: '0px 0px -12% 0px', threshold: 0.01 });
+
+    for (var i = 0; i < targets.length; i++) io.observe(targets[i]);
+  })();
+</script>
+
+</body>
+</html>
